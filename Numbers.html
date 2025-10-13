@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Fun Numbers • English & አማርኛ</title>
+<style>
+  :root{
+    --bg:#f7f7ff;
+    --ink:#1b1b2b; --brand:#6c5ce7; --brand2:#ff7eb6;
+    --ok:#2ecc71; --warn:#ffb020; --card:#ffffff; --muted:#eef1ff;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    font-family: "Comic Sans MS","Baloo 2", system-ui, sans-serif;
+    background:radial-gradient(1200px 600px at -10% 0%, #b5c7ff 0%, #fbc2eb 40%, #f7f7ff 75%);
+    color:var(--ink); overflow-x:hidden;
+  }
+  header{
+    position:sticky; top:0; z-index:50; text-align:center; padding:14px 10px;
+    background:linear-gradient(90deg,var(--brand),#8e7bff); color:#fff;
+    box-shadow:0 6px 18px #0002; font-weight:900; letter-spacing:.3px;
+  }
+  header h1{margin:0; font-size:clamp(22px,3.8vw,36px)}
+  /* tiny accessibility buttons */
+  .access{
+    position:fixed; top:8px; right:8px; z-index:60;
+    display:flex; gap:6px;
+  }
+  .access button{
+    border:none; padding:6px 9px; border-radius:999px; font-size:12px; cursor:pointer;
+    background:#111; color:#fff; opacity:.9;
+  }
+  .contrast{ filter: invert(1) hue-rotate(180deg); }
+  .largeText{ font-size:1.15em; }
+
+  nav.tabs{
+    position:sticky; top:58px; z-index:45; display:flex;
+    gap:10px; flex-wrap:wrap; justify-content:center;
+    padding:10px; background:#a29bfe;
+  }
+  nav.tabs button{
+    border:none; padding:10px 16px; border-radius:999px; font-weight:900; cursor:pointer;
+    background:#fff; color:#333;
+    box-shadow:0 4px 10px #0001;
+  }
+  nav.tabs button.active{ background:linear-gradient(90deg,#ffd54f,#ff7eb6); color:#222; }
+
+  main{max-width:1200px; margin:0 auto; padding:16px;}
+  section{display:none;
+    animation:fade .25s ease}
+  section.active{display:block}
+  @keyframes fade{from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:translateY(0)}}
+
+  /* Numbers grid */
+  .grid{display:grid; gap:14px;
+    grid-template-columns:repeat(auto-fit,minmax(160px,1fr))}
+  .card{
+    background:var(--card); border-radius:18px; padding:14px; text-align:center;
+    box-shadow:0 8px 18px #0001; transition:transform .12s ease;
+  }
+  .card:active{ transform:scale(.98)}
+  .num{font-size:clamp(34px,6vw,50px); font-weight:900}
+  .words{font-size:clamp(18px,3vw,22px); font-weight:900; margin-top:4px}
+  .sentence{font-size:clamp(16px,2.6vw,18px); margin:6px 0 10px}
+  .card .btn{
+    margin:3px; border:none; border-radius:12px; padding:6px 10px; font-weight:800; cursor:pointer;
+    background:#90caf9;
+  }
+
+  /* Math area */
+  .mathwrap{display:grid; gap:16px}
+  @media (min-width:900px){ .mathwrap{ grid-template-columns:1fr 1fr } }
+  .mathbox{background:var(--card); border-radius:18px; padding:16px; box-shadow:0 8px 18px #0001}
+  .mh{font-size:clamp(22px,3.4vw,28px); font-weight:900; margin:6px 0 10px}
+  .bigEq{font-size:clamp(28px,6vw,44px); font-weight:900; text-align:center}
+  .objs{display:flex; justify-content:center; gap:8px; font-size:clamp(28px,6vw,40px);
+    margin:8px 0; flex-wrap:wrap}
+  .explain{font-size:clamp(16px,2.6vw,18px); text-align:center; margin-top:4px}
+  .chips{display:flex; gap:8px; flex-wrap:wrap; justify-content:center; margin-top:10px}
+  .chip{border:none; padding:8px 12px; border-radius:999px; background:#ffd54f; font-weight:900; cursor:pointer}
+  .pulse{animation:pulse .6s ease}
+  @keyframes pulse{from{transform:scale(.92)} to{transform:scale(1)}}
+  .slideL{animation:slideL .6s ease both}
+  .slideR{animation:slideR .6s ease both}
+  @keyframes slideL{from{transform:translateX(-24px); opacity:.2} to{transform:translateX(0); opacity:1}}
+  @keyframes slideR{from{transform:translateX(24px); opacity:.2} to{transform:translateX(0); opacity:1}}
+
+  /* Quiz */
+  .quiz{max-width:760px; margin:0 auto; background:var(--card); border-radius:18px;
+    box-shadow:0 8px 18px #0001; padding:16px; text-align:center}
+  .qHead{display:flex; gap:8px; justify-content:center; flex-wrap:wrap}
+  .tag{background:#e1f5fe; border-radius:999px; padding:6px 10px; font-weight:900}
+  .q{font-size:clamp(22px,4.2vw,30px); font-weight:900; margin:8px 0}
+  .opts{display:flex; gap:10px; justify-content:center; flex-wrap:wrap}
+  .opts button{border:none; padding:12px 18px; border-radius:12px; background:#4caf50; color:#fff; cursor:pointer; font-weight:900;
+    font-size:clamp(18px,3.2vw,20px)}
+  .opts button:hover{background:#2e7d32}
+  .bar{height:12px; background:#eee; border-radius:999px; overflow:hidden; margin:8px 0 12px}
+  .fill{height:100%; width:0%; background:linear-gradient(90deg,#ffd54f,#ff7eb6);
+    transition:width .25s ease}
+
+  /* Games */
+  .gbox{max-width:860px; margin:0 auto}
+  .panel{background:var(--card); border-radius:18px; box-shadow:0 8px 18px #0001; padding:12px;
+    margin:10px 0}
+  .row{display:flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:center}
+  .lvl button{border:none; padding:8px 12px; border-radius:999px; font-weight:900; cursor:pointer; background:#fff;
+    box-shadow:0 3px 8px #0001}
+  .lvl button.active{background:linear-gradient(90deg,#ffd54f,#ff7eb6)}
+  /* Catch canvas area */
+  #catchArea{position:relative; width:100%; max-width:420px; height:520px;
+    border:4px solid #fff; border-radius:18px; margin:0 auto; background:#f0f4ff; overflow:hidden}
+  #basket{position:absolute; bottom:12px; left:50%; transform:translateX(-50%); font-size:60px; user-select:none}
+  .drop{position:absolute; top:-50px; font-size:40px; font-weight:900;
+    user-select:none}
+  #catchMsg{text-align:center; font-weight:900; min-height:28px}
+
+  /* Match game */
+  .matchWrap{display:grid; gap:12px}
+  .matchQ{font-size:clamp(22px,4vw,28px); font-weight:900; text-align:center; min-height: 50px;}
+  .matchOpts{display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+    gap:12px}
+  .mopt{background:var(--muted); border-radius:16px; padding:14px; text-align:center; font-size:clamp(26px,5vw,34px); cursor:pointer; box-shadow:0 4px 12px #0001}
+  .mopt.correct{outline:4px solid var(--ok)}
+  .mopt.wrong{outline:4px solid #ff6b6b;
+    animation:shake .3s}
+  @keyframes shake{0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)}}
+
+  /* Rewards */
+  .balloon{position:fixed; bottom:-120px; font-size:40px; animation:rise 4s linear forwards;
+    pointer-events:none}
+  @keyframes rise{0%{transform:translateY(0)} 100%{transform:translateY(-120vh)}}
+  .firework{position:fixed; width:10px; height:10px; background:gold; border-radius:50%; animation:boom 1s ease-out forwards; pointer-events:none}
+  @keyframes boom{from{transform:scale(0); opacity:1} to{transform:scale(10); opacity:0}}
+
+  /* Utilities */
+  .note{font-size:.9em; opacity:.8}
+  
+  /* Audio controls */
+  .audio-controls {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .audio-btn {
+    border: none;
+    padding: 6px 10px;
+    border-radius: 12px;
+    font-weight: 800;
+    cursor: pointer;
+    background: #ff7eb6;
+    color: white;
+  }
+  
+  /* Loading indicator */
+  .loading {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s ease-in-out infinite;
+  }
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+</style>
+</head>
+<body>
+<header><h1>🎉 Fun Numbers • English & አማርኛ 🎉</h1></header>
+
+<div class="access">
+  <button title="High Contrast" onclick="document.body.classList.toggle('contrast')">🌗</button>
+  <button title="Large Text" onclick="document.body.classList.toggle('largeText')">🔍</button>
+</div>
+
+<nav class="tabs">
+  <button class="active" data-tab="numbers">Numbers</button>
+  <button data-tab="math">Addition & Subtraction</button>
+  <button data-tab="quiz">Quizzes</button>
+  <button data-tab="games">Games</button>
+  <button data-tab="resources">Resources</button>
+</nav>
+
+<main>
+  <section id="numbers" class="active">
+    <h2>🔢 Numbers 1–20 + 30…100</h2>
+    <div class="grid" id="numbersGrid"></div>
+    <p class="note">Tip: Tap 🔊 English to hear the number. The አማርኛ button uses Google Translate for pronunciation.</p>
+  </section>
+
+  <section id="math">
+    <h2>➕➖ Learn with Animation</h2>
+    <div class="mathwrap">
+      <div class="mathbox">
+        <div class="mh">Addition (🍎 🐶 🎈 🧸)</div>
+        <div id="addEq" class="bigEq">2 + 3 = 5</div>
+        <div id="addObjsTop" class="objs"></div>
+        <div id="addObjsMerge" class="objs"></div>
+        <div id="addExplain" class="explain"></div>
+        <div class="chips">
+          <button class="chip" onclick="newAdd()">🔄 New Example</button>
+          <button class="chip" onclick="speakEn(currAdd.voice)">🔊 English</button>
+          <button class="chip" id="amharicAddBtn" onclick="playAmharicMath('add')">🔊 አማርኛ</button>
+        </div>
+      </div>
+      <div class="mathbox">
+        <div class="mh">Subtraction (⭐ 🍌 🚗 👨‍👩‍👧)</div>
+        <div id="subEq" class="bigEq">6 − 2 = 4</div>
+        <div id="subObjsTop" class="objs"></div>
+        <div id="subObjsLeft" class="objs"></div>
+        <div id="subExplain" class="explain"></div>
+        <div class="chips">
+          <button class="chip" onclick="newSub()">🔄 New Example</button>
+          <button class="chip" onclick="speakEn(currSub.voice)">🔊 English</button>
+          <button class="chip" id="amharicSubBtn" onclick="playAmharicMath('sub')">🔊 አማርኛ</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="quiz">
+    <h2>🎯 Quizzes (Auto-Next)</h2>
+    <div class="quiz" id="quizBox">
+      <div class="qHead">
+        <span class="tag" id="lvlTag">Level 1</span>
+        <span class="tag">Score: <span id="score">0</span></span>
+        <span class="tag">Q <span id="qNo">1</span>/<span id="qTotal">9</span></span>
+      </div>
+      <div class="bar"><div id="barFill" class="fill"></div></div>
+      <div id="qText" class="q">Loading…</div>
+      <div id="qObj" class="objs"></div>
+      <div id="qOpts" class="opts"></div>
+      <p id="qNote" class="note"></p>
+    </div>
+  </section>
+
+  <section id="games">
+    <h2>🎮 Games</h2>
+    <div class="gbox">
+      <div class="panel">
+        <h3>🧺 Catch the Number</h3>
+        <div class="row lvl" id="catchLvls">
+          <button data-speed="3800" class="active">Easy</button>
+          <button data-speed="2600">Medium</button>
+          <button data-speed="1700">Hard</button>
+        </div>
+        <div id="catchArea">
+          <div id="basket">🧺 1</div>
+        </div>
+        <p id="catchMsg"></p>
+      </div>
+
+      <div class="panel">
+        <h3>🔢 Match Number to Objects</h3>
+        <div class="row lvl" id="matchLvls">
+          <button data-max="5" class="active">Easy</button>
+          <button data-max="10">Medium</button>
+          <button data-max="15">Hard</button>
+        </div>
+        <div class="matchWrap">
+          <div id="matchQ" class="matchQ"></div>
+          <div id="matchOpts" class="matchOpts"></div>
+        </div>
+        <p class="note" id="matchNote"></p>
+      </div>
+    </div>
+  </section>
+
+  <section id="resources">
+    <h2>📚 Resources</h2>
+    <div class="card" style="padding:16px; text-align:left">
+      <h3>Printable</h3>
+      <ul>
+        <li><a href="#" onclick="reward()">Numbers 1–20 Worksheet (PDF)</a></li>
+      </ul>
+      <h3>Video</h3>
+      <iframe width="360" height="210" src="https://www.youtube.com/embed/tpAyJt3DZtM" allowfullscreen
+              style="border:0; border-radius:12px; box-shadow:0 8px 18px #0001"></iframe>
+      <h3>Tips</h3>
+      <p>Practice counting objects at home 👨‍👩‍👧‍👦 — apples, spoons, socks!</p>
+    </div>
+  </section>
+</main>
+
+<script>
+/* ---------- Tabs ---------- */
+document.querySelectorAll('nav.tabs button').forEach(b=>{
+  b.addEventListener('click', ()=>{
+    document.querySelectorAll('nav.tabs button').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    document.querySelectorAll('main section').forEach(s=>s.classList.remove('active'));
+    document.getElementById(b.dataset.tab).classList.add('active');
+  });
+});
+
+/* ---------- Speech (English working) ---------- */
+function speakEn(text){
+  if(!text) return;
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang="en-US"; u.rate=0.95; u.pitch=1.0;
+  window.speechSynthesis.cancel(); window.speechSynthesis.speak(u);
+}
+
+/* ---------- Amharic Audio using Google Translate API ---------- */
+function speakAmharic(text, buttonElement = null) {
+  if (!text) return;
+  
+  // Show loading indicator on button if provided
+  const originalText = buttonElement ? buttonElement.innerHTML : '';
+  if (buttonElement) {
+    buttonElement.innerHTML = '<span class="loading"></span>';
+    buttonElement.disabled = true;
+  }
+  
+  // Use Google Translate API for Amharic text-to-speech
+  const audio = new Audio(`https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=am&client=tw-ob`);
+  
+  audio.onended = function() {
+    if (buttonElement) {
+      buttonElement.innerHTML = originalText;
+      buttonElement.disabled = false;
+    }
+  };
+  
+  audio.onerror = function() {
+    if (buttonElement) {
+      buttonElement.innerHTML = originalText;
+      buttonElement.disabled = false;
+    }
+    alert("Unable to play Amharic audio. Please check your internet connection.");
+  };
+  
+  audio.play().catch(error => {
+    console.error("Audio play failed:", error);
+    if (buttonElement) {
+      buttonElement.innerHTML = originalText;
+      buttonElement.disabled = false;
+    }
+  });
+}
+
+// Play Amharic for numbers
+function playAmharicNumber(numberData, event) {
+  const button = event.target;
+  speakAmharic(numberData.am, button);
+}
+
+// Play Amharic for math problems
+function playAmharicMath(type) {
+  const problem = type === 'add' ? currAdd : currSub;
+  const amharicText = `${problem.l} ${type === 'add' ? 'ጨምሮ' : 'ቀንሶ'} ${problem.r} ${type === 'add' ? 'እኩል' : 'ይሆናል'} ${type === 'add' ? problem.l + problem.r : problem.l - problem.r}`;
+  const button = document.getElementById(type === 'add' ? 'amharicAddBtn' : 'amharicSubBtn');
+  speakAmharic(amharicText, button);
+}
+
+/* ---------- Rewards ---------- */
+function reward(){
+  for(let i=0;i<5;i++){
+    const b=document.createElement('div');
+    b.className='balloon'; b.textContent='🎈';
+    b.style.left=Math.random()*90+'%';
+    document.body.appendChild(b);
+    setTimeout(()=>b.remove(),4000);
+  }
+  for(let i=0;i<10;i++){
+    const f=document.createElement('div');
+    f.className='firework';
+    f.style.left=Math.random()*100+'%';
+    f.style.top=Math.random()*100+'%';
+    document.body.appendChild(f);
+    setTimeout(()=>f.remove(),1000);
+  }
+}
+
+/* ---------- NUMBERS LIST ---------- */
+const NUMBERS=[
+  {n:1,en:"One",am:"አንድ",sent:"I have 1 apple 🍎"},
+  {n:2,en:"Two",am:"ሁለት",sent:"I have 2 balloons 🎈🎈"},
+  {n:3,en:"Three",am:"ሶስት",sent:"I have 3 cars 🚗🚗🚗"},
+  {n:4,en:"Four",am:"አራት",sent:"I have 4 stars ⭐⭐⭐⭐"},
+  {n:5,en:"Five",am:"አምስት",sent:"I have 5 toys 🧸🧸🧸🧸🧸"},
+  {n:6,en:"Six",am:"ስድስት",sent:"I have 6 bananas 🍌🍌🍌🍌🍌🍌"},
+  {n:7,en:"Seven",am:"ሰባት",sent:"I have 7 fish 🐟🐟🐟🐟🐟🐟🐟"},
+  {n:8,en:"Eight",am:"ስምንት",sent:"I have 8 books 📚📚📚📚📚📚📚📚"},
+  {n:9,en:"Nine",am:"ዘጠኝ",sent:"I have 9 balls ⚽⚽⚽⚽⚽⚽⚽⚽⚽"},
+  {n:10,en:"Ten",am:"አስር",sent:"I count 10 pencils ✏️✏️✏️✏️✏️✏️✏️✏️✏️✏️"},
+  {n:11,en:"Eleven",am:"አስራ አንድ",sent:"11 crayons 🖍️ together"},
+  {n:12,en:"Twelve",am:"አስራ ሁለት",sent:"12 cupcakes 🧁 yummy!"},
+  {n:13,en:"Thirteen",am:"አስራ ሶስት",sent:"13 balloons 🎈 party!"},
+  {n:14,en:"Fourteen",am:"አስራ አራት",sent:"14 stars ⭐ in the sky"},
+  {n:15,en:"Fifteen",am:"አስራ አምስት",sent:"15 stickers 🥳"},
+  {n:16,en:"Sixteen",am:"አስራ ስድስት",sent:"16 ducks 🦆"},
+  {n:17,en:"Seventeen",am:"አስራ ሰባት",sent:"17 books 📚"},
+  {n:18,en:"Eighteen",am:"አስራ ስምንት",sent:"18 candies 🍬"},
+  {n:19,en:"Nineteen",am:"አስራ ዘጠኝ",sent:"19 leaves 🍃"},
+  {n:20,en:"Twenty",am:"ሃያ",sent:"20 birds 🐦 fly together"},
+  {n:30,en:"Thirty",am:"ሰላሳ",sent:"30 stars ⭐ shine bright"},
+  {n:40,en:"Forty",am:"አርባ",sent:"40 balloons 🎈 in the sky"},
+  {n:50,en:"Fifty",am:"አምሳ",sent:"50 fish 🐟 in the river"},
+  {n:60,en:"Sixty",am:"ስድሳ",sent:"60 flowers 🌸 in the garden"},
+  {n:70,en:"Seventy",am:"ሰባ",sent:"70 books 📚 in the library"},
+  {n:80,en:"Eighty",am:"ሰማንያ",sent:"80 toys 🧸 in the shop"},
+  {n:90,en:"Ninety",am:"ዘጠና",sent:"90 apples 🍎 on the tree"},
+  {n:100,en:"One Hundred",am:"መቶ",sent:"100 stars ⭐ at night"},
+];
+const grid=document.getElementById('numbersGrid');
+NUMBERS.forEach(x=>{
+  const c=document.createElement('div'); c.className='card';
+  c.innerHTML=`
+    <div class="num">${x.n}</div>
+    <div class="words">${x.en} • ${x.am}</div>
+    <div class="sentence">${x.sent}</div>
+    <button class="btn" onclick="speakEn('${x.en}')">🔊 English</button>
+    <button class="btn" onclick="playAmharicNumber(${x.n}, event)">🔊 አማርኛ</button>`;
+  grid.appendChild(c);
+});
+
+// Helper function to play Amharic number audio
+function playAmharicNumber(number, event) {
+  const numberData = NUMBERS.find(n => n.n === number);
+  if (numberData) {
+    playAmharicNumberDirect(numberData, event);
+  }
+}
+
+function playAmharicNumberDirect(numberData, event) {
+  const button = event.target;
+  speakAmharic(numberData.am, button);
+}
+
+/* ---------- MATH (animated) ---------- */
+const addPool=[
+  {l:2,r:3,obj:"🍎", voice:"Two apples plus three apples make five apples."},
+  {l:3,r:2,obj:"🐶", voice:"Three dogs plus two dogs make five dogs."},
+  {l:4,r:1,obj:"🎈", voice:"Four balloons plus one balloon make five balloons."},
+  {l:5,r:5,obj:"🧸", voice:"Five toys plus five toys make ten toys."},
+  {l:7,r:3,obj:"⭐", voice:"Seven stars plus three stars make ten stars."},
+];
+const subPool=[
+  {l:6,r:2,obj:"⭐", voice:"Six stars minus two stars make four stars."},
+  {l:5,r:2,obj:"🍌", voice:"Five bananas minus two bananas make three bananas."},
+  {l:9,r:4,obj:"🚗", voice:"Nine cars minus four cars make five cars."},
+  {l:10,r:5,obj:"🎈", voice:"Ten balloons minus five balloons make five balloons."},
+  {l:7,r:1,obj:"🐟", voice:"Seven fish minus one fish make six fish."},
+];
+let currAdd=addPool[0], currSub=subPool[0];
+
+function repeatEmoji(e,count){ return Array(count).fill(e).join(' ') }
+
+function newAdd(){
+  currAdd=addPool[Math.floor(Math.random()*addPool.length)];
+  const l=currAdd.l, r=currAdd.r, obj=currAdd.obj;
+  document.getElementById('addEq').textContent=`${l} + ${r} = ${l+r}`;
+  const top=document.getElementById('addObjsTop');
+  const merge=document.getElementById('addObjsMerge');
+  const ex=document.getElementById('addExplain');
+
+  top.innerHTML=`<span class="slideL">${repeatEmoji(obj,l)}</span> ➕ <span class="slideR">${repeatEmoji(obj,r)}</span>`;
+  merge.innerHTML=`➡️ <span class="pulse">${repeatEmoji(obj,l+r)}</span>`;
+  ex.textContent=currAdd.voice;
+  speakEn(currAdd.voice);
+}
+function newSub(){
+  currSub=subPool[Math.floor(Math.random()*subPool.length)];
+  const l=currSub.l, r=currSub.r, obj=currSub.obj;
+  document.getElementById('subEq').textContent=`${l} − ${r} = ${l-r}`;
+  const top=document.getElementById('subObjsTop');
+  const left=document.getElementById('subObjsLeft');
+  const ex=document.getElementById('subExplain');
+  top.innerHTML=`<span class="slideL">${repeatEmoji(obj,l)}</span> − <span class="slideR">${repeatEmoji(obj,r)}</span>`;
+  left.innerHTML=`➡️ <span class="pulse">${repeatEmoji(obj,l-r)}</span>`;
+  ex.textContent=currSub.voice;
+  speakEn(currSub.voice);
+}
+newAdd(); newSub();
+/* ---------- QUIZ (3 levels, auto-next) ---------- */
+const quizData=[
+  // Level 1: recognize numbers
+  {lvl:1, q:"Which is 5?", a:"5", options:["3","5","7"], speak:"Which number is five?"},
+  {lvl:1, q:"Which is 9?", a:"9", options:["8","9","10"], speak:"Which number is nine?"},
+  {lvl:1, q:"Which is 12?", a:"12", options:["11","12","20"], speak:"Which number is twelve?"},
+  // Level 2: count objects
+  {lvl:2, q:"How many 🍎 ?", a:"3", options:["2","3","4"], objs:"🍎🍎🍎", speak:"How many apples do you see?"},
+  {lvl:2, q:"How many 🐟 ?", a:"6", options:["5","6","7"], objs:"🐟🐟🐟🐟🐟🐟", speak:"How many fish do you see?"},
+  {lvl:2, q:"How many ⭐ ?", a:"4", options:["4","5","6"], objs:"⭐ ⭐ ⭐ ⭐", speak:"How many stars do you see?"},
+  // Level 3: simple math
+  {lvl:3, q:"2 + 3 = ?", a:"5", options:["4","5","6"], speak:"Two plus three equals what?"},
+  {lvl:3, q:"6 − 2 = ?", a:"4", options:["3","4","5"], speak:"Six minus two equals what?"},
+  {lvl:3, q:"10 − 5 = ?", a:"5", options:["4","5","6"], speak:"Ten minus five equals what?"},
+];
+let qi=0, score=0;
+const qTotal=document.getElementById('qTotal'); qTotal.textContent=quizData.length;
+function loadQ(){
+  if(qi>=quizData.length){
+    document.getElementById('quizBox').innerHTML = `<div class="q">🎆 Amazing! You finished the quiz! Score: ${score}/${quizData.length}</div>`;
+    reward(); return;
+  }
+  const q=quizData[qi];
+  document.getElementById('lvlTag').textContent=`Level ${q.lvl}`;
+  document.getElementById('qNo').textContent=qi+1;
+  document.getElementById('qText').textContent=q.q;
+  document.getElementById('qObj').textContent=q.objs? q.objs : "";
+  speakEn(q.speak || q.q);
+
+  const opts=document.getElementById('qOpts'); opts.innerHTML="";
+  q.options.sort(()=>Math.random()-.5).forEach(o=>{
+    const b=document.createElement('button'); b.textContent=o;
+    b.onclick=()=>checkQ(o,q.a);
+    opts.appendChild(b);
+  });
+  document.getElementById('barFill').style.width=((qi)/quizData.length*100)+'%';
+  document.getElementById('qNote').textContent="Pick the answer — next question shows automatically ✅";
+}
+function checkQ(choice,ans){
+  if(String(choice)===String(ans)){
+    score++; document.getElementById('score').textContent=score;
+    document.getElementById('qNote').textContent="🎉 Correct! Great job!";
+    reward();
+    setTimeout(()=>{ qi++; loadQ(); }, 800);
+  }else{
+    document.getElementById('qNote').textContent="😅 Oops! Try again!";
+  }
+}
+loadQ();
+/* ---------- GAME 1: Catch the Number (levels) ---------- */
+const catchArea=document.getElementById('catchArea');
+const basket=document.getElementById('basket');
+const catchMsg=document.getElementById('catchMsg');
+let basketNum=1, dropTimer=null, dropSpeed=3800;
+function setCatchLevel(ms){
+  dropSpeed=ms;
+  document.querySelectorAll('#catchLvls button').forEach(b=>b.classList.remove('active'));
+  [...document.querySelectorAll('#catchLvls button')].find(b=>+b.dataset.speed===ms).classList.add('active');
+  restartCatch();
+}
+document.querySelectorAll('#catchLvls button').forEach(b=> b.onclick=()=>setCatchLevel(+b.dataset.speed));
+
+function newBasket(){ basketNum = Math.floor(Math.random()*9)+1; basket.textContent="🧺 "+basketNum; }
+function spawnDrop(){
+  const n=Math.floor(Math.random()*9)+1;
+  const d=document.createElement('div'); d.className='drop'; d.textContent=n;
+  d.style.left=Math.random()*(catchArea.clientWidth-40)+'px';
+  catchArea.appendChild(d);
+  const anim=d.animate([{top:'-50px'},{top: (catchArea.clientHeight-90)+'px'}],{duration:dropSpeed, fill:'forwards'});
+  d.onclick=()=>{
+    if(n===basketNum){ catchMsg.textContent="🎉 Correct!"; reward(); newBasket(); }
+    else{ catchMsg.textContent="😅 Try again"; }
+    d.remove();
+  };
+  setTimeout(()=>d.remove(), dropSpeed+400);
+}
+function restartCatch(){
+  if(dropTimer) clearInterval(dropTimer);
+  [...catchArea.querySelectorAll('.drop')].forEach(x=>x.remove());
+  newBasket();
+  dropTimer=setInterval(spawnDrop, Math.max(900, dropSpeed-600));
+}
+setCatchLevel(3800);
+/* ---------- GAME 2: Match Number to Objects (levels) ---------- */
+const EMOJIS=["🍎","🍌","⭐","🐟","🎈","🧸","🚗","📚","🍪","🐶","🐱","🦋","🍇","🍓","🌸"];
+const matchQ=document.getElementById('matchQ');
+const matchOpts=document.getElementById('matchOpts');
+const matchNote=document.getElementById('matchNote');
+let matchMax=5;
+function setMatchLevel(max){
+  matchMax=max;
+  document.querySelectorAll('#matchLvls button').forEach(b=>b.classList.remove('active'));
+  [...document.querySelectorAll('#matchLvls button')].find(b=>+b.dataset.max===max).classList.add('active');
+  newMatch();
+}
+document.querySelectorAll('#matchLvls button').forEach(b=> b.onclick=()=>setMatchLevel(+b.dataset.max));
+
+function newMatch(){
+  const n=Math.floor(Math.random()*matchMax)+1;
+  const e=EMOJIS[Math.floor(Math.random()*EMOJIS.length)];
+  matchQ.innerHTML=`How many ${e}? <br> ${Array(n).fill(e).join(' ')}`;
+  const opts=[n];
+  while(opts.length<3){
+    const r=Math.floor(Math.random()*matchMax)+1;
+    if(!opts.includes(r)) opts.push(r);
+  }
+  opts.sort(()=>Math.random()-.5);
+  matchOpts.innerHTML="";
+  opts.forEach(o=>{
+    const b=document.createElement('div'); b.className='mopt'; b.textContent=o;
+    b.onclick=()=>{
+      if(o===n){ b.classList.add('correct'); matchNote.textContent="🎉 Correct!"; reward(); setTimeout(newMatch,1000); }
+      else{ b.classList.add('wrong'); matchNote.textContent="😅 Try again"; }
+    };
+    matchOpts.appendChild(b);
+  });
+  matchNote.textContent="Tap the number that matches the objects";
+}
+setMatchLevel(5);
+</script>
+</body>
+</html>

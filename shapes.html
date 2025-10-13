@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lines & Shapes Explorer - Amharic & English</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --accent: #6a0572;
+            --accent-light: #e8d4ea;
+            --bg: #f8f9fa;
+            --card: #ffffff;
+            --muted: #6c757d;
+            --gap: 16px;
+            --success: #28a745;
+            --fail: #dc3545;
+            --border-color: #dee2e6;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: var(--bg);
+            color: #212529;
+            line-height: 1.5;
+            font-size: 18px;
+            overflow-x: hidden;
+        }
+
+        header {
+            background: var(--accent);
+            color: white;
+            padding: 12px 16px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .brand {
+            font-weight: 700;
+            font-size: 28px;
+        }
+
+        nav {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        nav .navbtn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 10px 14px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: 600;
+            transition: background-color 0.2s;
+            white-space: nowrap;
+        }
+        nav .navbtn:hover { background: rgba(255, 255, 255, 0.3); }
+
+        main {
+            max-width: 1200px;
+            margin: 24px auto;
+            padding: 0 16px;
+        }
+
+        section { display: none; }
+        section.active { display: block; }
+
+        .controls {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 12px;
+            background: var(--card);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .controls .chip {
+            background: #e9ecef;
+            padding: 8px 14px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .controls .chip:hover { background: var(--accent-light); }
+        .controls .chip.active-filter { background: var(--accent); color: white; border-color: var(--accent); }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: var(--gap);
+        }
+
+        .card {
+            background: var(--card);
+            padding: 16px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            text-align: center;
+            border: 1px solid var(--border-color);
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+        }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 8px 16px rgba(0,0,0,0.1); }
+
+        .shape-display, .line-display {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 12px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .card h4 {
+            margin: 8px 0 4px;
+            font-size: 22px;
+            font-weight: 700;
+        }
+        .card small {
+            display: block;
+            color: var(--muted);
+            margin-bottom: 12px;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .sound-buttons { display: flex; gap: 8px; width: 100%; }
+        .sound-buttons button {
+            flex: 1;
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            position: relative;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s;
+        }
+        .sound-buttons button:hover { background-color: #5a0462; }
+        .sound-buttons .amharic-btn { background-color: var(--success); }
+        .sound-buttons .amharic-btn:hover { background-color: #218838; }
+
+        .loading-spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .panel {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            margin-bottom: 24px;
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .panel h3 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--accent);
+        }
+
+        .stats-bar {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            padding: 10px;
+            background: var(--accent-light);
+            border-radius: 8px;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .feedback {
+            min-height: 36px;
+            font-weight: 700;
+            font-size: 22px;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .memory-board { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 15px; }
+        .memory-card {
+            background-color: var(--accent-light);
+            border-radius: 8px;
+            cursor: pointer;
+            aspect-ratio: 1 / 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform-style: preserve-3d;
+            transition: transform 0.5s;
+        }
+        .memory-card .shape-display {
+            width: 80%;
+            height: 80%;
+            margin: 0;
+            box-shadow: none;
+        }
+        .memory-card.flipped {
+            transform: rotateY(180deg);
+        }
+        .memory-card.matched {
+            transform: rotateY(180deg);
+            opacity: 0.7;
+            cursor: default;
+        }
+        .memory-card .front, .memory-card .back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+        }
+        .memory-card .front {
+            background-color: var(--accent);
+            color: white;
+            font-size: 2.5em;
+            font-weight: bold;
+        }
+        .memory-card .back {
+            transform: rotateY(180deg);
+            background-color: white;
+        }
+
+        .language-toggle {
+            display: flex;
+            gap: 10px;
+            margin: 24px 0 10px;
+            justify-content: center;
+        }
+
+        .lang-btn {
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            background: white;
+            cursor: pointer;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .lang-btn.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 10px 0;
+            justify-content: center;
+        }
+
+        /* Celebration Animations */
+        .celebration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2000;
+        }
+
+        .balloon {
+            position: absolute;
+            bottom: -100px;
+            width: 40px;
+            height: 50px;
+            border-radius: 50%;
+            animation: floatUp 8s ease-in forwards;
+        }
+
+        .balloon::before {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2px;
+            height: 15px;
+            background: rgba(0,0,0,0.2);
+        }
+
+        .rocket {
+            position: absolute;
+            bottom: -100px;
+            font-size: 30px;
+            animation: flyUp 6s ease-in forwards;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-120vh) rotate(10deg); opacity: 0; }
+        }
+
+        @keyframes flyUp {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-120vh) rotate(5deg); opacity: 0; }
+        }
+
+        @media (max-width: 768px) {
+            nav .navbtn { padding: 8px 12px; font-size: 16px; }
+            .grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+            .brand { font-size: 24px; }
+        }
+
+        @media (max-width: 576px) {
+            header { flex-direction: column; align-items: flex-start; gap: 10px; }
+            nav { width: 100%; justify-content: center; }
+            .grid { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div class="brand">Lines & Shapes Explorer</div>
+    <nav>
+        <button class="navbtn" onclick="show('lines')">📏 Lines</button>
+        <button class="navbtn" onclick="show('shapes')">🔷 Shapes</button>
+        <button class="navbtn" onclick="show('games')">🎮 Games</button>
+    </nav>
+</header>
+
+<main>
+    <div class="language-toggle">
+        <button class="lang-btn active" id="englishBtn">English</button>
+        <button class="lang-btn" id="amharicBtn">Amharic (አማርኛ)</button>
+    </div>
+
+    <section id="lines" class="active">
+        <div class="controls">
+            <div class="chip">Filter:</div>
+            <button class="chip active-filter" onclick="filterLines('all', this)">All</button>
+            <button class="chip" onclick="filterLines('straight', this)">Straight</button>
+            <button class="chip" onclick="filterLines('curved', this)">Curved</button>
+            <button class="chip" onclick="filterLines('pattern', this)">Patterns</button>
+        </div>
+        <div id="linesGrid" class="grid"></div>
+    </section>
+
+    <section id="shapes">
+        <div class="controls">
+            <div class="chip">Filter:</div>
+            <button class="chip active-filter" onclick="filterShapes('all', this)">All</button>
+            <button class="chip" onclick="filterShapes('basic', this)">Basic</button>
+            <button class="chip" onclick="filterShapes('polygon', this)">Polygons</button>
+            <button class="chip" onclick="filterShapes('advanced', this)">Advanced</button>
+        </div>
+        <div id="shapesGrid" class="grid"></div>
+    </section>
+
+    <section id="games">
+        <div class="panel">
+            <h3>🎯 Shape Memory Match</h3>
+            <div class="row">
+                <button class="chip" onclick="startShapeMemory(4)">Easy (4 Pairs)</button>
+                <button class="chip" onclick="startShapeMemory(6)">Medium (6 Pairs)</button>
+                <button class="chip" onclick="startShapeMemory(8)">Hard (8 Pairs)</button>
+            </div>
+            <div class="stats-bar">
+                <span id="movesDisplay">Moves: 0</span>
+                <span id="matchesDisplay">Matches: 0/4</span>
+                <span id="memoryTimer">Time: 0s</span>
+            </div>
+            <div id="memoryBoard" class="memory-board"></div>
+            <div id="memoryFeedback" class="feedback"></div>
+        </div>
+    </section>
+</main>
+
+<script>
+    // --- DATA ---
+    const linesData = [
+        { id: 1, name: "Straight Line", amharic: "ቀጥተኛ መስመር", svg: '<line x1="20" y1="60" x2="100" y2="60" stroke="#6a0572" stroke-width="4"/>', category: "straight" },
+        { id: 2, name: "Curved Line", amharic: "ከርቪ መስመር", svg: '<path d="M20,60 Q60,20 100,60" stroke="#6a0572" stroke-width="4" fill="none"/>', category: "curved" },
+        { id: 3, name: "Zigzag Line", amharic: "ዚግዛግ መስመር", svg: '<polyline points="20,80 45,40 70,80 95,40" stroke="#6a0572" stroke-width="4" fill="none"/>', category: "pattern" },
+        { id: 4, name: "Wavy Line", amharic: "ሞገድ መስመር", svg: '<path d="M10,60 C30,30 50,90 70,60 S90,30 110,60" stroke="#6a0572" stroke-width="4" fill="none"/>', category: "curved" },
+        { id: 5, name: "Spiral Line", amharic: "ስፒራል መስመር", svg: '<path d="M60,60 C 80,60 80,40 60,40 S 40,40 40,60 80,80 60,80" stroke="#6a0572" stroke-width="3" fill="none"/>', category: "curved" },
+        { id: 6, name: "Dotted Line", amharic: "ነጥብ መስመር", svg: '<line x1="20" y1="60" x2="100" y2="60" stroke="#6a0572" stroke-width="4" stroke-dasharray="1, 5" stroke-linecap="round"/>', category: "pattern" },
+        { id: 7, name: "Dashed Line", amharic: "የተቆራረጠ መስመር", svg: '<line x1="20" y1="60" x2="100" y2="60" stroke="#6a0572" stroke-width="4" stroke-dasharray="10,5"/>', category: "pattern" },
+        { id: 8, name: "Thick Line", amharic: "ሰፊ መስመር", svg: '<line x1="20" y1="60" x2="100" y2="60" stroke="#6a0572" stroke-width="10"/>', category: "straight" }
+    ];
+
+    const shapesData = [
+        { id: 1, name: "Circle", amharic: "ክብ", svg: '<circle cx="60" cy="60" r="40" fill="#e8d4ea"/>', category: "basic" },
+        { id: 2, name: "Square", amharic: "ካሬ", svg: '<rect x="20" y="20" width="80" height="80" fill="#e8d4ea"/>', category: "basic" },
+        { id: 3, name: "Triangle", amharic: "ሶስት ማዕዘን", svg: '<polygon points="60,20 100,100 20,100" fill="#e8d4ea"/>', category: "basic" },
+        { id: 4, name: "Rectangle", amharic: "አራት ማዕዘን", svg: '<rect x="15" y="30" width="90" height="60" fill="#e8d4ea"/>', category: "basic" },
+        { id: 5, name: "Star", amharic: "ኮከብ", svg: '<polygon points="60,10 75,50 115,50 85,75 100,115 60,90 20,115 35,75 5,50 45,50" fill="#e8d4ea"/>', category: "advanced" },
+        { id: 6, name: "Heart", amharic: "ልብ", svg: '<path d="M60,35 C40,10 10,20 25,50 L60,90 L95,50 C110,20 80,10 60,35 Z" fill="#e8d4ea"/>', category: "advanced" },
+        { id: 7, name: "Pentagon", amharic: "አምስት ማዕዘን", svg: '<polygon points="60,20 100,50 85,100 35,100 20,50" fill="#e8d4ea"/>', category: "polygon" },
+        { id: 8, name: "Hexagon", amharic: "ስድስት ማዕዘን", svg: '<polygon points="30,90 60,110 90,90 90,30 60,10 30,30" fill="#e8d4ea"/>', category: "polygon" }
+    ];
+
+    let currentLanguage = 'english';
+
+    document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('englishBtn').addEventListener('click', () => setLanguage('english'));
+        document.getElementById('amharicBtn').addEventListener('click', () => setLanguage('amharic'));
+        show('lines');
+    });
+
+    function setLanguage(lang) {
+        currentLanguage = lang;
+        document.getElementById('englishBtn').classList.toggle('active', lang === 'english');
+        document.getElementById('amharicBtn').classList.toggle('active', lang === 'amharic');
+        const activeSection = document.querySelector('section.active').id;
+        show(activeSection);
+    }
+
+    function show(sectionId) {
+        document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+        document.getElementById(sectionId).classList.add('active');
+        if (sectionId === 'lines') renderLines();
+        if (sectionId === 'shapes') renderShapes();
+        if (sectionId === 'games') startShapeMemory(4);
+    }
+
+    function renderLines(data = linesData) {
+        const grid = document.getElementById('linesGrid');
+        grid.innerHTML = data.map(line => createCard(line, 'line')).join('');
+    }
+
+    function renderShapes(data = shapesData) {
+        const grid = document.getElementById('shapesGrid');
+        grid.innerHTML = data.map(shape => createCard(shape, 'shape')).join('');
+    }
+
+    function createCard(item, type) {
+        const name = currentLanguage === 'english' ? item.name : item.amharic;
+        const translation = currentLanguage === 'english' ? item.amharic : item.name;
+        const displayClass = type === 'line' ? 'line-display' : 'shape-display';
+
+        return `
+                <div class="card">
+                    <div class="${displayClass}">
+                        <svg viewBox="0 0 120 120">${item.svg}</svg>
+                    </div>
+                    <h4>${name}</h4>
+                    <small>${translation}</small>
+                    <div class="sound-buttons">
+                        <button onclick="speakTextViaGoogle('${item.name}', 'en', this)">🔊 English</button>
+                        <button class="amharic-btn" onclick="speakTextViaGoogle('${item.amharic}', 'am', this)">🔊 አማርኛ</button>
+                    </div>
+                </div>
+            `;
+    }
+
+    function filterLines(category, element) {
+        document.querySelectorAll('#lines .controls .chip').forEach(c => c.classList.remove('active-filter'));
+        element.classList.add('active-filter');
+        const filteredData = category === 'all' ? linesData : linesData.filter(l => l.category === category);
+        renderLines(filteredData);
+    }
+
+    function filterShapes(category, element) {
+        document.querySelectorAll('#shapes .controls .chip').forEach(c => c.classList.remove('active-filter'));
+        element.classList.add('active-filter');
+        const filteredData = category === 'all' ? shapesData : shapesData.filter(s => s.category === category);
+        renderShapes(filteredData);
+    }
+
+    // --- SOUND SYSTEM (GOOGLE TTS) ---
+    let activeAudio = null;
+    function showLoading(element) {
+        if (!element.dataset.originalHTML) element.dataset.originalHTML = element.innerHTML;
+        element.innerHTML = '<div class="loading-spinner"></div>';
+        element.disabled = true;
+    }
+    function hideLoading(element) {
+        if (element && element.dataset.originalHTML) {
+            element.innerHTML = element.dataset.originalHTML;
+            element.disabled = false;
+        }
+    }
+    function speakTextViaGoogle(text, lang, element) {
+        if (activeAudio) {
+            activeAudio.pause();
+            const playingButton = document.querySelector('.loading-spinner')?.parentElement;
+            if(playingButton && playingButton !== element) hideLoading(playingButton);
+        }
+
+        showLoading(element);
+        const encodedText = encodeURIComponent(text);
+        const audioUrl = `https://translate.google.com/translate_tts?ie=UTF-8&tl=${lang}&client=tw-ob&q=${encodedText}`;
+
+        activeAudio = new Audio(audioUrl);
+        activeAudio.play().catch(e => console.error("Audio error:", e));
+
+        const onEnd = () => { hideLoading(element); activeAudio = null; };
+        activeAudio.addEventListener('ended', onEnd);
+        activeAudio.addEventListener('error', onEnd);
+    }
+
+    // --- CELEBRATION EFFECTS ---
+    function createCelebration() {
+        const celebration = document.createElement('div');
+        celebration.className = 'celebration';
+        document.body.appendChild(celebration);
+
+        // Create balloons
+        const colors = ['#FF6B6B', '#4ECDC4', '#FFD166', '#6A0572', '#118AB2', '#06D6A0'];
+        for (let i = 0; i < 15; i++) {
+            setTimeout(() => {
+                const balloon = document.createElement('div');
+                balloon.className = 'balloon';
+                balloon.style.left = `${Math.random() * 100}%`;
+                balloon.style.background = colors[Math.floor(Math.random() * colors.length)];
+                balloon.style.animationDuration = `${6 + Math.random() * 4}s`;
+                celebration.appendChild(balloon);
+            }, i * 200);
+        }
+
+        // Create rockets
+        for (let i = 0; i < 8; i++) {
+            setTimeout(() => {
+                const rocket = document.createElement('div');
+                rocket.className = 'rocket';
+                rocket.innerHTML = '🚀';
+                rocket.style.left = `${Math.random() * 100}%`;
+                rocket.style.animationDuration = `${4 + Math.random() * 3}s`;
+                celebration.appendChild(rocket);
+            }, i * 300);
+        }
+
+        // Remove celebration after animation completes
+        setTimeout(() => {
+            celebration.remove();
+        }, 10000);
+    }
+
+    // --- MEMORY GAME ---
+    let memoryGame = {
+        flippedCards: [],
+        matchedPairs: 0,
+        totalPairs: 0,
+        moves: 0,
+        timer: null,
+        timeElapsed: 0,
+
+        init: function(pairs) {
+            this.totalPairs = pairs;
+            this.matchedPairs = 0;
+            this.moves = 0;
+            this.timeElapsed = 0;
+            this.flippedCards = [];
+            if (this.timer) clearInterval(this.timer);
+
+            const selectedShapes = [...shapesData].sort(() => 0.5 - Math.random()).slice(0, pairs);
+            const cards = [...selectedShapes, ...selectedShapes].sort(() => 0.5 - Math.random());
+            this.renderBoard(cards);
+            this.updateDisplay();
+        },
+
+        renderBoard: function(cards) {
+            const board = document.getElementById('memoryBoard');
+            board.style.gridTemplateColumns = `repeat(${this.totalPairs > 4 ? 4 : this.totalPairs}, 1fr)`;
+            board.innerHTML = cards.map(card => `
+                    <div class="memory-card" data-name="${card.name}">
+                        <div class="front">?</div>
+                        <div class="back">
+                            <div class="shape-display">
+                                <svg viewBox="0 0 120 120">${card.svg}</svg>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            document.querySelectorAll('.memory-card').forEach(card => card.addEventListener('click', () => this.flipCard(card)));
+        },
+
+        flipCard: function(card) {
+            if (card.classList.contains('flipped') || card.classList.contains('matched') || this.flippedCards.length >= 2) return;
+
+            if (this.moves === 0 && this.timeElapsed === 0) this.startTimer();
+
+            card.classList.add('flipped');
+            this.flippedCards.push(card);
+
+            if (this.flippedCards.length === 2) {
+                this.moves++;
+                this.checkMatch();
+            }
+            this.updateDisplay();
+        },
+
+        checkMatch: function() {
+            const [card1, card2] = this.flippedCards;
+            if (card1.dataset.name === card2.dataset.name) {
+                card1.classList.add('matched');
+                card2.classList.add('matched');
+                this.matchedPairs++;
+                this.flippedCards = [];
+                
+                // Celebration for correct match!
+                createCelebration();
+                
+                if (this.matchedPairs === this.totalPairs) this.endGame();
+            } else {
+                setTimeout(() => {
+                    card1.classList.remove('flipped');
+                    card2.classList.remove('flipped');
+                    this.flippedCards = [];
+                }, 1200);
+            }
+            this.updateDisplay();
+        },
+
+        startTimer: function() {
+            this.timer = setInterval(() => {
+                this.timeElapsed++;
+                this.updateDisplay();
+            }, 1000);
+        },
+
+        updateDisplay: function() {
+            document.getElementById('movesDisplay').textContent = `Moves: ${this.moves}`;
+            document.getElementById('matchesDisplay').textContent = `Matches: ${this.matchedPairs}/${this.totalPairs}`;
+            document.getElementById('memoryTimer').textContent = `Time: ${this.timeElapsed}s`;
+        },
+
+        endGame: function() {
+            clearInterval(this.timer);
+            document.getElementById('memoryFeedback').textContent = 'You won!';
+            // Big celebration for winning the game!
+            createCelebration();
+            setTimeout(() => createCelebration(), 1500);
+        }
+    };
+
+    function startShapeMemory(pairs) {
+        memoryGame.init(pairs);
+    }
+
+</script>
+</body>
+</html>

@@ -1,0 +1,2302 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Body Parts Explorer</title>
+    <style>
+        :root {
+            --accent: #007bff;
+            --accent-light: #cce5ff;
+            --bg: #f8f9fa;
+            --card: #ffffff;
+            --muted: #6c757d;
+            --gap: 16px;
+            --success: #28a745;
+            --fail: #dc3545;
+            --border-color: #dee2e6;
+            --warning: #ffc107;
+            --info: #17a2b8;
+            --easy: #28a745;
+            --medium: #ffc107;
+            --hard: #dc3545;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: var(--bg);
+            color: #212529;
+            line-height: 1.5;
+        }
+
+        header {
+            background: var(--accent);
+            color: white;
+            padding: 12px 16px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .brand {
+            font-weight: 600;
+            font-size: 22px;
+        }
+
+        nav {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        nav .navbtn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background-color 0.2s;
+            white-space: nowrap;
+        }
+        nav .navbtn:hover { background: rgba(255, 255, 255, 0.3); }
+
+        main {
+            max-width: 1200px;
+            margin: 24px auto;
+            padding: 0 16px;
+        }
+
+        section { display: none; }
+        section.active { display: block; }
+
+        .controls {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 12px;
+            background: var(--card);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .controls .chip {
+            background: #e9ecef;
+            padding: 6px 12px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .controls .chip:hover { background: var(--accent-light); }
+        .controls .chip.active-filter { background: var(--accent); color: white; border-color: var(--accent); }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: var(--gap);
+        }
+
+        .card {
+            background: var(--card);
+            padding: 16px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            text-align: center;
+            border: 1px solid var(--border-color);
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+        }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 8px 16px rgba(0,0,0,0.1); }
+
+        .part-image-container {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+        .part-image {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .card h4 { margin: 8px 0 4px; font-size: 18px; }
+        .card small { display: block; color: var(--muted); margin-bottom: 12px; font-size: 16px; }
+
+        .sound-buttons { display: flex; gap: 8px; width: 100%; }
+        .sound-buttons button {
+            flex: 1;
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            position: relative;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s;
+        }
+        .sound-buttons button:hover { background-color: #0056b3; }
+        .sound-buttons .amharic-btn { background-color: var(--success); }
+        .sound-buttons .amharic-btn:hover { background-color: #218838; }
+
+        .panel {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            margin-bottom: 24px;
+            border: 1px solid var(--border-color);
+        }
+
+        #bodypart-speaker { font-size: 3.5rem; cursor: pointer; padding: 10px; transition: transform 0.2s; }
+        #bodypart-speaker:hover { transform: scale(1.1); }
+
+        .feedback { min-height: 36px; font-weight: 600; font-size: 1.2rem; margin-top: 10px; text-align: center; }
+
+        .memory-board { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 15px; }
+        .memory-card {
+            background-color: var(--accent-light);
+            border-radius: 8px;
+            cursor: pointer;
+            aspect-ratio: 1 / 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform-style: preserve-3d;
+            transition: transform 0.5s;
+        }
+        .memory-card .part-image { max-width: 80%; max-height: 80%; }
+        .memory-card.flipped { background-color: #fff; transform: rotateY(180deg); }
+        .memory-card.matched { background-color: var(--success); opacity: 0.5; cursor: default; }
+        .memory-card .front, .memory-card .back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+        }
+        .memory-card .back { transform: rotateY(180deg); }
+
+        .loading-spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        .search-box {
+            padding: 10px 15px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            width: 100%;
+            max-width: 300px;
+            margin-left: auto;
+            font-size: 14px;
+        }
+        
+        .stats-bar {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            padding: 10px;
+            background: var(--accent-light);
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
+        .quiz-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .quiz-option {
+            padding: 15px;
+            background: var(--bg);
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+        }
+        
+        .quiz-option:hover {
+            border-color: var(--accent);
+        }
+        
+        .quiz-option.correct {
+            background-color: var(--success);
+            color: white;
+        }
+        
+        .quiz-option.incorrect {
+            background-color: var(--fail);
+            color: white;
+        }
+        
+        .human-body-diagram {
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
+            display: block;
+        }
+        
+        .body-zone {
+            cursor: pointer;
+            transition: fill 0.3s;
+        }
+        
+        .body-zone:hover {
+            fill: var(--accent-light);
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background: #e9ecef;
+            border-radius: 5px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background: var(--success);
+            border-radius: 5px;
+            transition: width 0.3s;
+        }
+        
+        .favorite-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #ccc;
+            transition: color 0.2s;
+        }
+        
+        .favorite-btn.active {
+            color: gold;
+        }
+        
+        .difficulty-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .difficulty-btn {
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            background: white;
+            cursor: pointer;
+        }
+        
+        .difficulty-btn.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+        
+        .row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 10px 0;
+        }
+        
+        .center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        
+        .placeholder-image {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #e9ecef;
+            color: #6c757d;
+            font-size: 12px;
+            text-align: center;
+            border-radius: 4px;
+        }
+        
+        /* Balloon rewards */
+        .balloon {
+            position: absolute;
+            width: 40px;
+            height: 50px;
+            background: #ff6b6b;
+            border-radius: 50%;
+            animation: float 5s ease-in-out forwards;
+            z-index: 1000;
+            opacity: 0.9;
+        }
+        
+        .balloon::before {
+            content: "";
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            width: 2px;
+            height: 15px;
+            background: #ccc;
+            transform: translateX(-50%);
+        }
+        
+        .balloon:nth-child(2n) {
+            background: #4ecdc4;
+        }
+        
+        .balloon:nth-child(3n) {
+            background: #ffd166;
+        }
+        
+        .balloon:nth-child(4n) {
+            background: #6a0572;
+        }
+        
+        .balloon:nth-child(5n) {
+            background: #06d6a0;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(0) rotate(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) rotate(20deg);
+                opacity: 0;
+            }
+        }
+        
+        .reward-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2000;
+        }
+        
+        /* Videos Section Styles */
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .video-card {
+            background: var(--card);
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+
+        .video-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .video-card h4 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            color: var(--accent);
+            font-size: 16px;
+            text-align: center;
+            height: 40px;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        .video-container {
+            position: relative;
+            width: 100%;
+            height: 0;
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            overflow: hidden;
+            border-radius: 8px;
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Quiz specific styles */
+        .quiz-content {
+            display: none;
+        }
+        
+        .quiz-content.active {
+            display: block;
+        }
+        
+        .level-indicator {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .level-easy {
+            background: var(--easy);
+            color: white;
+        }
+        
+        .level-medium {
+            background: var(--medium);
+            color: black;
+        }
+        
+        .level-hard {
+            background: var(--hard);
+            color: white;
+        }
+        
+        .quiz-navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        
+        .quiz-results {
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .quiz-results h3 {
+            color: var(--accent);
+            margin-bottom: 15px;
+        }
+        
+        .quiz-stats {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .quiz-stat {
+            background: var(--accent-light);
+            padding: 15px;
+            border-radius: 10px;
+            min-width: 80px;
+        }
+        
+        .quiz-stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--accent);
+        }
+        
+        .result-emoji {
+            font-size: 40px;
+            margin-bottom: 15px;
+        }
+
+        /* Enhanced Diagram Styles */
+        .diagram-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .diagram-controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+        
+        .diagram-control-btn {
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+        }
+        
+        .diagram-control-btn.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+        
+        .diagram-control-btn:hover {
+            background: var(--accent-light);
+        }
+        
+        .diagram-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .human-body-diagram {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            background: white;
+            transition: transform 0.3s ease;
+        }
+        
+        .body-zone {
+            cursor: pointer;
+            transition: all 0.3s;
+            opacity: 0.8;
+        }
+        
+        .body-zone:hover {
+            opacity: 1;
+            filter: brightness(1.1);
+        }
+        
+        .body-zone.highlighted {
+            opacity: 1;
+            filter: brightness(1.2);
+            stroke: var(--accent);
+            stroke-width: 2;
+        }
+        
+        .body-zone.internal {
+            fill: #ffcccc;
+        }
+        
+        .diagram-info-panel {
+            background: var(--card);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 600px;
+            margin-top: 20px;
+        }
+        
+        .diagram-info-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .diagram-info-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            background: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+        
+        .diagram-info-image img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        
+        .diagram-info-text h4 {
+            margin: 0 0 5px;
+            font-size: 1.5rem;
+        }
+        
+        .diagram-info-text small {
+            color: var(--muted);
+            font-size: 1.1rem;
+        }
+        
+        .diagram-info-description {
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+        
+        .diagram-info-sound {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .diagram-info-sound button {
+            flex: 1;
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            background: var(--accent);
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s;
+        }
+        
+        .diagram-info-sound button:hover {
+            background: #0056b3;
+        }
+        
+        .diagram-info-sound .amharic-btn {
+            background: var(--success);
+        }
+        
+        .diagram-info-sound .amharic-btn:hover {
+            background: #218838;
+        }
+        
+        .body-system-indicator {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+        
+        .system-nervous { background: #e3f2fd; color: #1565c0; }
+        .system-respiratory { background: #e8f5e9; color: #2e7d32; }
+        .system-circulatory { background: #ffebee; color: #c62828; }
+        .system-digestive { background: #fff3e0; color: #ef6c00; }
+        .system-muscular { background: #f3e5f5; color: #7b1fa2; }
+        .system-skeletal { background: #e0f2f1; color: #00695c; }
+        .system-integumentary { background: #fce4ec; color: #ad1457; }
+        .system-urinary { background: #fff8e1; color: #ff8f00; }
+        
+        /* Zoom controls */
+        .zoom-controls {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            z-index: 10;
+        }
+        
+        .zoom-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: white;
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 18px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: all 0.2s;
+        }
+        
+        .zoom-btn:hover {
+            background: var(--accent-light);
+        }
+        
+        /* Reset view button */
+        .reset-view-btn {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            padding: 8px 12px;
+            border-radius: 20px;
+            background: white;
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            font-size: 14px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            z-index: 10;
+        }
+        
+        .reset-view-btn:hover {
+            background: var(--accent-light);
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .video-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 20px;
+            }
+            
+            nav {
+                gap: 5px;
+            }
+            
+            nav .navbtn {
+                padding: 6px 10px;
+                font-size: 13px;
+            }
+            
+            .quiz-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .diagram-info-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .diagram-info-sound {
+                flex-direction: column;
+            }
+            
+            .zoom-controls {
+                top: 10px;
+                right: 10px;
+            }
+            
+            .reset-view-btn {
+                top: 10px;
+                left: 10px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .video-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            nav {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .human-body-diagram {
+                max-width: 100%;
+            }
+        }
+
+        @media (max-width: 400px) {
+            nav .navbtn {
+                font-size: 12px;
+                padding: 5px 8px;
+            }
+            
+            .brand {
+                font-size: 18px;
+            }
+            
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .quiz-navigation {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .quiz-navigation button {
+                width: 100%;
+            }
+            
+            .diagram-controls {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="brand">Body Parts Explorer</div>
+        <nav>
+            <button class="navbtn" onclick="show('body-parts')">📚 Learn</button>
+            <button class="navbtn" onclick="show('games')">🎮 Play</button>
+            <button class="navbtn" onclick="show('diagram')">🔍 Diagram</button>
+            <button class="navbtn" onclick="show('quiz')">✏️ Quiz</button>
+            <button class="navbtn" onclick="show('resources')">📺 Videos</button>
+        </nav>
+    </header>
+
+    <main>
+        <section id="body-parts" class="active">
+            <div class="controls">
+                <div class="chip">Filter:</div>
+                <button class="chip active-filter" onclick="filter('all', this)">All</button>
+                <button class="chip" onclick="filter('head', this)">Head</button>
+                <button class="chip" onclick="filter('torso', this)">Torso</button>
+                <button class="chip" onclick="filter('limbs', this)">Limbs</button>
+                <button class="chip" onclick="filter('internal', this)">Internal</button>
+                <button class="chip" onclick="filter('senses', this)">Sense Organs</button>
+                <input type="text" class="search-box" placeholder="Search body parts..." oninput="searchBodyParts(this.value)">
+                <button class="chip" onclick="showOnlyFavorites()">⭐ Favorites</button>
+            </div>
+            <div id="bodyPartsGrid" class="grid"></div>
+        </section>
+
+        <section id="games">
+            <div class="panel">
+                <h3>🔊 Guess the Body Part by Sound</h3>
+                <div class="center row">
+                    <div id="bodypart-speaker" title="Play Sound Again" onclick="bodyPartGame.playSound()">🔊</div>
+                    <div id="bodyPartChoices" class="row"></div>
+                </div>
+                <div id="bodyPartFeedback" class="feedback center"></div>
+                <div class="stats-bar">
+                    <span id="scoreDisplay">Score: 0</span>
+                    <span id="streakDisplay">Streak: 0</span>
+                    <span id="timerDisplay">Time: 30s</span>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <h3>🎯 Memory Match</h3>
+                <div class="row">
+                    <button class="chip" onclick="startMemory(4)">Easy (4 Pairs)</button>
+                    <button class="chip" onclick="startMemory(6)">Medium (6 Pairs)</button>
+                    <button class="chip" onclick="startMemory(8)">Hard (8 Pairs)</button>
+                </div>
+                <div class="stats-bar">
+                    <span id="movesDisplay">Moves: 0</span>
+                    <span id="matchesDisplay">Matches: 0/8</span>
+                    <span id="memoryTimer">Time: 0s</span>
+                </div>
+                <div id="memoryBoard" class="memory-board"></div>
+                <div id="memoryFeedback" class="feedback"></div>
+            </div>
+        </section>
+        
+        <section id="diagram">
+            <div class="panel">
+                <h3>🔍 Interactive Body Diagram</h3>
+                <p>Click on different body parts to learn their names and functions. Use the controls to explore different body systems.</p>
+                
+                <div class="diagram-controls">
+                    <button class="diagram-control-btn active" onclick="showBodySystem('all')">All Systems</button>
+                    <button class="diagram-control-btn" onclick="showBodySystem('skeletal')">Skeletal System</button>
+                    <button class="diagram-control-btn" onclick="showBodySystem('muscular')">Muscular System</button>
+                    <button class="diagram-control-btn" onclick="showBodySystem('nervous')">Nervous System</button>
+                    <button class="diagram-control-btn" onclick="showBodySystem('circulatory')">Circulatory System</button>
+                    <button class="diagram-control-btn" onclick="showBodySystem('respiratory')">Respiratory System</button>
+                    <button class="diagram-control-btn" onclick="showBodySystem('digestive')">Digestive System</button>
+                </div>
+                
+                <div class="diagram-container">
+                    <div class="diagram-wrapper">
+                        <button class="reset-view-btn" onclick="resetDiagramView()">Reset View</button>
+                        <div class="zoom-controls">
+                            <button class="zoom-btn" onclick="zoomDiagram(1.2)">+</button>
+                            <button class="zoom-btn" onclick="zoomDiagram(0.8)">-</button>
+                        </div>
+                        
+                        <svg class="human-body-diagram" viewBox="0 0 600 800" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Head and Face -->
+                            <g id="head-system" class="body-system">
+                                <circle cx="300" cy="150" r="60" class="body-zone" data-part="head" data-system="skeletal" onclick="highlightBodyPart('head')"></circle>
+                                
+                                <!-- Eyes -->
+                                <circle cx="275" cy="140" r="10" class="body-zone" data-part="eye" data-system="nervous" onclick="highlightBodyPart('eye')"></circle>
+                                <circle cx="325" cy="140" r="10" class="body-zone" data-part="eye" data-system="nervous" onclick="highlightBodyPart('eye')"></circle>
+                                
+                                <!-- Nose -->
+                                <polygon points="295,155 300,145 305,155" class="body-zone" data-part="nose" data-system="respiratory" onclick="highlightBodyPart('nose')"></polygon>
+                                
+                                <!-- Mouth -->
+                                <path d="M280,170 Q300,180 320,170" stroke="black" stroke-width="2" fill="none" class="body-zone" data-part="mouth" data-system="digestive" onclick="highlightBodyPart('mouth')"></path>
+                                
+                                <!-- Ears -->
+                                <circle cx="240" cy="150" r="12" class="body-zone" data-part="ear" data-system="nervous" onclick="highlightBodyPart('ear')"></circle>
+                                <circle cx="360" cy="150" r="12" class="body-zone" data-part="ear" data-system="nervous" onclick="highlightBodyPart('ear')"></circle>
+                                
+                                <!-- Brain (inside head) -->
+                                <path d="M260,110 Q300,90 340,110 Q340,130 300,150 Q260,130 260,110" class="body-zone internal" data-part="brain" data-system="nervous" onclick="highlightBodyPart('brain')"></path>
+                            </g>
+                            
+                            <!-- Torso -->
+                            <g id="torso-system" class="body-system">
+                                <!-- Main torso -->
+                                <rect x="250" y="210" width="100" height="180" rx="15" class="body-zone" data-part="torso" data-system="skeletal" onclick="highlightBodyPart('torso')"></rect>
+                                
+                                <!-- Internal organs -->
+                                <!-- Heart -->
+                                <path d="M290,250 Q310,230 330,250 Q330,280 300,300 Q270,280 290,250" class="body-zone internal" data-part="heart" data-system="circulatory" onclick="highlightBodyPart('heart')"></path>
+                                
+                                <!-- Lungs -->
+                                <ellipse cx="270" cy="280" rx="25" ry="40" class="body-zone internal" data-part="lungs" data-system="respiratory" onclick="highlightBodyPart('lungs')"></ellipse>
+                                <ellipse cx="330" cy="280" rx="25" ry="40" class="body-zone internal" data-part="lungs" data-system="respiratory" onclick="highlightBodyPart('lungs')"></ellipse>
+                                
+                                <!-- Stomach -->
+                                <path d="M280,330 Q300,320 320,330 Q320,360 300,380 Q280,360 280,330" class="body-zone internal" data-part="stomach" data-system="digestive" onclick="highlightBodyPart('stomach')"></path>
+                                
+                                <!-- Liver -->
+                                <path d="M260,320 Q280,310 300,320 Q300,340 280,350 Q260,340 260,320" class="body-zone internal" data-part="liver" data-system="digestive" onclick="highlightBodyPart('liver')"></path>
+                            </g>
+                            
+                            <!-- Arms -->
+                            <g id="arms-system" class="body-system">
+                                <!-- Left arm -->
+                                <rect x="190" y="210" width="60" height="150" rx="10" class="body-zone" data-part="arm" data-system="muscular" onclick="highlightBodyPart('arm')"></rect>
+                                
+                                <!-- Right arm -->
+                                <rect x="350" y="210" width="60" height="150" rx="10" class="body-zone" data-part="arm" data-system="muscular" onclick="highlightBodyPart('arm')"></rect>
+                                
+                                <!-- Left hand -->
+                                <circle cx="220" cy="370" r="25" class="body-zone" data-part="hand" data-system="muscular" onclick="highlightBodyPart('hand')"></circle>
+                                
+                                <!-- Right hand -->
+                                <circle cx="380" cy="370" r="25" class="body-zone" data-part="hand" data-system="muscular" onclick="highlightBodyPart('hand')"></circle>
+                                
+                                <!-- Shoulders -->
+                                <circle cx="250" cy="210" r="15" class="body-zone" data-part="shoulder" data-system="muscular" onclick="highlightBodyPart('shoulder')"></circle>
+                                <circle cx="350" cy="210" r="15" class="body-zone" data-part="shoulder" data-system="muscular" onclick="highlightBodyPart('shoulder')"></circle>
+                                
+                                <!-- Elbows -->
+                                <circle cx="220" cy="300" r="12" class="body-zone" data-part="elbow" data-system="muscular" onclick="highlightBodyPart('elbow')"></circle>
+                                <circle cx="380" cy="300" r="12" class="body-zone" data-part="elbow" data-system="muscular" onclick="highlightBodyPart('elbow')"></circle>
+                            </g>
+                            
+                            <!-- Legs -->
+                            <g id="legs-system" class="body-system">
+                                <!-- Left leg -->
+                                <rect x="270" y="390" width="40" height="180" rx="10" class="body-zone" data-part="leg" data-system="muscular" onclick="highlightBodyPart('leg')"></rect>
+                                
+                                <!-- Right leg -->
+                                <rect x="290" y="390" width="40" height="180" rx="10" class="body-zone" data-part="leg" data-system="muscular" onclick="highlightBodyPart('leg')"></rect>
+                                
+                                <!-- Left foot -->
+                                <rect x="260" y="570" width="50" height="20" rx="5" class="body-zone" data-part="foot" data-system="muscular" onclick="highlightBodyPart('foot')"></rect>
+                                
+                                <!-- Right foot -->
+                                <rect x="290" y="570" width="50" height="20" rx="5" class="body-zone" data-part="foot" data-system="muscular" onclick="highlightBodyPart('foot')"></rect>
+                                
+                                <!-- Knees -->
+                                <circle cx="290" cy="480" r="12" class="body-zone" data-part="knee" data-system="muscular" onclick="highlightBodyPart('knee')"></circle>
+                                <circle cx="310" cy="480" r="12" class="body-zone" data-part="knee" data-system="muscular" onclick="highlightBodyPart('knee')"></circle>
+                            </g>
+                            
+                            <!-- Neck -->
+                            <rect x="285" y="150" width="30" height="60" rx="5" class="body-zone" data-part="neck" data-system="muscular" onclick="highlightBodyPart('neck')"></rect>
+                            
+                            <!-- Back -->
+                            <path d="M250,210 Q250,250 260,300 Q270,350 280,390" stroke="black" stroke-width="15" fill="none" class="body-zone" data-part="back" data-system="skeletal" onclick="highlightBodyPart('back')"></path>
+                        </svg>
+                    </div>
+                    
+                    <div class="diagram-info-panel">
+                        <div class="diagram-info-header">
+                            <div class="diagram-info-image">
+                                <img id="diagram-part-image" src="" alt="Body part">
+                            </div>
+                            <div class="diagram-info-text">
+                                <h4 id="diagram-part-name">Select a body part</h4>
+                                <small id="diagram-part-amharic">Click on the diagram</small>
+                                <div id="diagram-part-system" class="body-system-indicator"></div>
+                            </div>
+                        </div>
+                        <div class="diagram-info-description" id="diagram-part-description">
+                            Click on any body part in the diagram to see information about it here.
+                        </div>
+                        <div class="diagram-info-sound">
+                            <button onclick="playDiagramPartSound('english')">🔊 English Pronunciation</button>
+                            <button class="amharic-btn" onclick="playDiagramPartSound('amharic')">🔊 Amharic Pronunciation</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="quiz">
+            <div class="panel">
+                <h3>✏️ Body Parts Quiz</h3>
+                <div class="difficulty-selector">
+                    <button class="difficulty-btn active" data-level="easy" onclick="changeQuizDifficulty('easy')">Easy</button>
+                    <button class="difficulty-btn" data-level="medium" onclick="changeQuizDifficulty('medium')">Medium</button>
+                    <button class="difficulty-btn" data-level="hard" onclick="changeQuizDifficulty('hard')">Hard</button>
+                </div>
+                
+                <div class="progress-bar">
+                    <div class="progress" id="quiz-progress" style="width: 0%"></div>
+                </div>
+                
+                <div class="quiz-content active" id="quiz-content">
+                    <div class="level-indicator level-easy" id="level-indicator">🟢 Level 1 - Easy</div>
+                    
+                    <div class="question" id="quiz-question">
+                        <span class="question-number" id="question-number">Question 1/5</span><br>
+                        <span id="question-text">👀 Which part helps us to see?</span>
+                    </div>
+                    
+                    <div class="options" id="quiz-options">
+                        <!-- Options will be populated by JavaScript -->
+                    </div>
+                    
+                    <div class="quiz-navigation">
+                        <button id="quiz-prev-btn" onclick="quizPrevious()" disabled>Previous</button>
+                        <button id="quiz-next-btn" onclick="quizNext()">Next</button>
+                    </div>
+                </div>
+                
+                <div class="quiz-results" id="quiz-results" style="display: none;">
+                    <div class="result-emoji" id="result-emoji">🎉</div>
+                    <h3>Quiz Completed!</h3>
+                    <div class="score" id="quiz-score">Your score: 0/5</div>
+                    
+                    <div class="quiz-stats">
+                        <div class="quiz-stat">
+                            <div class="quiz-stat-value" id="correct-answers">0</div>
+                            <div>Correct</div>
+                        </div>
+                        <div class="quiz-stat">
+                            <div class="quiz-stat-value" id="incorrect-answers">0</div>
+                            <div>Incorrect</div>
+                        </div>
+                    </div>
+                    
+                    <button onclick="restartQuiz()">Try Again</button>
+                </div>
+            </div>
+        </section>
+        
+        <section id="resources">
+            <div class="panel">
+                <h3>📺 Educational Videos</h3>
+                <p>Watch these helpful videos to learn more about the human body:</p>
+                
+                <div class="video-grid">
+                    <div class="video-card">
+                        <h4>Human Body 101 | National Geographic</h4>
+                        <div class="video-container">
+                            <iframe src="https://www.youtube.com/embed/Ae4MadKPJC0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                        </div>
+                    </div>
+                    
+                    <div class="video-card">
+                        <h4>How Do Your Body Parts Work? | StoryBots</h4>
+                        <div class="video-container">
+                            <iframe src="https://www.youtube.com/embed/ORB866QSGv8" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                        </div>
+                    </div>
+                    
+                    <div class="video-card">
+                        <h4>Human Body Systems Overview | Amoeba Sisters</h4>
+                        <div class="video-container">
+                            <iframe src="https://www.youtube.com/embed/gEUu-A2wfSE" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                        </div>
+                    </div>
+                    
+                    <div class="video-card">
+                        <h4>Learn Body Parts for Kids | Smile and Learn</h4>
+                        <div class="video-container">
+                            <iframe src="https://www.youtube.com/embed/4vb5W5d4LkY" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                        </div>
+                    </div>
+                    
+                    <div class="video-card">
+                        <h4>The Skeletal System | Crash Course</h4>
+                        <div class="video-container">
+                            <iframe src="https://www.youtube.com/embed/rDGqkMHPDqE" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                        </div>
+                    </div>
+                    
+                    <div class="video-card">
+                        <h4>The Muscular System Explained | Science for Kids</h4>
+                        <div class="video-container">
+                            <iframe src="https://www.youtube.com/embed/4WKyLtq7lC4" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="rewardContainer" class="reward-container"></div>
+
+    <script>
+        // --- REWARD SYSTEM ---
+        function createBalloons(count) {
+            const container = document.getElementById('rewardContainer');
+            container.innerHTML = '';
+            
+            for (let i = 0; i < count; i++) {
+                const balloon = document.createElement('div');
+                balloon.className = 'balloon';
+                balloon.style.left = `${Math.random() * 100}%`;
+                balloon.style.animationDuration = `${3 + Math.random() * 2}s`;
+                container.appendChild(balloon);
+                
+                // Remove balloon after animation completes
+                setTimeout(() => {
+                    balloon.remove();
+                }, 5000);
+            }
+        }
+
+        // --- SOUND SYSTEM (UNIFIED WITH GOOGLE TTS) ---
+        let activeAudio = null;
+        document.addEventListener('click', () => {}, { once: true }); 
+
+        function showLoading(element) {
+            hideLoading(element);
+            element.innerHTML = '<div class="loading-spinner"></div>';
+        }
+
+        function hideLoading(element, originalText) {
+            element.innerHTML = originalText;
+        }
+
+        function playSound(soundUrl, element, originalText) {
+            if (activeAudio) activeAudio.pause();
+            
+            showLoading(element);
+            const audio = new Audio(soundUrl);
+            activeAudio = audio;
+            
+            audio.play().then(() => {
+                setTimeout(() => hideLoading(element, originalText), 500);
+            }).catch(err => {
+                console.error("Audio playback error:", err);
+                hideLoading(element, originalText);
+            });
+            
+            audio.onended = () => {
+                hideLoading(element, originalText);
+                activeAudio = null;
+            };
+        }
+
+        // --- BODY PARTS DATA ---
+        const bodyParts = [
+            {
+                id: 1,
+                name: "Head",
+                amharic: "ራስ",
+                image: "head.jpg",
+                category: "head",
+                system: "skeletal",
+                description: "The upper part of the body containing the brain and sensory organs. It protects the brain and supports the face."
+            },
+            {
+                id: 2,
+                name: "Eye",
+                amharic: "አይን",
+                image: "eye.jpg",
+                category: "senses",
+                system: "nervous",
+                description: "Organ of vision that detects light and converts it into electro-chemical signals. Contains the retina, lens, and iris."
+            },
+            {
+                id: 3,
+                name: "Nose",
+                amharic: "አፍንጫ",
+                image: "nose.jpg",
+                category: "senses",
+                system: "respiratory",
+                description: "Organ for smelling and breathing, located in the middle of the face. Filters, warms, and moistens inhaled air."
+            },
+            {
+                id: 4,
+                name: "Mouth",
+                amharic: "አፍ",
+                image: "mouth.jpg",
+                category: "head",
+                system: "digestive",
+                description: "Opening through which food is taken in and vocal sounds are emitted. Contains teeth, tongue, and salivary glands."
+            },
+            {
+                id: 5,
+                name: "Ear",
+                amharic: "ጆሮ",
+                image: "ears.jpg",
+                category: "senses",
+                system: "nervous",
+                description: "Organ of hearing and balance, located on both sides of the head. Consists of outer, middle, and inner ear."
+            },
+            {
+                id: 6,
+                name: "Arm",
+                amharic: "እጅ",
+                image: "arm.jpg",
+                category: "limbs",
+                system: "muscular",
+                description: "Upper limb from shoulder to hand, used for lifting, holding, and manipulating objects. Contains humerus, radius, and ulna bones."
+            },
+            {
+                id: 7,
+                name: "Hand",
+                amharic: "እጅ",
+                image: "hand.jpg",
+                category: "limbs",
+                system: "muscular",
+                description: "Terminal part of the arm with fingers, used for grasping and manipulating objects. Contains 27 bones including carpals, metacarpals, and phalanges."
+            },
+            {
+                id: 8,
+                name: "Leg",
+                amharic: "እግር",
+                image: "leg.jpg",
+                category: "limbs",
+                system: "muscular",
+                description: "Lower limb from hip to foot, used for standing, walking, and running. Contains femur, tibia, and fibula bones."
+            },
+            {
+                id: 9,
+                name: "Foot",
+                amharic: "እግር",
+                image: "foot.jpg",
+                category: "limbs",
+                system: "muscular",
+                description: "Terminal part of the leg, including toes, used for standing and walking. Contains 26 bones including tarsals, metatarsals, and phalanges."
+            },
+            {
+                id: 10,
+                name: "Heart",
+                amharic: "ልብ",
+                image: "heart.jpg",
+                category: "internal",
+                system: "circulatory",
+                description: "Muscular organ that pumps blood through the circulatory system. About the size of a fist, located slightly left of center in the chest."
+            },
+            {
+                id: 11,
+                name: "Lungs",
+                amharic: "ሳምባ",
+                image: "lungs.jpg",
+                category: "internal",
+                system: "respiratory",
+                description: "Pair of respiratory organs that extract oxygen from the air and transfer it to the blood. The right lung has three lobes, the left has two."
+            },
+            {
+                id: 12,
+                name: "Stomach",
+                amharic: "ሆድ",
+                image: "stomach.jpg",
+                category: "internal",
+                system: "digestive",
+                description: "Organ where food is broken down by acids and enzymes during digestion. Can expand to hold about 1 liter of food."
+            },
+            {
+                id: 13,
+                name: "Brain",
+                amharic: "አንጎል",
+                image: "brain.jpg",
+                category: "internal",
+                system: "nervous",
+                description: "Center of the nervous system, responsible for thought, memory, emotion, and other cognitive functions. Weighs about 1.4 kg and contains about 86 billion neurons."
+            },
+            {
+                id: 14,
+                name: "Back",
+                amharic: "ጀርባ",
+                image: "back.jpg",
+                category: "torso",
+                system: "skeletal",
+                description: "Posterior part of the human body from the neck to the pelvis. Contains the spinal column with 33 vertebrae."
+            },
+            {
+                id: 15,
+                name: "Chest",
+                amharic: "ደረት",
+                image: "chest.jpg",
+                category: "torso",
+                system: "skeletal",
+                description: "Upper front part of the body between the neck and abdomen. Protected by the rib cage which contains 12 pairs of ribs."
+            },
+            {
+                id: 16,
+                name: "Shoulder",
+                amharic: "ትከሻ",
+                image: "shoulder.jpg",
+                category: "limbs",
+                system: "muscular",
+                description: "Junction where the arm attaches to the torso, allowing arm movement. The most mobile joint in the human body."
+            },
+            {
+                id: 17,
+                name: "Elbow",
+                amharic: "ማንጠልጠያ",
+                image: "elbow.jpg",
+                category: "limbs",
+                system: "muscular",
+                description: "Joint between the upper and lower parts of the arm. A hinge joint that allows flexion and extension."
+            },
+            {
+                id: 18,
+                name: "Knee",
+                amharic: "ጉልበት",
+                image: "knee.jpg",
+                category: "limbs",
+                system: "muscular",
+                description: "Joint between the thigh and lower leg, allowing leg bending. The largest and most complex joint in the human body."
+            },
+            {
+                id: 19,
+                name: "Neck",
+                amharic: "አንገት",
+                image: "neck.jpg",
+                category: "torso",
+                system: "muscular",
+                description: "Part of the body that connects the head to the rest of the body. Contains 7 cervical vertebrae and supports the head's weight."
+            },
+            {
+                id: 20,
+                name: "Tongue",
+                amharic: "ምላስ",
+                image: "tongue.jpg",
+                category: "senses",
+                system: "digestive",
+                description: "Muscular organ in the mouth used for tasting, swallowing, and speaking. Contains about 2,000-4,000 taste buds."
+            },
+            {
+                id: 21,
+                name: "Skin",
+                amharic: "ቆዳ",
+                image: "skin.jpg",
+                category: "senses",
+                system: "integumentary",
+                description: "Largest organ of the body that provides a protective barrier and senses touch. An average adult's skin covers about 2 square meters."
+            },
+            {
+                id: 22,
+                name: "Teeth",
+                amharic: "ጥርስ",
+                image: "teeth.jpg",
+                category: "head",
+                system: "digestive",
+                description: "Hard structures in the mouth used for biting and chewing food. Adults typically have 32 permanent teeth."
+            },
+            {
+                id: 23,
+                name: "Liver",
+                amharic: "ጉበት",
+                image: "liver.jpg",
+                category: "internal",
+                system: "digestive",
+                description: "Vital organ that processes nutrients, filters blood, and produces bile. The largest internal organ, weighing about 1.5 kg."
+            },
+            {
+                id: 24,
+                name: "Kidneys",
+                amharic: "ኩላሊት",
+                image: "kidney.jpg",
+                category: "internal",
+                system: "urinary",
+                description: "Pair of organs that filter waste products from the blood to produce urine. Each kidney contains about 1 million nephrons."
+            }
+        ];
+
+        // --- FAVORITES SYSTEM ---
+        let favorites = JSON.parse(localStorage.getItem('bodyPartsFavorites')) || [];
+        
+        function toggleFavorite(id) {
+            const index = favorites.indexOf(id);
+            if (index === -1) {
+                favorites.push(id);
+            } else {
+                favorites.splice(index, 1);
+            }
+            localStorage.setItem('bodyPartsFavorites', JSON.stringify(favorites));
+            renderBodyParts();
+        }
+        
+        function showOnlyFavorites() {
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                const id = parseInt(card.dataset.id);
+                card.style.display = favorites.includes(id) ? 'flex' : 'none';
+            });
+        }
+
+        // --- FILTERING AND SEARCH ---
+        function filter(category, element) {
+            document.querySelectorAll('.controls .chip').forEach(chip => {
+                chip.classList.remove('active-filter');
+            });
+            element.classList.add('active-filter');
+            
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                if (category === 'all' || card.dataset.category === category) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+        
+        function searchBodyParts(query) {
+            const cards = document.querySelectorAll('.card');
+            const searchTerm = query.toLowerCase().trim();
+            
+            cards.forEach(card => {
+                const name = card.querySelector('h4').textContent.toLowerCase();
+                const amharic = card.querySelector('small').textContent.toLowerCase();
+                
+                if (name.includes(searchTerm) || amharic.includes(searchTerm)) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // --- RENDER BODY PARTS GRID ---
+        function renderBodyParts() {
+            const grid = document.getElementById('bodyPartsGrid');
+            grid.innerHTML = '';
+            
+            bodyParts.forEach(part => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.dataset.id = part.id;
+                card.dataset.category = part.category;
+                
+                const isFavorite = favorites.includes(part.id);
+                
+                card.innerHTML = `
+                    <button class="favorite-btn ${isFavorite ? 'active' : ''}" onclick="toggleFavorite(${part.id})">${isFavorite ? '★' : '☆'}</button>
+                    <div class="part-image-container">
+                        <img class="part-image" src="images/${part.image}" alt="${part.name}" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22100%22%20height%3D%22100%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Crect%20width%3D%22100%22%20height%3D%22100%22%20fill%3D%22%23e9ecef%22%2F%3E%3Ctext%20x%3D%2250%22%20y%3D%2255%22%20font-size%3D%2212%22%20text-anchor%3D%22middle%22%20fill%3D%22%236c757d%22%3E${part.name}%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                    </div>
+                    <h4>${part.name}</h4>
+                    <small>${part.amharic}</small>
+                    <div class="sound-buttons">
+                        <button onclick="playSound('https://translate.google.com/translate_tts?ie=UTF-8&tl=en&q=${encodeURIComponent(part.name)}&client=tw-ob', this, '🔊 English')">🔊 English</button>
+                        <button class="amharic-btn" onclick="playSound('https://translate.google.com/translate_tts?ie=UTF-8&tl=am&q=${encodeURIComponent(part.amharic)}&client=tw-ob', this, '🔊 Amharic')">🔊 Amharic</button>
+                    </div>
+                `;
+                
+                grid.appendChild(card);
+            });
+        }
+
+        // --- NAVIGATION ---
+        function show(sectionId) {
+            document.querySelectorAll('section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Initialize diagram if it's the diagram section
+            if (sectionId === 'diagram') {
+                resetDiagramView();
+            }
+        }
+
+        // --- ENHANCED DIAGRAM FUNCTIONALITY ---
+        let currentDiagramScale = 1;
+        let currentHighlightedPart = null;
+        let currentSystem = 'all';
+        
+        // Enhanced highlightBodyPart function
+        function highlightBodyPart(partName) {
+            // Remove previous highlight
+            if (currentHighlightedPart) {
+                document.querySelectorAll(`.body-zone[data-part="${currentHighlightedPart}"]`).forEach(zone => {
+                    zone.classList.remove('highlighted');
+                });
+            }
+            
+            // Add new highlight
+            document.querySelectorAll(`.body-zone[data-part="${partName}"]`).forEach(zone => {
+                zone.classList.add('highlighted');
+            });
+            
+            currentHighlightedPart = partName;
+            
+            // Find part data
+            const partData = bodyParts.find(p => p.name.toLowerCase() === partName.toLowerCase());
+            
+            if (partData) {
+                // Update info panel
+                document.getElementById('diagram-part-name').textContent = partData.name;
+                document.getElementById('diagram-part-amharic').textContent = partData.amharic;
+                document.getElementById('diagram-part-description').textContent = partData.description;
+                
+                // Set image (with fallback)
+                const partImage = document.getElementById('diagram-part-image');
+                partImage.src = `images/${partData.image}`;
+                partImage.alt = partData.name;
+                partImage.onerror = function() {
+                    this.src = 'data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2280%22%20height%3D%2280%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Crect%20width%3D%2280%22%20height%3D%2280%22%20fill%3D%22%23e9ecef%22%2F%3E%3Ctext%20x%3D%2240%22%20y%3D%2245%22%20font-size%3D%2212%22%20text-anchor%3D%22middle%22%20fill%3D%22%236c757d%22%3E' + partData.name + '%3C%2Ftext%3E%3C%2Fsvg%3E';
+                };
+                
+                // Update system indicator
+                const systemIndicator = document.getElementById('diagram-part-system');
+                systemIndicator.textContent = partData.system.charAt(0).toUpperCase() + partData.system.slice(1) + " System";
+                systemIndicator.className = 'body-system-indicator';
+                
+                // Add system-specific class
+                switch(partData.system) {
+                    case 'nervous':
+                        systemIndicator.classList.add('system-nervous');
+                        break;
+                    case 'respiratory':
+                        systemIndicator.classList.add('system-respiratory');
+                        break;
+                    case 'circulatory':
+                        systemIndicator.classList.add('system-circulatory');
+                        break;
+                    case 'digestive':
+                        systemIndicator.classList.add('system-digestive');
+                        break;
+                    case 'muscular':
+                        systemIndicator.classList.add('system-muscular');
+                        break;
+                    case 'skeletal':
+                        systemIndicator.classList.add('system-skeletal');
+                        break;
+                    case 'integumentary':
+                        systemIndicator.classList.add('system-integumentary');
+                        break;
+                    case 'urinary':
+                        systemIndicator.classList.add('system-urinary');
+                        break;
+                }
+            }
+        }
+
+        // Show specific body system
+        function showBodySystem(system) {
+            // Update active button
+            document.querySelectorAll('.diagram-control-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            currentSystem = system;
+            
+            // Show/hide body systems
+            document.querySelectorAll('.body-system').forEach(systemGroup => {
+                if (system === 'all') {
+                    systemGroup.style.display = 'block';
+                } else {
+                    systemGroup.style.display = systemGroup.id.includes(system) ? 'block' : 'none';
+                }
+            });
+            
+            // Reset highlights
+            if (currentHighlightedPart) {
+                document.querySelectorAll(`.body-zone[data-part="${currentHighlightedPart}"]`).forEach(zone => {
+                    zone.classList.remove('highlighted');
+                });
+                currentHighlightedPart = null;
+            }
+            
+            // Reset info panel
+            document.getElementById('diagram-part-name').textContent = 'Select a body part';
+            document.getElementById('diagram-part-amharic').textContent = 'Click on the diagram';
+            document.getElementById('diagram-part-description').textContent = 'Click on any body part in the diagram to see information about it here.';
+            document.getElementById('diagram-part-system').textContent = '';
+            document.getElementById('diagram-part-system').className = 'body-system-indicator';
+            document.getElementById('diagram-part-image').src = '';
+        }
+
+        // Zoom functionality
+        function zoomDiagram(factor) {
+            const diagram = document.querySelector('.human-body-diagram');
+            currentDiagramScale *= factor;
+            
+            // Limit zoom range
+            if (currentDiagramScale < 0.5) currentDiagramScale = 0.5;
+            if (currentDiagramScale > 3) currentDiagramScale = 3;
+            
+            diagram.style.transform = `scale(${currentDiagramScale})`;
+            diagram.style.transformOrigin = 'center';
+        }
+
+        // Reset diagram view
+        function resetDiagramView() {
+            const diagram = document.querySelector('.human-body-diagram');
+            currentDiagramScale = 1;
+            diagram.style.transform = 'scale(1)';
+            
+            // Also reset system view to all
+            showBodySystem('all');
+        }
+
+        // Play sound for the currently selected diagram part
+        function playDiagramPartSound(language) {
+            if (!currentHighlightedPart) return;
+            
+            const partData = bodyParts.find(p => p.name.toLowerCase() === currentHighlightedPart.toLowerCase());
+            if (!partData) return;
+            
+            const text = language === 'english' ? partData.name : partData.amharic;
+            const langCode = language === 'english' ? 'en' : 'am';
+            const soundUrl = `https://translate.google.com/translate_tts?ie=UTF-8&tl=${langCode}&q=${encodeURIComponent(text)}&client=tw-ob`;
+            
+            playSound(soundUrl, event.target, language === 'english' ? '🔊 English' : '🔊 Amharic');
+        }
+
+        // --- GAMES ---
+        const bodyPartGame = {
+            currentPart: null,
+            score: 0,
+            streak: 0,
+            timer: 30,
+            timerInterval: null,
+            
+            init: function() {
+                this.nextQuestion();
+                this.updateScore();
+                
+                this.timerInterval = setInterval(() => {
+                    this.timer--;
+                    document.getElementById('timerDisplay').textContent = `Time: ${this.timer}s`;
+                    
+                    if (this.timer <= 0) {
+                        this.endGame();
+                    }
+                }, 1000);
+            },
+            
+            nextQuestion: function() {
+                const randomIndex = Math.floor(Math.random() * bodyParts.length);
+                this.currentPart = bodyParts[randomIndex];
+                
+                document.getElementById('bodypart-speaker').dataset.partId = this.currentPart.id;
+                
+                // Generate answer choices
+                const choices = [this.currentPart];
+                while (choices.length < 4) {
+                    const randomPart = bodyParts[Math.floor(Math.random() * bodyParts.length)];
+                    if (!choices.some(p => p.id === randomPart.id)) {
+                        choices.push(randomPart);
+                    }
+                }
+                
+                // Shuffle choices
+                choices.sort(() => Math.random() - 0.5);
+                
+                // Render choices
+                const choicesContainer = document.getElementById('bodyPartChoices');
+                choicesContainer.innerHTML = '';
+                
+                choices.forEach(part => {
+                    const button = document.createElement('button');
+                    button.className = 'chip';
+                    button.textContent = part.name;
+                    button.onclick = () => this.checkAnswer(part);
+                    choicesContainer.appendChild(button);
+                });
+                
+                this.playSound();
+            },
+            
+            playSound: function() {
+                const speaker = document.getElementById('bodypart-speaker');
+                const soundUrl = `https://translate.google.com/translate_tts?ie=UTF-8&tl=en&q=${encodeURIComponent(this.currentPart.name)}&client=tw-ob`;
+                
+                playSound(soundUrl, speaker, '🔊');
+            },
+            
+            checkAnswer: function(selectedPart) {
+                const feedback = document.getElementById('bodyPartFeedback');
+                
+                if (selectedPart.id === this.currentPart.id) {
+                    feedback.textContent = 'Correct!';
+                    feedback.style.color = 'var(--success)';
+                    this.score += 10;
+                    this.streak++;
+                    
+                    // Reward with balloons
+                    createBalloons(5);
+                    
+                    setTimeout(() => {
+                        this.nextQuestion();
+                        feedback.textContent = '';
+                    }, 1500);
+                } else {
+                    feedback.textContent = `Wrong! It was ${this.currentPart.name}`;
+                    feedback.style.color = 'var(--fail)';
+                    this.streak = 0;
+                    
+                    setTimeout(() => {
+                        this.nextQuestion();
+                        feedback.textContent = '';
+                    }, 2000);
+                }
+                
+                this.updateScore();
+            },
+            
+            updateScore: function() {
+                document.getElementById('scoreDisplay').textContent = `Score: ${this.score}`;
+                document.getElementById('streakDisplay').textContent = `Streak: ${this.streak}`;
+            },
+            
+            endGame: function() {
+                clearInterval(this.timerInterval);
+                document.getElementById('bodyPartFeedback').textContent = `Game Over! Final Score: ${this.score}`;
+                document.getElementById('bodyPartChoices').innerHTML = '<button class="chip" onclick="bodyPartGame.restart()">Play Again</button>';
+                
+                // Reward with balloons based on score
+                const balloonCount = Math.min(20, Math.floor(this.score / 5));
+                createBalloons(balloonCount);
+            },
+            
+            restart: function() {
+                this.score = 0;
+                this.streak = 0;
+                this.timer = 30;
+                this.updateScore();
+                document.getElementById('timerDisplay').textContent = `Time: ${this.timer}s`;
+                this.init();
+            }
+        };
+
+        // --- MEMORY GAME ---
+        let memoryGame = {
+            cards: [],
+            flippedCards: [],
+            matchedPairs: 0,
+            moves: 0,
+            timer: 0,
+            timerInterval: null,
+            
+            init: function(pairs) {
+                clearInterval(this.timerInterval);
+                this.matchedPairs = 0;
+                this.moves = 0;
+                this.timer = 0;
+                this.flippedCards = [];
+                
+                // Select random body parts
+                const selectedParts = [];
+                while (selectedParts.length < pairs) {
+                    const randomPart = bodyParts[Math.floor(Math.random() * bodyParts.length)];
+                    if (!selectedParts.some(p => p.id === randomPart.id)) {
+                        selectedParts.push(randomPart);
+                    }
+                }
+                
+                // Create pairs
+                this.cards = [];
+                selectedParts.forEach(part => {
+                    this.cards.push({ id: part.id, name: part.name, image: part.image });
+                    this.cards.push({ id: part.id, name: part.name, image: part.image });
+                });
+                
+                // Shuffle cards
+                this.cards.sort(() => Math.random() - 0.5);
+                
+                this.renderBoard();
+                this.updateStats();
+                
+                this.timerInterval = setInterval(() => {
+                    this.timer++;
+                    document.getElementById('memoryTimer').textContent = `Time: ${this.timer}s`;
+                }, 1000);
+            },
+            
+            renderBoard: function() {
+                const board = document.getElementById('memoryBoard');
+                board.innerHTML = '';
+                board.style.gridTemplateColumns = `repeat(${Math.min(this.cards.length / 2, 4)}, 1fr)`;
+                
+                this.cards.forEach((card, index) => {
+                    const cardElement = document.createElement('div');
+                    cardElement.className = 'memory-card';
+                    cardElement.dataset.index = index;
+                    
+                    cardElement.innerHTML = `
+                        <div class="front">?</div>
+                        <div class="back">
+                            <img class="part-image" src="images/${card.image}" alt="${card.name}" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22100%22%20height%3D%22100%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Crect%20width%3D%22100%22%20height%3D%22100%22%20fill%3D%22%23e9ecef%22%2F%3E%3Ctext%20x%3D%2250%22%20y%3D%2255%22%20font-size%3D%2212%22%20text-anchor%3D%22middle%22%20fill%3D%22%236c757d%22%3E${card.name}%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                        </div>
+                    `;
+                    
+                    cardElement.addEventListener('click', () => this.flipCard(index));
+                    board.appendChild(cardElement);
+                });
+            },
+            
+            flipCard: function(index) {
+                const card = document.querySelector(`.memory-card[data-index="${index}"]`);
+                
+                // Don't allow flipping if already flipped or matched
+                if (card.classList.contains('flipped') || card.classList.contains('matched') || this.flippedCards.length >= 2) {
+                    return;
+                }
+                
+                card.classList.add('flipped');
+                this.flippedCards.push(index);
+                
+                if (this.flippedCards.length === 2) {
+                    this.moves++;
+                    this.updateStats();
+                    
+                    setTimeout(() => this.checkMatch(), 800);
+                }
+            },
+            
+            checkMatch: function() {
+                const [index1, index2] = this.flippedCards;
+                const card1 = this.cards[index1];
+                const card2 = this.cards[index2];
+                
+                if (card1.id === card2.id) {
+                    // Match found
+                    document.querySelector(`.memory-card[data-index="${index1}"]`).classList.add('matched');
+                    document.querySelector(`.memory-card[data-index="${index2}"]`).classList.add('matched');
+                    
+                    this.matchedPairs++;
+                    
+                    // Reward with balloons for each match
+                    createBalloons(3);
+                    
+                    if (this.matchedPairs === this.cards.length / 2) {
+                        // Game completed
+                        clearInterval(this.timerInterval);
+                        document.getElementById('memoryFeedback').textContent = `You won in ${this.moves} moves and ${this.timer} seconds!`;
+                        
+                        // Big reward for completing the game
+                        createBalloons(15);
+                    }
+                } else {
+                    // No match, flip back
+                    document.querySelector(`.memory-card[data-index="${index1}"]`).classList.remove('flipped');
+                    document.querySelector(`.memory-card[data-index="${index2}"]`).classList.remove('flipped');
+                }
+                
+                this.flippedCards = [];
+            },
+            
+            updateStats: function() {
+                document.getElementById('movesDisplay').textContent = `Moves: ${this.moves}`;
+                document.getElementById('matchesDisplay').textContent = `Matches: ${this.matchedPairs}/${this.cards.length / 2}`;
+            }
+        };
+
+        function startMemory(pairs) {
+            memoryGame.init(pairs);
+        }
+
+        // --- QUIZ FUNCTIONALITY ---
+        const quizData = {
+            easy: [
+                {
+                    question: "👀 Which part helps us to see?",
+                    options: [
+                        { text: "Nose", emoji: "👃", correct: false },
+                        { text: "Eye", emoji: "👀", correct: true },
+                        { text: "Ear", emoji: "👂", correct: false }
+                    ]
+                },
+                {
+                    question: "👃 Which part helps us to smell?",
+                    options: [
+                        { text: "Nose", emoji: "👃", correct: true },
+                        { text: "Hand", emoji: "🖐", correct: false },
+                        { text: "Mouth", emoji: "👄", correct: false }
+                    ]
+                },
+                {
+                    question: "👂 How many ears do we have?",
+                    options: [
+                        { text: "1", emoji: "1", correct: false },
+                        { text: "2", emoji: "2", correct: true },
+                        { text: "3", emoji: "3", correct: false }
+                    ]
+                },
+                {
+                    question: "🦵 Which part helps us to walk?",
+                    options: [
+                        { text: "Eyes", emoji: "👀", correct: false },
+                        { text: "Legs", emoji: "🦵", correct: true },
+                        { text: "Hands", emoji: "🖐", correct: false }
+                    ]
+                },
+                {
+                    question: "👄 Which part helps us to eat food?",
+                    options: [
+                        { text: "Mouth", emoji: "👄", correct: true },
+                        { text: "Ear", emoji: "👂", correct: false },
+                        { text: "Nose", emoji: "👃", correct: false }
+                    ]
+                }
+            ],
+            medium: [
+                {
+                    question: "🖐 How many fingers do we have on one hand?",
+                    options: [
+                        { text: "4", emoji: "4", correct: false },
+                        { text: "5", emoji: "5", correct: true },
+                        { text: "6", emoji: "6", correct: false }
+                    ]
+                },
+                {
+                    question: "❤️ Heart in Amharic is _____.",
+                    options: [
+                        { text: "ልብ", emoji: "❤️", correct: true },
+                        { text: "አፍ", emoji: "👄", correct: false },
+                        { text: "አይን", emoji: "👀", correct: false }
+                    ]
+                },
+                {
+                    question: "🧠 Which part of the body helps us to think?",
+                    options: [
+                        { text: "Brain", emoji: "🧠", correct: true },
+                        { text: "Nose", emoji: "👃", correct: false },
+                        { text: "Hand", emoji: "🖐", correct: false }
+                    ]
+                },
+                {
+                    question: "👂 Ear in Amharic is _____.",
+                    options: [
+                        { text: "አፍ", emoji: "👄", correct: false },
+                        { text: "ጆሮ", emoji: "👂", correct: true },
+                        { text: "እግር", emoji: "🦵", correct: false }
+                    ]
+                },
+                {
+                    question: "🤰 Stomach in Amharic is _____.",
+                    options: [
+                        { text: "ሆድ", emoji: "🤰", correct: true },
+                        { text: "ልብ", emoji: "❤️", correct: false },
+                        { text: "አፍ", emoji: "👄", correct: false }
+                    ]
+                }
+            ],
+            hard: [
+                {
+                    question: "🌬 Which part of the body helps us to breathe?",
+                    options: [
+                        { text: "Lungs", emoji: "🫁", correct: true },
+                        { text: "Stomach", emoji: "🤰", correct: false },
+                        { text: "Hand", emoji: "🖐", correct: false }
+                    ]
+                },
+                {
+                    question: "🤰 Which organ helps us to digest food?",
+                    options: [
+                        { text: "Brain", emoji: "🧠", correct: false },
+                        { text: "Stomach", emoji: "🤰", correct: true },
+                        { text: "Heart", emoji: "❤️", correct: false }
+                    ]
+                },
+                {
+                    question: "🦴 Where is the backbone found?",
+                    options: [
+                        { text: "In the chest", emoji: "👔", correct: false },
+                        { text: "At the back", emoji: "🔙", correct: true },
+                        { text: "In the leg", emoji: "🦵", correct: false }
+                    ]
+                },
+                {
+                    question: "💀 Which body part protects the brain?",
+                    options: [
+                        { text: "Skull", emoji: "💀", correct: true },
+                        { text: "Heart", emoji: "❤️", correct: false },
+                        { text: "Hand", emoji: "🖐", correct: false }
+                    ]
+                },
+                {
+                    question: "🖐 Which body part helps us to hold things?",
+                    options: [
+                        { text: "Hands", emoji: "🖐", correct: true },
+                        { text: "Legs", emoji: "🦵", correct: false },
+                        { text: "Nose", emoji: "👃", correct: false }
+                    ]
+                }
+            ]
+        };
+
+        // Quiz state
+        let currentLevel = 'easy';
+        let currentQuestion = 0;
+        let score = 0;
+        let userAnswers = [];
+
+        // DOM elements
+        const difficultyButtons = document.querySelectorAll('.difficulty-btn');
+        const questionElement = document.getElementById('question-text');
+        const questionNumberElement = document.getElementById('question-number');
+        const optionsContainer = document.getElementById('quiz-options');
+        const prevButton = document.getElementById('quiz-prev-btn');
+        const nextButton = document.getElementById('quiz-next-btn');
+        const progressBar = document.getElementById('quiz-progress');
+        const resultsContainer = document.getElementById('quiz-results');
+        const scoreElement = document.getElementById('quiz-score');
+        const correctAnswersElement = document.getElementById('correct-answers');
+        const incorrectAnswersElement = document.getElementById('incorrect-answers');
+        const resultEmojiElement = document.getElementById('result-emoji');
+        const levelIndicator = document.getElementById('level-indicator');
+        const quizContent = document.getElementById('quiz-content');
+
+        // Initialize quiz
+        function initQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            userAnswers = [];
+            loadQuestion();
+            updateProgressBar();
+            updateNavigation();
+            
+            // Show quiz content, hide results
+            quizContent.style.display = 'block';
+            resultsContainer.style.display = 'none';
+        }
+
+        // Load question
+        function loadQuestion() {
+            const question = quizData[currentLevel][currentQuestion];
+            questionNumberElement.textContent = `Question ${currentQuestion + 1}/${quizData[currentLevel].length}`;
+            questionElement.textContent = question.question;
+            
+            // Clear options
+            optionsContainer.innerHTML = '';
+            
+            // Add options
+            question.options.forEach((option, index) => {
+                const optionElement = document.createElement('div');
+                optionElement.className = 'quiz-option';
+                optionElement.innerHTML = `
+                    <span class="option-emoji">${option.emoji}</span>
+                    <span class="option-text">${option.text}</span>
+                `;
+                optionElement.dataset.correct = option.correct;
+                
+                optionElement.addEventListener('click', selectOption);
+                optionsContainer.appendChild(optionElement);
+            });
+        }
+
+        // Select option
+        function selectOption(e) {
+            const selectedOption = e.target.closest('.quiz-option');
+            if (!selectedOption) return;
+            
+            // Disable all options after selection
+            const options = document.querySelectorAll('.quiz-option');
+            options.forEach(option => {
+                option.removeEventListener('click', selectOption);
+            });
+            
+            // Check if correct
+            const isCorrect = selectedOption.dataset.correct === 'true';
+            
+            // Update UI
+            if (isCorrect) {
+                selectedOption.classList.add('correct');
+                score++;
+            } else {
+                selectedOption.classList.add('incorrect');
+                // Highlight correct answer
+                options.forEach(option => {
+                    if (option.dataset.correct === 'true') {
+                        option.classList.add('correct');
+                    }
+                });
+            }
+            
+            // Store answer
+            userAnswers[currentQuestion] = isCorrect;
+            
+            // Enable next button
+            nextButton.disabled = false;
+            
+            // Reward with balloons for correct answers
+            if (isCorrect) {
+                createBalloons(3);
+            }
+        }
+
+        // Update navigation buttons
+        function updateNavigation() {
+            prevButton.disabled = currentQuestion === 0;
+            
+            if (currentQuestion === quizData[currentLevel].length - 1) {
+                nextButton.textContent = 'Finish';
+            } else {
+                nextButton.textContent = 'Next';
+            }
+            
+            // Disable next button if no answer selected
+            if (userAnswers[currentQuestion] === undefined) {
+                nextButton.disabled = true;
+            }
+        }
+
+        // Update progress bar
+        function updateProgressBar() {
+            const progress = ((currentQuestion + 1) / quizData[currentLevel].length) * 100;
+            progressBar.style.width = `${progress}%`;
+        }
+
+        // Show results
+        function showResults() {
+            quizContent.style.display = 'none';
+            resultsContainer.style.display = 'block';
+            
+            scoreElement.textContent = `Your score: ${score}/${quizData[currentLevel].length}`;
+            correctAnswersElement.textContent = score;
+            incorrectAnswersElement.textContent = quizData[currentLevel].length - score;
+            
+            // Set result emoji based on score
+            if (score === quizData[currentLevel].length) {
+                resultEmojiElement.textContent = '🎉';
+                createBalloons(15);
+            } else if (score >= quizData[currentLevel].length / 2) {
+                resultEmojiElement.textContent = '👍';
+                createBalloons(8);
+            } else {
+                resultEmojiElement.textContent = '👎';
+                createBalloons(3);
+            }
+        }
+
+        // Change difficulty level
+        function changeQuizDifficulty(level) {
+            currentLevel = level;
+            
+            // Update UI
+            difficultyButtons.forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.level === level) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            // Update level indicator
+            levelIndicator.className = 'level-indicator';
+            if (level === 'easy') {
+                levelIndicator.classList.add('level-easy');
+                levelIndicator.textContent = '🟢 Level 1 - Easy';
+            } else if (level === 'medium') {
+                levelIndicator.classList.add('level-medium');
+                levelIndicator.textContent = '🟡 Level 2 - Medium';
+            } else {
+                levelIndicator.classList.add('level-hard');
+                levelIndicator.textContent = '🔴 Level 3 - Hard';
+            }
+            
+            // Reset quiz
+            initQuiz();
+        }
+
+        // Navigate to previous question
+        function quizPrevious() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                loadQuestion();
+                updateProgressBar();
+                updateNavigation();
+                
+                // Re-enable options if already answered
+                if (userAnswers[currentQuestion] !== undefined) {
+                    const options = document.querySelectorAll('.quiz-option');
+                    options.forEach(option => {
+                        option.removeEventListener('click', selectOption);
+                        if (option.dataset.correct === 'true') {
+                            option.classList.add('correct');
+                        }
+                    });
+                }
+            }
+        }
+
+        // Navigate to next question or finish quiz
+        function quizNext() {
+            if (currentQuestion < quizData[currentLevel].length - 1) {
+                currentQuestion++;
+                loadQuestion();
+                updateProgressBar();
+                updateNavigation();
+                
+                // Re-enable options if already answered
+                if (userAnswers[currentQuestion] !== undefined) {
+                    const options = document.querySelectorAll('.quiz-option');
+                    options.forEach(option => {
+                        option.removeEventListener('click', selectOption);
+                        if (option.dataset.correct === 'true') {
+                            option.classList.add('correct');
+                        }
+                    });
+                }
+            } else {
+                showResults();
+            }
+        }
+
+        // Restart quiz
+        function restartQuiz() {
+            initQuiz();
+        }
+
+        // --- INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', function() {
+            renderBodyParts();
+            bodyPartGame.init();
+            
+            // Initialize memory game with easy difficulty
+            startMemory(4);
+            
+            // Initialize quiz
+            initQuiz();
+        });
+    </script>
+</body>
+</html>

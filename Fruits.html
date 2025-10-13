@@ -1,0 +1,1409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fruit Explorer - Learn Fruits</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --accent: #e67e22;
+            --accent-light: #fef9e7;
+            --bg: #f8f9fa;
+            --card: #ffffff;
+            --muted: #6c757d;
+            --gap: 16px;
+            --success: #28a745;
+            --fail: #dc3545;
+            --border-color: #dee2e6;
+            --warning: #ffc107;
+            --info: #17a2b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Comic Sans MS', 'Arial Rounded MT Bold', Arial, sans-serif;
+            background: var(--bg);
+            color: #212529;
+            line-height: 1.5;
+            font-size: 18px;
+        }
+
+        header {
+            background: var(--accent);
+            color: white;
+            padding: 12px 16px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .brand {
+            font-weight: 700;
+            font-size: 28px;
+        }
+
+        nav {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        nav .navbtn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 10px 14px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: 600;
+            transition: background-color 0.2s;
+        }
+        nav .navbtn:hover { background: rgba(255, 255, 255, 0.3); }
+
+        main {
+            max-width: 1200px;
+            margin: 24px auto;
+            padding: 0 16px;
+        }
+
+        section { display: none; }
+        section.active { display: block; }
+
+        .controls {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 12px;
+            background: var(--card);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .controls .chip {
+            background: #e9ecef;
+            padding: 8px 14px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .controls .chip:hover { background: var(--accent-light); }
+        .controls .chip.active-filter { background: var(--accent); color: white; border-color: var(--accent); }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: var(--gap);
+        }
+
+        .card {
+            background: var(--card);
+            padding: 16px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            text-align: center;
+            border: 1px solid var(--border-color);
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            cursor: pointer;
+        }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 8px 16px rgba(0,0,0,0.1); }
+
+        .fruit-display {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 12px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            font-size: 50px;
+            background: var(--accent-light);
+        }
+
+        .card h4 {
+            margin: 8px 0 4px;
+            font-size: 22px;
+            font-weight: 700;
+        }
+        .card small {
+            display: block;
+            color: var(--muted);
+            margin-bottom: 12px;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .sound-buttons { 
+            display: flex; 
+            gap: 8px; 
+            width: 100%; 
+        }
+        .sound-buttons button {
+            flex: 1;
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            position: relative;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s;
+        }
+        .sound-buttons button:hover { background-color: #d35400; }
+        .sound-buttons .amharic-btn { background-color: var(--success); }
+        .sound-buttons .amharic-btn:hover { background-color: #218838; }
+
+        .panel {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            margin-bottom: 24px;
+            border: 1px solid var(--border-color);
+        }
+
+        .panel h3 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--accent);
+        }
+
+        .panel p {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .search-box {
+            padding: 12px 15px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            width: 100%;
+            max-width: 300px;
+            margin-left: auto;
+            font-size: 18px;
+        }
+
+        .favorite-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: #ccc;
+            transition: color 0.2s;
+            z-index: 10;
+        }
+
+        .favorite-btn.active {
+            color: gold;
+        }
+
+        .language-toggle {
+            display: flex;
+            gap: 10px;
+            margin: 10px 0;
+            justify-content: center;
+        }
+
+        .lang-btn {
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            background: white;
+            cursor: pointer;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .lang-btn.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .loading-spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Game Styles */
+        .game-levels {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .level-btn {
+            padding: 15px 25px;
+            background: var(--accent-light);
+            border: 3px solid var(--accent);
+            border-radius: 15px;
+            font-size: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .level-btn.active {
+            background: var(--accent);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .level-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .memory-board {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .memory-card {
+            background-color: var(--accent-light);
+            border-radius: 12px;
+            cursor: pointer;
+            aspect-ratio: 1 / 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform-style: preserve-3d;
+            transition: transform 0.5s;
+            border: 3px solid var(--accent);
+        }
+
+        .memory-card .fruit-display {
+            width: 80%;
+            height: 80%;
+            margin: 0;
+            box-shadow: none;
+            font-size: 30px;
+        }
+
+        .memory-card.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .memory-card.matched {
+            transform: rotateY(180deg);
+            opacity: 0.7;
+            cursor: default;
+            border-color: var(--success);
+        }
+
+        .memory-card .front, .memory-card .back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 10px;
+        }
+
+        .memory-card .front {
+            background: var(--accent);
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .memory-card .back {
+            transform: rotateY(180deg);
+            background: white;
+        }
+
+        .stats-bar {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            padding: 15px;
+            background: var(--accent-light);
+            border-radius: 10px;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        /* Quiz Styles */
+        .quiz-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .quiz-option {
+            padding: 20px;
+            background: var(--bg);
+            border-radius: 15px;
+            cursor: pointer;
+            text-align: center;
+            border: 3px solid transparent;
+            transition: all 0.3s;
+            font-size: 22px;
+            font-weight: 600;
+        }
+
+        .quiz-option:hover {
+            border-color: var(--accent);
+            transform: scale(1.05);
+        }
+
+        .quiz-option.correct {
+            background-color: var(--success);
+            color: white;
+            border-color: var(--success);
+        }
+
+        .quiz-option.incorrect {
+            background-color: var(--fail);
+            color: white;
+            border-color: var(--fail);
+        }
+
+        .progress-bar {
+            height: 15px;
+            background: #e9ecef;
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress {
+            height: 100%;
+            background: var(--success);
+            border-radius: 10px;
+            transition: width 0.3s;
+        }
+
+        .question {
+            font-size: 26px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .question-number {
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--muted);
+        }
+
+        .fruit-display-box {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 20px;
+            border-radius: 15px;
+            border: 4px solid var(--border-color);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+            background: var(--accent-light);
+        }
+
+        .quiz-navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .quiz-navigation button {
+            padding: 15px 30px;
+            font-size: 20px;
+            font-weight: 700;
+            border-radius: 10px;
+            border: none;
+            background: var(--accent);
+            color: white;
+            cursor: pointer;
+        }
+
+        .quiz-navigation button:disabled {
+            background: var(--muted);
+            cursor: not-allowed;
+        }
+
+        .quiz-results {
+            text-align: center;
+            padding: 30px;
+        }
+
+        .quiz-results h3 {
+            color: var(--accent);
+            margin-bottom: 20px;
+            font-size: 32px;
+        }
+
+        .result-emoji {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+
+        .score-display {
+            font-size: 28px;
+            font-weight: 700;
+            margin: 20px 0;
+            color: var(--accent);
+        }
+
+        .celebration-message {
+            font-size: 24px;
+            margin: 20px 0;
+            color: var(--success);
+        }
+
+        /* Rewards */
+        .balloon {
+            position: absolute;
+            width: 40px;
+            height: 50px;
+            background: #ff6b6b;
+            border-radius: 50%;
+            animation: float 5s ease-in-out forwards;
+            z-index: 1000;
+            opacity: 0.9;
+        }
+
+        .balloon::before {
+            content: "";
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            width: 2px;
+            height: 15px;
+            background: #ccc;
+            transform: translateX(-50%);
+        }
+
+        .balloon:nth-child(2n) { background: #4ecdc4; }
+        .balloon:nth-child(3n) { background: #ffd166; }
+        .balloon:nth-child(4n) { background: #2e7d32; }
+        .balloon:nth-child(5n) { background: #06d6a0; }
+
+        .rocket {
+            position: absolute;
+            font-size: 30px;
+            animation: rocketLaunch 3s ease-in-out forwards;
+            z-index: 1000;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0) rotate(0); opacity: 1; }
+            100% { transform: translateY(-100vh) rotate(20deg); opacity: 0; }
+        }
+
+        @keyframes rocketLaunch {
+            0% { transform: translateY(0) rotate(0); opacity: 1; }
+            100% { transform: translateY(-100vh) rotate(10deg); opacity: 0; }
+        }
+
+        .reward-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2000;
+        }
+
+        /* Modal for fruit details */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--accent);
+            margin: 0;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 30px;
+            cursor: pointer;
+            color: var(--muted);
+        }
+
+        .modal-body {
+            font-size: 18px;
+            line-height: 1.6;
+        }
+
+        .fruit-detail-icon {
+            font-size: 80px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            nav .navbtn { padding: 8px 12px; font-size: 16px; }
+            .grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+            .fruit-display { width: 100px; height: 100px; font-size: 40px; }
+            body { font-size: 16px; }
+            .brand { font-size: 24px; }
+            .panel h3 { font-size: 24px; }
+            .memory-board { grid-template-columns: repeat(3, 1fr); }
+            .quiz-container { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 576px) {
+            header { flex-direction: column; gap: 10px; }
+            nav { width: 100%; justify-content: center; }
+            .grid { grid-template-columns: 1fr 1fr; }
+            .controls { flex-direction: column; align-items: flex-start; }
+            .search-box { margin-left: 0; max-width: 100%; }
+            .memory-board { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 400px) {
+            nav .navbtn { font-size: 14px; padding: 6px 10px; }
+            .brand { font-size: 20px; }
+            .grid { grid-template-columns: 1fr; }
+            .lang-btn { font-size: 16px; padding: 8px 16px; }
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div class="brand">Fruit Explorer</div>
+    <nav>
+        <button class="navbtn" onclick="showSection('fruits')">🍎 Fruits</button>
+        <button class="navbtn" onclick="showSection('games')">🎯 Games</button>
+        <button class="navbtn" onclick="showSection('quiz')">🧠 Quiz</button>
+    </nav>
+</header>
+
+<main>
+    <div class="language-toggle">
+        <button class="lang-btn active" id="englishBtn">English</button>
+        <button class="lang-btn" id="amharicBtn">Amharic (አማርኛ)</button>
+    </div>
+
+    <section id="fruits" class="active">
+        <div class="controls">
+            <div class="chip">Filter:</div>
+            <button class="chip active-filter" onclick="filterFruits('all', this)">All</button>
+            <button class="chip" onclick="filterFruits('tropical', this)">Tropical</button>
+            <button class="chip" onclick="filterFruits('citrus', this)">Citrus</button>
+            <button class="chip" onclick="filterFruits('berry', this)">Berries</button>
+            <button class="chip" onclick="filterFruits('common', this)">Common</button>
+            <button class="chip" onclick="filterFruits('seasonal', this)">Seasonal</button>
+            <input type="text" class="search-box" placeholder="Search fruits..." oninput="searchFruits(this.value)">
+            <button class="chip" onclick="showOnlyFavorites()">⭐ Favorites</button>
+        </div>
+        <div id="fruitsGrid" class="grid"></div>
+    </section>
+
+    <section id="games">
+        <div class="panel">
+            <h3>🎯 Fruit Memory Match</h3>
+            <p>Match the same fruits together! Perfect for young learners.</p>
+            
+            <div class="game-levels">
+                <button class="level-btn active" onclick="startMemoryGame(4)">Easy (4 Pairs)</button>
+                <button class="level-btn" onclick="startMemoryGame(6)">Medium (6 Pairs)</button>
+                <button class="level-btn" onclick="startMemoryGame(8)">Hard (8 Pairs)</button>
+            </div>
+            
+            <div class="stats-bar">
+                <span id="movesDisplay">Moves: 0</span>
+                <span id="matchesDisplay">Matches: 0/4</span>
+                <span id="gameTimer">Time: 0s</span>
+            </div>
+            
+            <div id="memoryBoard" class="memory-board"></div>
+            <div id="gameFeedback" class="celebration-message"></div>
+        </div>
+    </section>
+
+    <section id="quiz">
+        <div class="panel">
+            <h3>🧠 Fruit Quiz</h3>
+            <p>Test your fruit knowledge! Get rewards for correct answers.</p>
+            
+            <div class="game-levels">
+                <button class="level-btn active" onclick="startQuiz('easy')">🍎 Easy (3-4 years)</button>
+                <button class="level-btn" onclick="startQuiz('medium')">🍊 Medium (5-6 years)</button>
+                <button class="level-btn" onclick="startQuiz('hard')">🍓 Hard (6-7 years)</button>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress" id="quiz-progress" style="width: 0%"></div>
+            </div>
+
+            <div class="quiz-content" id="quiz-content">
+                <div class="question">
+                    <span class="question-number" id="question-number">Question 1/5</span><br>
+                    <span id="question-text">Which one is the apple?</span>
+                </div>
+
+                <div class="fruit-display-box" id="quiz-fruit-display">🍎</div>
+
+                <div class="quiz-container" id="quiz-options">
+                    <!-- Options will be generated here -->
+                </div>
+
+                <div class="quiz-navigation">
+                    <button id="quiz-next-btn" onclick="nextQuestion()">Next Question</button>
+                </div>
+            </div>
+
+            <div class="quiz-results" id="quiz-results" style="display: none;">
+                <div class="result-emoji" id="result-emoji">🎉</div>
+                <h3>Quiz Completed!</h3>
+                <div class="score-display" id="quiz-score">Your score: 0/5</div>
+                <div class="celebration-message" id="celebration-message">Great job! You're a fruit expert!</div>
+                <button class="level-btn" onclick="restartQuiz()" style="margin-top: 20px;">Play Again</button>
+            </div>
+        </div>
+    </section>
+</main>
+
+<div id="fruitModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title" id="fruitModalTitle">Fruit</h3>
+            <button class="close-btn" onclick="closeModal('fruitModal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="fruit-detail-icon" id="fruitModalIcon"></div>
+            <div id="fruitModalContent"></div>
+        </div>
+    </div>
+</div>
+
+<div id="rewardContainer" class="reward-container"></div>
+
+<script>
+    // --- LANGUAGE SYSTEM ---
+    let currentLanguage = 'english';
+
+    document.getElementById('englishBtn').addEventListener('click', function() {
+        currentLanguage = 'english';
+        document.getElementById('englishBtn').classList.add('active');
+        document.getElementById('amharicBtn').classList.remove('active');
+        renderFruits();
+        updateGameTexts();
+    });
+
+    document.getElementById('amharicBtn').addEventListener('click', function() {
+        currentLanguage = 'amharic';
+        document.getElementById('amharicBtn').classList.add('active');
+        document.getElementById('englishBtn').classList.remove('active');
+        renderFruits();
+        updateGameTexts();
+    });
+
+    function updateGameTexts() {
+        // Update game section texts
+        if (currentLanguage === 'amharic') {
+            document.querySelector('#games h3').textContent = '🎯 ፍራፍሬ ማስታወሻ ጨዋታ';
+            document.querySelector('#games p').textContent = 'ተመሳሳይ ፍራፍሬዎችን አንድ ላይ ያዛምዱ! ለወጣት ተማሪዎች ተስማሚ።';
+            document.querySelector('#games .level-btn:nth-child(1)').textContent = 'ቀላል (4 ጥንድ)';
+            document.querySelector('#games .level-btn:nth-child(2)').textContent = 'መካከለኛ (6 ጥንድ)';
+            document.querySelector('#games .level-btn:nth-child(3)').textContent = 'ከባድ (8 ጥንድ)';
+            
+            // Update quiz section texts
+            document.querySelector('#quiz h3').textContent = '🧠 ፍራፍሬ ፈተና';
+            document.querySelector('#quiz p').textContent = 'የፍራፍሬ እውቀትዎን ይሞክሩ! ለትክክለኛ መልሶች ሽልማት ያግኙ።';
+            document.querySelector('#quiz .level-btn:nth-child(1)').textContent = '🍎 ቀላል (3-4 ዓመት)';
+            document.querySelector('#quiz .level-btn:nth-child(2)').textContent = '🍊 መካከለኛ (5-6 ዓመት)';
+            document.querySelector('#quiz .level-btn:nth-child(3)').textContent = '🍓 ከባድ (6-7 ዓመት)';
+        } else {
+            document.querySelector('#games h3').textContent = '🎯 Fruit Memory Match';
+            document.querySelector('#games p').textContent = 'Match the same fruits together! Perfect for young learners.';
+            document.querySelector('#games .level-btn:nth-child(1)').textContent = 'Easy (4 Pairs)';
+            document.querySelector('#games .level-btn:nth-child(2)').textContent = 'Medium (6 Pairs)';
+            document.querySelector('#games .level-btn:nth-child(3)').textContent = 'Hard (8 Pairs)';
+            
+            document.querySelector('#quiz h3').textContent = '🧠 Fruit Quiz';
+            document.querySelector('#quiz p').textContent = 'Test your fruit knowledge! Get rewards for correct answers.';
+            document.querySelector('#quiz .level-btn:nth-child(1)').textContent = '🍎 Easy (3-4 years)';
+            document.querySelector('#quiz .level-btn:nth-child(2)').textContent = '🍊 Medium (5-6 years)';
+            document.querySelector('#quiz .level-btn:nth-child(3)').textContent = '🍓 Hard (6-7 years)';
+        }
+    }
+
+    // --- REWARD SYSTEM ---
+    function createBalloons(count) {
+        const container = document.getElementById('rewardContainer');
+        for (let i = 0; i < count; i++) {
+            const balloon = document.createElement('div');
+            balloon.className = 'balloon';
+            balloon.style.left = `${Math.random() * 100}%`;
+            balloon.style.animationDuration = `${3 + Math.random() * 2}s`;
+            container.appendChild(balloon);
+            setTimeout(() => balloon.remove(), 5000);
+        }
+    }
+
+    function createRockets(count) {
+        const container = document.getElementById('rewardContainer');
+        const rockets = ['🚀', '🛸', '✨', '🌟'];
+        for (let i = 0; i < count; i++) {
+            const rocket = document.createElement('div');
+            rocket.className = 'rocket';
+            rocket.textContent = rockets[Math.floor(Math.random() * rockets.length)];
+            rocket.style.left = `${Math.random() * 100}%`;
+            rocket.style.animationDuration = `${2 + Math.random() * 1}s`;
+            container.appendChild(rocket);
+            setTimeout(() => rocket.remove(), 3000);
+        }
+    }
+
+    // --- MODAL SYSTEM ---
+    function openModal(modalId) {
+        document.getElementById(modalId).style.display = 'flex';
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = 'none';
+    }
+
+    // --- NAVIGATION ---
+    function showSection(sectionId) {
+        document.querySelectorAll('section').forEach(section => {
+            section.classList.remove('active');
+        });
+        document.getElementById(sectionId).classList.add('active');
+        
+        if (sectionId === 'games') startMemoryGame(4);
+        if (sectionId === 'quiz') startQuiz('easy');
+    }
+
+    // --- FRUITS DATA ---
+    const fruitsData = [
+        { id: 1, name: "Apple", amharic: "ፖም", emoji: "🍎", category: "common", description: "A sweet, crisp fruit that grows on trees.", amharicDescription: "በዛፍ ላይ የሚበቅል ጣፋጭ ፍራፍሬ።", color: "#ff6b6b" },
+        { id: 2, name: "Banana", amharic: "ሙዝ", emoji: "🍌", category: "tropical", description: "A long, curved fruit with yellow skin.", amharicDescription: "ረጅም፣ የተጠጋጋ ፍራፍሬ ቢጫ ቆዳ ያለው።", color: "#ffd93d" },
+        { id: 3, name: "Orange", amharic: "ብርቱካን", emoji: "🍊", category: "citrus", description: "A round, orange-colored citrus fruit.", amharicDescription: "ክብ፣ ብርቱካናማ ሲትረስ ፍራፍሬ።", color: "#ffa500" },
+        { id: 4, name: "Grapes", amharic: "ወይን", emoji: "🍇", category: "berry", description: "Small, round fruits that grow in clusters.", amharicDescription: "ትናንሽ ክብ ፍራፍሬዎች በተከማቸ ይበቃሉ።", color: "#6b5b95" },
+        { id: 5, name: "Strawberry", amharic: "እንጆሪ", emoji: "🍓", category: "berry", description: "A sweet, red fruit with small seeds.", amharicDescription: "ጣፋጭ፣ ቀይ ፍራፍሬ ትናንሽ ዘሮች ያሉት።", color: "#ff6b6b" },
+        { id: 6, name: "Pineapple", amharic: "አናናስ", emoji: "🍍", category: "tropical", description: "A tropical fruit with rough, spiky skin.", amharicDescription: "የትሮፒካል ፍራፍሬ ከረጅም ቆዳ ጋር።", color: "#ffd93d" },
+        { id: 7, name: "Watermelon", amharic: "ሐብሐብ", emoji: "🍉", category: "tropical", description: "A large, juicy fruit with green skin.", amharicDescription: "ትልቅ፣ ጠባብ ፍራፍሬ አረንጓዴ ቆዳ ያለው።", color: "#ff6b6b" },
+        { id: 8, name: "Mango", amharic: "ማንጎ", emoji: "🥭", category: "tropical", description: "A sweet, juicy tropical fruit.", amharicDescription: "ጣፋጭ፣ ጠባብ የትሮፒካል ፍራፍሬ።", color: "#ffa500" },
+        { id: 9, name: "Lemon", amharic: "ሎሚ", emoji: "🍋", category: "citrus", description: "A yellow citrus fruit with sour taste.", amharicDescription: "ቢጫ ሲትረስ ፍራፍሬ ጠላ ጣዕም ያለው።", color: "#ffd93d" },
+        { id: 10, name: "Pear", amharic: "ፔር", emoji: "🍐", category: "common", description: "A sweet fruit that is narrow at the top.", amharicDescription: "ጣፋጭ ፍራፍሬ ከላይ ጠባብ የሆነ።", color: "#c1e1c1" },
+        { id: 11, name: "Peach", amharic: "ኮክ", emoji: "🍑", category: "common", description: "A soft, juicy fruit with fuzzy skin.", amharicDescription: "ለስላሳ፣ ጠባብ ፍራፍሬ ከሸካራ ቆዳ ጋር።", color: "#ffb6c1" },
+        { id: 12, name: "Cherry", amharic: "ቸሪ", emoji: "🍒", category: "berry", description: "Small, round red fruits with a hard seed.", amharicDescription: "ትናንሽ፣ ክብ ቀይ ፍራፍሬዎች ከባድ ዘር ጋር።", color: "#dc143c" },
+        { id: 13, name: "Kiwi", amharic: "ኪዊ", emoji: "🥝", category: "tropical", description: "A small fruit with brown fuzzy skin and green inside.", amharicDescription: "ትንሽ ፍራፍሬ ቡናማ ቆዳ እና አረንጓዴ ውስጥ ያለው።", color: "#8fbc8f" },
+        { id: 14, name: "Coconut", amharic: "ኮኮንት", emoji: "🥥", category: "tropical", description: "A large fruit with hard shell and sweet water inside.", amharicDescription: "ትልቅ ፍራፍሬ ከባድ ቅርፊት እና ጣፋጭ ውሃ ያለው።", color: "#daa520" },
+        { id: 15, name: "Avocado", amharic: "አቮካዶ", emoji: "🥑", category: "tropical", description: "A fruit with green skin and soft, creamy inside.", amharicDescription: "ፍራፍሬ አረንጓዴ ቆዳ እና ለስላሳ፣ ክሬም ያለ ውስጥ ያለው።", color: "#556b2f" },
+        { id: 16, name: "Blueberry", amharic: "ብሉበሪ", emoji: "🫐", category: "berry", description: "Tiny blue fruits that grow on bushes.", amharicDescription: "ትናንሽ ሰማያዊ ፍራፍሬዎች በቁጥቋጦ ላይ የሚበቁ።", color: "#4b0082" },
+        { id: 17, name: "Raspberry", amharic: "ራዝበሪ", emoji: "🍓", category: "berry", description: "Small red fruits that grow on bushes.", amharicDescription: "ትናንሽ ቀይ ፍራፍሬዎች በቁጥቋጦ ላይ የሚበቁ።", color: "#dc143c" },
+        { id: 18, name: "Papaya", amharic: "ፓፓያ", emoji: "🍈", category: "tropical", description: "A large tropical fruit with orange flesh.", amharicDescription: "ትልቅ የትሮፒካል ፍራፍሬ ብርቱካናማ ሥጋ ያለው።", color: "#ffa500" },
+        { id: 19, name: "Pomegranate", amharic: "ሮማን", emoji: "🍎", category: "seasonal", description: "A fruit with hard skin and many juicy seeds inside.", amharicDescription: "ፍራፍሬ ከባድ ቆዳ እና ብዙ ጠባብ ዘሮች ያሉት።", color: "#dc143c" },
+        { id: 20, name: "Plum", amharic: "ፕለም", emoji: "🍑", category: "seasonal", description: "A small, sweet fruit with smooth skin.", amharicDescription: "ትንሽ፣ ጣፋጭ ፍራፍሬ ለስላሳ ቆዳ ያለው።", color: "#8b008b" }
+    ];
+
+    // --- FAVORITES SYSTEM ---
+    let favorites = JSON.parse(localStorage.getItem('fruitFavorites')) || [];
+
+    function toggleFavorite(fruitId) {
+        event.stopPropagation();
+        const index = favorites.indexOf(fruitId);
+        if (index === -1) {
+            favorites.push(fruitId);
+        } else {
+            favorites.splice(index, 1);
+        }
+        localStorage.setItem('fruitFavorites', JSON.stringify(favorites));
+        renderFruits();
+    }
+
+    function showOnlyFavorites() {
+        renderFruits(fruitsData.filter(fruit => favorites.includes(fruit.id)));
+    }
+
+    // --- FRUITS RENDERING ---
+    function renderFruits(filteredFruits = fruitsData) {
+        const grid = document.getElementById('fruitsGrid');
+        grid.innerHTML = '';
+
+        filteredFruits.forEach(fruit => {
+            const isFavorite = favorites.includes(fruit.id);
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `
+                <button class="favorite-btn ${isFavorite ? 'active' : ''}" onclick="toggleFavorite(${fruit.id})">
+                    ${isFavorite ? '★' : '☆'}
+                </button>
+                <div class="fruit-display" style="background: ${fruit.color}22;">
+                    ${fruit.emoji}
+                </div>
+                <h4>${currentLanguage === 'english' ? fruit.name : fruit.amharic}</h4>
+                <small>${currentLanguage === 'english' ? fruit.amharic : fruit.name}</small>
+                <div class="sound-buttons">
+                    <button onclick="event.stopPropagation(); speakText('${fruit.name}', 'en', this)">
+                        🔊 English
+                    </button>
+                    <button class="amharic-btn" onclick="event.stopPropagation(); speakText('${fruit.amharic}', 'am', this)">
+                        🔊 አማርኛ
+                    </button>
+                </div>
+            `;
+
+            card.addEventListener('click', () => showFruitDetails(fruit));
+            grid.appendChild(card);
+        });
+    }
+
+    // --- SHOW FRUIT DETAILS ---
+    function showFruitDetails(fruit) {
+        document.getElementById('fruitModalTitle').textContent = currentLanguage === 'english' ? fruit.name : fruit.amharic;
+        document.getElementById('fruitModalIcon').innerHTML = `
+            <div style="font-size: 80px; background: ${fruit.color}22; width: 120px; height: 120px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
+                ${fruit.emoji}
+            </div>`;
+        document.getElementById('fruitModalContent').innerHTML = `
+            <p><strong>${currentLanguage === 'english' ? 'Name' : 'ስም'}:</strong> ${currentLanguage === 'english' ? fruit.name : fruit.amharic}</p>
+            <p><strong>${currentLanguage === 'english' ? 'Description' : 'መግለጫ'}:</strong> ${currentLanguage === 'english' ? fruit.description : fruit.amharicDescription}</p>
+        `;
+        openModal('fruitModal');
+    }
+
+    // --- SOUND SYSTEM ---
+    let activeAudio = null;
+
+    function showLoading(element) {
+        if (!element.dataset.originalContent) {
+            element.dataset.originalContent = element.innerHTML;
+        }
+        element.innerHTML = '<div class="loading-spinner"></div>';
+        element.disabled = true;
+    }
+
+    function hideLoading(element) {
+        if (element && element.dataset.originalContent) {
+            element.innerHTML = element.dataset.originalContent;
+            element.disabled = false;
+        }
+    }
+
+    function speakText(text, lang, element) {
+        if (activeAudio) {
+            activeAudio.pause();
+            const playingButton = document.querySelector('.loading-spinner')?.parentElement;
+            if(playingButton && playingButton !== element) {
+                hideLoading(playingButton);
+            }
+        }
+
+        showLoading(element);
+
+        const encodedText = encodeURIComponent(text);
+        const audioUrl = `https://translate.google.com/translate_tts?ie=UTF-8&tl=${lang}&client=tw-ob&q=${encodedText}`;
+
+        const audio = new Audio(audioUrl);
+        activeAudio = audio;
+
+        audio.play().then(() => {
+            hideLoading(element);
+        }).catch(error => {
+            console.error("Audio playback error:", error);
+            element.innerHTML = element.dataset.originalContent + ' ❌';
+            setTimeout(() => hideLoading(element), 2000);
+        });
+
+        audio.onended = () => {
+            hideLoading(element);
+            activeAudio = null;
+        };
+    }
+
+    // --- FILTERING AND SEARCH ---
+    function filterFruits(category, element) {
+        document.querySelectorAll('.controls .chip').forEach(chip => {
+            chip.classList.remove('active-filter');
+        });
+        element.classList.add('active-filter');
+        
+        let filtered = fruitsData;
+        if (category !== 'all') {
+            filtered = fruitsData.filter(fruit => fruit.category === category);
+        }
+        renderFruits(filtered);
+    }
+
+    function searchFruits(query) {
+        const filtered = fruitsData.filter(fruit => 
+            fruit.name.toLowerCase().includes(query.toLowerCase()) || 
+            fruit.amharic.includes(query)
+        );
+        renderFruits(filtered);
+    }
+
+    // --- MEMORY GAME ---
+    let memoryGame = {
+        cards: [],
+        flippedCards: [],
+        matchedPairs: 0,
+        totalPairs: 0,
+        moves: 0,
+        timer: null,
+        timeElapsed: 0,
+        gameStarted: false,
+
+        init: function(pairs) {
+            this.totalPairs = pairs;
+            this.matchedPairs = 0;
+            this.moves = 0;
+            this.timeElapsed = 0;
+            this.flippedCards = [];
+            this.gameStarted = false;
+
+            if (this.timer) clearInterval(this.timer);
+
+            // Select fruits for the game
+            const selectedFruits = [...fruitsData].sort(() => 0.5 - Math.random()).slice(0, pairs);
+            this.cards = [...selectedFruits, ...selectedFruits].sort(() => 0.5 - Math.random());
+
+            this.renderBoard();
+            this.updateDisplay();
+        },
+
+        renderBoard: function() {
+            const board = document.getElementById('memoryBoard');
+            board.innerHTML = '';
+            board.style.gridTemplateColumns = `repeat(${this.totalPairs <= 4 ? 4 : 4}, 1fr)`;
+
+            this.cards.forEach((fruit, index) => {
+                const cardElement = document.createElement('div');
+                cardElement.className = 'memory-card';
+                cardElement.dataset.id = fruit.id;
+                cardElement.innerHTML = `
+                    <div class="front">?</div>
+                    <div class="back">
+                        <div class="fruit-display" style="background: ${fruit.color}22;">
+                            ${fruit.emoji}
+                        </div>
+                    </div>
+                `;
+                cardElement.addEventListener('click', () => this.flipCard(cardElement));
+                board.appendChild(cardElement);
+            });
+        },
+
+        flipCard: function(cardElement) {
+            if (cardElement.classList.contains('flipped') || cardElement.classList.contains('matched') || this.flippedCards.length >= 2) {
+                return;
+            }
+
+            if (!this.gameStarted) {
+                this.startTimer();
+                this.gameStarted = true;
+            }
+
+            cardElement.classList.add('flipped');
+            this.flippedCards.push(cardElement);
+
+            if (this.flippedCards.length === 2) {
+                this.moves++;
+                this.checkMatch();
+            }
+            this.updateDisplay();
+        },
+
+        checkMatch: function() {
+            const [card1, card2] = this.flippedCards;
+
+            if (card1.dataset.id === card2.dataset.id) {
+                // Match found!
+                createBalloons(3);
+                card1.classList.add('matched');
+                card2.classList.add('matched');
+                this.flippedCards = [];
+                this.matchedPairs++;
+                
+                if (this.matchedPairs === this.totalPairs) {
+                    this.endGame();
+                }
+            } else {
+                // No match
+                setTimeout(() => {
+                    card1.classList.remove('flipped');
+                    card2.classList.remove('flipped');
+                    this.flippedCards = [];
+                }, 1000);
+            }
+            this.updateDisplay();
+        },
+
+        startTimer: function() {
+            this.timer = setInterval(() => {
+                this.timeElapsed++;
+                this.updateDisplay();
+            }, 1000);
+        },
+
+        updateDisplay: function() {
+            document.getElementById('movesDisplay').textContent = `Moves: ${this.moves}`;
+            document.getElementById('matchesDisplay').textContent = `Matches: ${this.matchedPairs}/${this.totalPairs}`;
+            document.getElementById('gameTimer').textContent = `Time: ${this.timeElapsed}s`;
+        },
+
+        endGame: function() {
+            clearInterval(this.timer);
+            const message = currentLanguage === 'english' ? '🎉 Congratulations! You won! 🎉' : '🎉 እንኳን ደስ አለህ! አሸንፈሃል! 🎉';
+            document.getElementById('gameFeedback').textContent = message;
+            createBalloons(10);
+            createRockets(5);
+        }
+    };
+
+    function startMemoryGame(pairs) {
+        document.querySelectorAll('#games .level-btn').forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+        memoryGame.init(pairs);
+    }
+
+    // --- QUIZ SYSTEM ---
+    let quiz = {
+        currentQuestion: 0,
+        score: 0,
+        questions: [],
+        currentDifficulty: 'easy',
+        
+        init: function(difficulty) {
+            this.currentDifficulty = difficulty;
+            this.currentQuestion = 0;
+            this.score = 0;
+            this.generateQuestions();
+            this.displayQuestion();
+            this.updateProgress();
+            
+            document.getElementById('quiz-content').style.display = 'block';
+            document.getElementById('quiz-results').style.display = 'none';
+            document.getElementById('quiz-next-btn').disabled = true;
+        },
+        
+        generateQuestions: function() {
+            this.questions = [];
+            let questionCount, questionTypes;
+            
+            // Set difficulty parameters
+            switch(this.currentDifficulty) {
+                case 'easy': // Ages 3-4
+                    questionCount = 5;
+                    questionTypes = ['identify', 'match'];
+                    break;
+                case 'medium': // Ages 5-6
+                    questionCount = 7;
+                    questionTypes = ['identify', 'match', 'color'];
+                    break;
+                case 'hard': // Ages 6-7
+                    questionCount = 10;
+                    questionTypes = ['identify', 'match', 'color', 'spell'];
+                    break;
+            }
+            
+            for (let i = 0; i < questionCount; i++) {
+                const questionType = questionTypes[Math.floor(Math.random() * questionTypes.length)];
+                const correctFruit = fruitsData[Math.floor(Math.random() * fruitsData.length)];
+                
+                let questionText, options;
+                
+                switch(questionType) {
+                    case 'identify':
+                        questionText = currentLanguage === 'english' ? 
+                            `Which one is the ${correctFruit.name.toLowerCase()}?` : 
+                            `የትኛው ${correctFruit.amharic} ነው?`;
+                        options = this.getRandomOptions(correctFruit, 4);
+                        break;
+                        
+                    case 'match':
+                        questionText = currentLanguage === 'english' ? 
+                            `Find the ${correctFruit.name.toLowerCase()}` : 
+                            `${correctFruit.amharic} ያግኙ`;
+                        options = this.getRandomOptions(correctFruit, 4);
+                        break;
+                        
+                    case 'color':
+                        questionText = currentLanguage === 'english' ? 
+                            `What color is a ${correctFruit.name.toLowerCase()}?` : 
+                            `${correctFruit.amharic} ምን ማለት ነው?`;
+                        options = this.getColorOptions(correctFruit);
+                        break;
+                        
+                    case 'spell':
+                        if (this.currentDifficulty === 'hard') {
+                            questionText = currentLanguage === 'english' ? 
+                                `How do you spell this fruit?` : 
+                                `ይህን ፍራፍሬ እንዴት ይጠራሉ?`;
+                            options = this.getSpellingOptions(correctFruit);
+                        }
+                        break;
+                }
+                
+                this.questions.push({
+                    type: questionType,
+                    text: questionText,
+                    options: options,
+                    correctFruit: correctFruit,
+                    correctIndex: options.findIndex(opt => opt.isCorrect)
+                });
+            }
+        },
+        
+        getRandomOptions: function(correctFruit, count) {
+            const options = [correctFruit];
+            const otherFruits = fruitsData.filter(f => f.id !== correctFruit.id)
+                                         .sort(() => 0.5 - Math.random())
+                                         .slice(0, count - 1);
+            options.push(...otherFruits);
+            return options.sort(() => 0.5 - Math.random())
+                         .map((fruit, index) => ({
+                             text: fruit.emoji,
+                             isCorrect: fruit.id === correctFruit.id
+                         }));
+        },
+        
+        getColorOptions: function(correctFruit) {
+            const colors = currentLanguage === 'english' ? 
+                ['Red', 'Yellow', 'Green', 'Orange'] : 
+                ['ቀይ', 'ቢጫ', 'አረንጓዴ', 'ብርቱካናማ'];
+            const correctColor = this.getColorName(correctFruit.color);
+            return colors.map(color => ({
+                text: color,
+                isCorrect: color === correctColor
+            }));
+        },
+        
+        getSpellingOptions: function(correctFruit) {
+            const spellings = [correctFruit.name];
+            const otherFruits = fruitsData.filter(f => f.id !== correctFruit.id)
+                                         .sort(() => 0.5 - Math.random())
+                                         .slice(0, 3);
+            spellings.push(...otherFruits.map(f => f.name));
+            return spellings.sort(() => 0.5 - Math.random())
+                          .map((spelling, index) => ({
+                              text: spelling,
+                              isCorrect: spelling === correctFruit.name
+                          }));
+        },
+        
+        getColorName: function(color) {
+            const colorMap = currentLanguage === 'english' ? {
+                '#ff6b6b': 'Red',
+                '#ffd93d': 'Yellow', 
+                '#ffa500': 'Orange',
+                '#6b5b95': 'Purple',
+                '#c1e1c1': 'Green',
+                '#556b2f': 'Green',
+                '#4b0082': 'Blue'
+            } : {
+                '#ff6b6b': 'ቀይ',
+                '#ffd93d': 'ቢጫ', 
+                '#ffa500': 'ብርቱካናማ',
+                '#6b5b95': 'ሐምራዊ',
+                '#c1e1c1': 'አረንጓዴ',
+                '#556b2f': 'አረንጓዴ',
+                '#4b0082': 'ሰማያዊ'
+            };
+            return colorMap[color] || (currentLanguage === 'english' ? 'Red' : 'ቀይ');
+        },
+        
+        displayQuestion: function() {
+            if (this.currentQuestion >= this.questions.length) {
+                this.showResults();
+                return;
+            }
+            
+            const question = this.questions[this.currentQuestion];
+            const questionNumber = document.getElementById('question-number');
+            const questionText = document.getElementById('question-text');
+            const quizOptions = document.getElementById('quiz-options');
+            const quizFruitDisplay = document.getElementById('quiz-fruit-display');
+            
+            questionNumber.textContent = currentLanguage === 'english' ? 
+                `Question ${this.currentQuestion + 1}/${this.questions.length}` :
+                `ጥያቄ ${this.currentQuestion + 1}/${this.questions.length}`;
+            
+            questionText.textContent = question.text;
+            
+            // Show fruit emoji for identification questions
+            if (question.type === 'identify' || question.type === 'spell') {
+                quizFruitDisplay.textContent = question.correctFruit.emoji;
+                quizFruitDisplay.style.display = 'flex';
+            } else {
+                quizFruitDisplay.style.display = 'none';
+            }
+            
+            // Generate options
+            quizOptions.innerHTML = '';
+            question.options.forEach((option, index) => {
+                const optionElement = document.createElement('div');
+                optionElement.className = 'quiz-option';
+                optionElement.textContent = option.text;
+                optionElement.onclick = () => this.selectAnswer(index);
+                quizOptions.appendChild(optionElement);
+            });
+        },
+        
+        selectAnswer: function(answerIndex) {
+            const question = this.questions[this.currentQuestion];
+            const options = document.querySelectorAll('.quiz-option');
+            
+            options.forEach((option, index) => {
+                if (index === answerIndex) {
+                    option.classList.add(question.options[index].isCorrect ? 'correct' : 'incorrect');
+                    if (question.options[index].isCorrect) {
+                        this.score++;
+                        createBalloons(2);
+                        if (this.currentDifficulty === 'hard') {
+                            createRockets(2);
+                        }
+                    }
+                }
+                if (question.options[index].isCorrect && index !== answerIndex) {
+                    option.classList.add('correct');
+                }
+                option.style.pointerEvents = 'none';
+            });
+            
+            document.getElementById('quiz-next-btn').disabled = false;
+        },
+        
+        nextQuestion: function() {
+            this.currentQuestion++;
+            this.displayQuestion();
+            this.updateProgress();
+            document.getElementById('quiz-next-btn').disabled = true;
+        },
+        
+        updateProgress: function() {
+            const progress = (this.currentQuestion / this.questions.length) * 100;
+            document.getElementById('quiz-progress').style.width = `${progress}%`;
+        },
+        
+        showResults: function() {
+            document.getElementById('quiz-content').style.display = 'none';
+            document.getElementById('quiz-results').style.display = 'block';
+            
+            const percentage = (this.score / this.questions.length) * 100;
+            
+            document.getElementById('quiz-score').textContent = 
+                currentLanguage === 'english' ? 
+                `Your score: ${this.score}/${this.questions.length}` :
+                `ውጤትህ: ${this.score}/${this.questions.length}`;
+            
+            // Set celebration message
+            let message, emoji;
+            if (percentage >= 80) {
+                message = currentLanguage === 'english' ? 'Excellent! You are a fruit expert! 🌟' : 'በጣም ጥሩ! ፍራፍሬ ሙያተኛ ነዎት! 🌟';
+                emoji = '🏆';
+                createBalloons(15);
+                createRockets(8);
+            } else if (percentage >= 60) {
+                message = currentLanguage === 'english' ? 'Great job! Keep learning! 🎉' : 'ጥሩ ስራ! መማርዎን ቀጥሉ! 🎉';
+                emoji = '🎉';
+                createBalloons(8);
+            } else {
+                message = currentLanguage === 'english' ? 'Good try! Practice makes perfect! 👍' : 'ጥሩ ፈተና! ልምምድ ፍጹም ያደርጋል! 👍';
+                emoji = '👍';
+                createBalloons(3);
+            }
+            
+            document.getElementById('result-emoji').textContent = emoji;
+            document.getElementById('celebration-message').textContent = message;
+        }
+    };
+
+    function startQuiz(difficulty) {
+        document.querySelectorAll('#quiz .level-btn').forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+        quiz.init(difficulty);
+    }
+
+    function nextQuestion() {
+        quiz.nextQuestion();
+    }
+
+    function restartQuiz() {
+        startQuiz(quiz.currentDifficulty);
+    }
+
+    // --- INITIALIZATION ---
+    document.addEventListener('DOMContentLoaded', function() {
+        renderFruits();
+        updateGameTexts();
+    });
+</script>
+</body>
+</html>

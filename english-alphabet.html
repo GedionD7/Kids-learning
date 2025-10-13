@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>English Alphabet Fun • A–Z</title>
+<style>
+  :root{
+    --bg1:#fff3e0; --bg2:#ffe0e9;
+    --card:#ffffff; --ink:#333; --accent:#ff4d8d; --accent2:#ffb300; --ok:#2e7d32; --bad:#c62828;
+    --shadow:0 8px 24px rgba(0,0,0,.12);
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    font-family:"Comic Sans MS","Baloo 2",system-ui,Segoe UI,Arial,sans-serif;
+    color:var(--ink);
+    background:linear-gradient(135deg,var(--bg1),var(--bg2));
+  }
+  /* Top bar */
+  .topbar{
+    position:sticky; top:0; z-index:50;
+    display:flex; align-items:center; gap:.5rem;
+    padding:.6rem .8rem; background:rgba(255,255,255,.7); backdrop-filter: blur(8px);
+    border-bottom:1px solid rgba(0,0,0,.05);
+  }
+  .brand{font-weight:900; font-size:1.2rem}
+  .spacer{flex:1}
+  .toggle{
+    border:none; border-radius:999px; padding:.45rem .8rem; cursor:pointer;
+    background:#222; color:#fff; box-shadow:var(--shadow); font-weight:700;
+  }
+  .toggle.secondary{background:#555}
+  .toggle:active{transform:scale(.98)}
+  .nav{
+    display:flex; flex-wrap:wrap; gap:.4rem; margin-left:.4rem;
+  }
+  .tab-btn{
+    border:none; border-radius:999px; padding:.5rem .9rem; cursor:pointer;
+    background:#fff; box-shadow:var(--shadow); font-weight:800;
+  }
+  .tab-btn.active{background:var(--accent); color:#fff}
+  main{
+    max-width:1100px; margin:0 auto; padding:1rem; display:grid; place-items:center;
+  }
+  .panel{
+    width:100%; max-width:1000px; min-height:60vh;
+    background:var(--card); border-radius:24px; box-shadow:var(--shadow);
+    display:none; padding:1rem; overflow:hidden; position:relative;
+  }
+  .panel.active{display:block; animation:pop .45s ease}
+  @keyframes pop{0%{transform:scale(.98);opacity:0}100%{transform:scale(1);opacity:1}}
+
+  /* Letters grid */
+  .grid{
+    display:grid; grid-template-columns:repeat(6,1fr); gap:.75rem; padding:.5rem;
+  }
+  @media (max-width:900px){ .grid{grid-template-columns:repeat(5,1fr)}}
+  @media (max-width:700px){ .grid{grid-template-columns:repeat(4,1fr)}}
+  @media (max-width:520px){ .grid{grid-template-columns:repeat(3,1fr)}}
+
+  .letter-card{
+    border:none; border-radius:18px; padding:.9rem .6rem; text-align:center; cursor:pointer;
+    background:linear-gradient(145deg,#fff,#ffeef7); box-shadow:var(--shadow);
+    transition:transform .2s ease; position:relative;
+  }
+  .letter-card:active{transform:scale(.98)}
+  .ltr{font-size:2.2rem; font-weight:900}
+  .word{font-size:.95rem; opacity:.8}
+  .emo{font-size:2rem; display:block; margin-top:.2rem}
+
+  .big-card{
+    margin:.5rem auto 0; max-width:720px; background:#fff7fb; border-radius:22px; box-shadow:var(--shadow);
+    display:grid; grid-template-columns:1fr 1fr; gap:1rem; padding:1rem;
+  }
+  @media (max-width:700px){ .big-card{grid-template-columns:1fr} }
+  .big-letter{font-size:5rem; line-height:1; font-weight:900; color:var(--accent)}
+  .big-word{font-size:1.4rem; margin-top:.2rem}
+  .big-emo{font-size:4rem}
+  .speak-btn,.nav-mini button{
+    border:none; background:var(--accent); color:#fff; border-radius:999px; padding:.5rem .9rem; cursor:pointer; font-weight:800;
+    box-shadow:var(--shadow);
+  }
+  .nav-mini{display:flex; gap:.5rem; flex-wrap:wrap; align-items:center}
+  .chip{background:#ffe7f1; border-radius:999px; padding:.35rem .7rem; font-weight:800}
+
+  /* Words panel */
+  .words-row{
+    display:flex; flex-wrap:wrap; gap:.6rem; justify-content:center; padding:.5rem 0 0;
+  }
+  .pill{
+    border:none; border-radius:999px; padding:.5rem .9rem; background:#fff; box-shadow:var(--shadow); cursor:pointer; font-weight:900;
+  }
+  .words-board{
+    margin-top:.8rem; display:grid; grid-template-columns:repeat(3,1fr); gap:.7rem;
+  }
+  @media (max-width:700px){ .words-board{grid-template-columns:repeat(2,1fr)}}
+  .word-card{
+    background:#fffdf5; border-radius:18px; padding:.8rem; text-align:center; box-shadow:var(--shadow);
+  }
+  .word-card .t{font-size:1.2rem; font-weight:800}
+  .word-card .emo{font-size:2rem}
+
+  /* Sentences panel */
+  .sentence-card{
+    background:#eefcff; border-radius:20px; padding:1rem; box-shadow:var(--shadow); text-align:center;
+  }
+  .sentence{font-size:1.4rem; font-weight:800}
+  .helper{opacity:.7}
+
+  /* Resources */
+  .resource-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:.8rem}
+  @media (max-width:800px){ .resource-grid{grid-template-columns:repeat(2,1fr)}}
+  @media (max-width:560px){ .resource-grid{grid-template-columns:1fr}}
+  .res-card{background:#fff; border-radius:18px; padding:1rem; box-shadow:var(--shadow)}
+  .res-card h4{margin:.2rem 0}
+  .res-card a{font-weight:900; color:var(--accent)}
+
+  /* Quiz */
+  .quiz-wrap{display:grid; gap:.8rem}
+  .bar{height:16px; background:#eee; border-radius:999px; overflow:hidden}
+  .bar > div{height:100%; width:0; background:linear-gradient(90deg,var(--accent),#ff6cab); transition:width .4s}
+  .q-card{
+    background:#fffaf1; border-radius:20px; box-shadow:var(--shadow); padding:1rem; text-align:center;
+  }
+  .q-img{font-size:4rem}
+  .q-title{font-size:1.4rem; font-weight:900}
+  .choices{display:flex; gap:.6rem; justify-content:center; flex-wrap:wrap; margin-top:.4rem}
+  .btn{
+    border:none; border-radius:12px; padding:.6rem 1rem; background:#ffd166; font-weight:900; cursor:pointer; box-shadow:var(--shadow);
+  }
+  .btn:hover{transform:translateY(-1px)}
+  .btn.primary{background:var(--accent); color:#fff}
+  .msg{font-weight:900; margin-top:.4rem}
+  .msg.ok{color:var(--ok)} .msg.bad{color:var(--bad)}
+
+  /* Balloons / fireworks */
+  .balloon{
+    position:fixed; bottom:-120px; width:60px; height:80px; border-radius:50%;
+    animation:floatUp 5s linear forwards; z-index:9999; opacity:.9;
+  }
+  @keyframes floatUp{from{transform:translateY(0)}to{transform:translateY(-110vh)}}
+  .firework{
+    position:fixed; width:6px; height:6px; background:#ffd54f; border-radius:50%;
+    animation:boom 800ms ease-out forwards; z-index:9999;
+  }
+  @keyframes boom{0%{transform:scale(1);opacity:1}100%{transform:scale(7);opacity:0}}
+
+  /* Accessibility toggles */
+  .contrast{
+    filter:contrast(110%) saturate(120%);
+    background:#000 !important; color:#ff0 !important;
+  }
+  .contrast .panel{background:#111 !important; color:#ff0 !important}
+  .contrast .tab-btn.active{background:#ff0 !important; color:#000 !important}
+  .large{font-size:1.15rem}
+</style>
+</head>
+<body>
+  <header class="topbar" role="navigation" aria-label="Main">
+    <div class="brand">🔤 A–Z Fun</div>
+    <nav class="nav" aria-label="Tabs">
+      <button class="tab-btn active" data-tab="letters" aria-controls="tab-letters">Letters</button>
+      <button class="tab-btn" data-tab="words" aria-controls="tab-words">Words</button>
+      <button class="tab-btn" data-tab="sentences" aria-controls="tab-sentences">Sentences</button>
+      <button class="tab-btn" data-tab="resources" aria-controls="tab-resources">Resources</button>
+      <button class="tab-btn" data-tab="quizzes" aria-controls="tab-quizzes">Quizzes</button>
+    </nav>
+    <div class="spacer"></div>
+    <button class="toggle" id="contrastBtn" title="Toggle High Contrast">🌓 Contrast</button>
+    <button class="toggle secondary" id="textBtn" title="Toggle Large Text">🔠 Text</button>
+  </header>
+
+  <main>
+    <!-- LETTERS -->
+    <section id="tab-letters" class="panel active" aria-labelledby="letters">
+      <h2 style="margin:.2rem 0">Tap a letter to hear it! 🔊</h2>
+      <div class="grid" id="lettersGrid" aria-live="polite"></div>
+
+      <div class="big-card" id="bigCard" aria-live="polite">
+        <div>
+          <div class="big-letter" id="bigLetter">A</div>
+          <div class="big-word"><span id="bigWord">Apple</span> <span class="big-emo" id="bigEmo">🍎</span></div>
+          <div class="nav-mini" style="margin-top:.6rem">
+            <span class="chip" id="idxChip">1/26</span>
+            <button class="speak-btn" id="speakBtn">🔊 Say it</button>
+            <button class="speak-btn" id="prevBtn">⏮️ Prev</button>
+            <button class="speak-btn" id="nextBtn">⏭️ Next</button>
+          </div>
+        </div>
+        <div>
+          <div class="sentence-card">
+            <div class="sentence" id="letterSentence">A is for Apple. I munch a yummy apple! 🍎</div>
+            <div class="helper">Tip: Use the tabs above to explore words, sentences, resources, and quizzes.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- WORDS -->
+    <section id="tab-words" class="panel" aria-labelledby="words">
+      <h2>Pick a letter to see more words ✨</h2>
+      <div class="words-row" id="wordLetters"></div>
+      <div class="words-board" id="wordsBoard" aria-live="polite"></div>
+    </section>
+
+    <!-- SENTENCES -->
+    <section id="tab-sentences" class="panel" aria-labelledby="sentences">
+      <h2>Short, silly sentences 😄</h2>
+      <div class="sentence-card">
+        <div class="q-img" id="sentEmo">🍎</div>
+        <div class="sentence" id="sentText">A is for Apple. I munch a yummy apple! 🍎</div>
+        <div class="nav-mini" style="margin-top:.6rem">
+          <button class="speak-btn" id="sentSpeak">🔊 Read it</button>
+          <button class="speak-btn" id="sentPrev">⏮️ Prev</button>
+          <button class="speak-btn" id="sentNext">⏭️ Next</button>
+          <span class="chip" id="sentChip">1/26</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- RESOURCES -->
+    <section id="tab-resources" class="panel" aria-labelledby="resources">
+      <h2>Resources for kids 🎵📚</h2>
+      <div class="resource-grid">
+        <div class="video-container">
+          <iframe src="https://www.youtube.com/embed/kpy6QEAuLJw" title="YouTube video Player" frameborder="0" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyrosope;picture-in-picture"allowfullscreen></iframe>
+        </div>
+        <div class="video-container">
+          <iframe src="https://www.youtube.com/embed/Ypz3bsr6SZc" title="YouTube video Player" frameborder="0" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyrosope;picture-in-picture"allowfullscreen></iframe>
+        </div>
+        <div class="video-container">
+          <iframe src="https://www.youtube.com/embed/N_Lo1i512Vo" title="YouTube video Player" frameborder="0" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyrosope;picture-in-picture"allowfullscreen></iframe>
+        </div>
+         <div class="video-container">
+          <iframe src="https://www.youtube.com/embed/ccEpTTZW34g" title="YouTube video Player" frameborder="0" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyrosope;picture-in-picture"allowfullscreen></iframe>
+        </div>
+      </div>
+      <p style="margin:.6rem 0;opacity:.8">You can replace these with your own videos, songs, or PDFs later.</p>
+    </section>
+
+    <!-- QUIZZES -->
+    <section id="tab-quizzes" class="panel" aria-labelledby="quizzes">
+      <h2>Quizzes 🎯 (Easy • Medium • Hard)</h2>
+      <div class="quiz-wrap">
+        <div style="display:flex; gap:.5rem; justify-content:center; flex-wrap:wrap">
+          <button class="btn" data-level="Easy">Easy</button>
+          <button class="btn" data-level="Medium">Medium</button>
+          <button class="btn" data-level="Hard">Hard</button>
+          <span class="chip" id="levelChip">Level: Easy</span>
+        </div>
+        <div class="bar" aria-label="Progress"><div id="qBar"></div></div>
+        <div class="q-card" id="qCard">
+          <div class="q-img" id="qImg">🍎</div>
+          <div class="q-title" id="qTitle">Which letter starts this word?</div>
+          <div class="choices" id="qChoices"></div>
+          <div class="msg" id="qMsg"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Sounds -->
+  <audio id="sndRight" src="https://www.soundjay.com/buttons/sounds/button-4.mp3" preload="auto"></audio>
+  <audio id="sndWrong" src="https://www.soundjay.com/buttons/sounds/button-10.mp3" preload="auto"></audio>
+
+<script>
+/* ===== DATA (A–Z) ===== */
+const A2Z = [
+  ["A","Apple","🍎","A is for Apple. I munch a yummy apple!"],
+  ["B","Ball","⚽","B is for Ball. The bouncy ball goes boing!"],
+  ["C","Cat","🐱","C is for Cat. The cat says meow!"],
+  ["D","Dog","🐶","D is for Dog. The dog wags its tail!"],
+  ["E","Elephant","🐘","E is for Elephant. Big, kind, and grey!"],
+  ["F","Fish","🐟","F is for Fish. Splish splash in the pond!"],
+  ["G","Giraffe","🦒","G is for Giraffe. Such a long neck!"],
+  ["H","House","🏠","H is for House. Home sweet home!"],
+  ["I","Ice cream","🍦","I is for Ice cream. So cold and sweet!"],
+  ["J","Juice","🧃","J is for Juice. Slurp, yummy juice!"],
+  ["K","Kite","🪁","K is for Kite. Fly high in the sky!"],
+  ["L","Lion","🦁","L is for Lion. The lion roars!"],
+  ["M","Monkey","🐵","M is for Monkey. Swing, swing!"],
+  ["N","Nest","🪺","N is for Nest. Cozy eggs rest!"],
+  ["O","Orange","🍊","O is for Orange. Peel and share!"],
+  ["P","Panda","🐼","P is for Panda. Cute and cuddly!"],
+  ["Q","Queen","👑","Q is for Queen. Royal and kind!"],
+  ["R","Rainbow","🌈","R is for Rainbow. Colors in the sky!"],
+  ["S","Sun","☀️","S is for Sun. Warm and bright!"],
+  ["T","Train","🚂","T is for Train. Choo-choo goes fast!"],
+  ["U","Umbrella","☂️","U is for Umbrella. Stay dry in rain!"],
+  ["V","Violin","🎻","V is for Violin. Lovely music plays!"],
+  ["W","Whale","🐳","W is for Whale. A giant of the sea!"],
+  ["X","Xylophone","🎼","X is for Xylophone. Ting-ting-ting!"],
+  ["Y","Yarn","🧶","Y is for Yarn. Soft and stringy!"],
+  ["Z","Zebra","🦓","Z is for Zebra. Stripey friend!"],
+];
+
+/* ===== TAB SYSTEM ===== */
+const tabs = document.querySelectorAll(".tab-btn");
+const panels = document.querySelectorAll(".panel");
+tabs.forEach(b=>{
+  b.addEventListener("click", ()=>{
+    tabs.forEach(x=>x.classList.remove("active"));
+    b.classList.add("active");
+    panels.forEach(p=>p.classList.remove("active"));
+    document.getElementById(`tab-${b.dataset.tab}`).classList.add("active");
+    saveSetting("tab", b.dataset.tab);
+  });
+});
+
+/* ===== ACCESSIBILITY TOGGLES ===== */
+const contrastBtn = document.getElementById("contrastBtn");
+const textBtn = document.getElementById("textBtn");
+contrastBtn.onclick = ()=>{ document.body.classList.toggle("contrast"); saveSetting("contrast", document.body.classList.contains("contrast")); };
+textBtn.onclick = ()=>{ document.body.classList.toggle("large"); saveSetting("large", document.body.classList.contains("large")); };
+
+/* ===== LETTERS PANEL ===== */
+const lettersGrid = document.getElementById("lettersGrid");
+const bigLetter = document.getElementById("bigLetter");
+const bigWord = document.getElementById("bigWord");
+const bigEmo = document.getElementById("bigEmo");
+const letterSentence = document.getElementById("letterSentence");
+const speakBtn = document.getElementById("speakBtn");
+const prevBtn = document.getElementById("prevBtn");
+const nextBtn = document.getElementById("nextBtn");
+const idxChip = document.getElementById("idxChip");
+
+let idx = 0;
+
+function buildLetters(){
+  lettersGrid.innerHTML = "";
+  A2Z.forEach(([L,word,emo],i)=>{
+    const btn = document.createElement("button");
+    btn.className="letter-card";
+    btn.innerHTML = `<div class="ltr">${L}</div><div class="word">${word}</div><span class="emo">${emo}</span>`;
+    btn.addEventListener("click",()=>{ showLetter(i); say(`${L}. ${word}`); celebrate(); });
+    lettersGrid.appendChild(btn);
+  });
+}
+function showLetter(i){
+  idx = (i+26)%26;
+  const [L,word,emo,sent] = A2Z[idx];
+  bigLetter.textContent = L;
+  bigWord.textContent = word;
+  bigEmo.textContent = emo;
+  letterSentence.textContent = sent + (sent.endsWith("!")?"":"!");
+  idxChip.textContent = `${idx+1}/26`;
+  saveSetting("idx", idx);
+}
+prevBtn.onclick = ()=>{ showLetter(idx-1); };
+nextBtn.onclick = ()=>{ showLetter(idx+1); };
+speakBtn.onclick = ()=>{ say(`${A2Z[idx][0]}. ${A2Z[idx][1]}. ${A2Z[idx][3]}`); };
+
+buildLetters(); showLetter(loadSetting("idx",0));
+
+/* ===== WORDS PANEL ===== */
+const wordLetters = document.getElementById("wordLetters");
+const wordsBoard = document.getElementById("wordsBoard");
+A2Z.forEach(([L])=>{
+  const p=document.createElement("button");
+  p.className="pill"; p.textContent=L;
+  p.onclick=()=>showWordsFor(L);
+  wordLetters.appendChild(p);
+});
+const wordBank = {
+  "A":[["Apple","🍎"],["Ant","🐜"],["Airplane","✈️"]],
+  "B":[["Ball","⚽"],["Bee","🐝"],["Boat","⛵"]],
+  "C":[["Cat","🐱"],["Cake","🍰"],["Car","🚗"]],
+  "D":[["Dog","🐶"],["Drum","🥁"],["Duck","🦆"]],
+  "E":[["Elephant","🐘"],["Egg","🥚"],["Earth","🌍"]],
+  "F":[["Fish","🐟"],["Frog","🐸"],["Fire","🔥"]],
+  "G":[["Giraffe","🦒"],["Grapes","🍇"],["Gift","🎁"]],
+  "H":[["House","🏠"],["Hat","👒"],["Heart","❤️"]],
+  "I":[["Ice cream","🍦"],["Igloo","🏠"],["Insect","🐞"]],
+  "J":[["Juice","🧃"],["Jar","🥫"],["Jet","🛩️"]],
+  "K":[["Kite","🪁"],["Koala","🐨"],["Key","🔑"]],
+  "L":[["Lion","🦁"],["Leaf","🍃"],["Lamp","💡"]],
+  "M":[["Monkey","🐵"],["Moon","🌙"],["Milk","🥛"]],
+  "N":[["Nest","🪺"],["Nose","👃"],["Net","🕸️"]],
+  "O":[["Orange","🍊"],["Octopus","🐙"],["Owl","🦉"]],
+  "P":[["Panda","🐼"],["Pizza","🍕"],["Pen","🖊️"]],
+  "Q":[["Queen","👑"],["Quail","🦤"],["Question","❓"]],
+  "R":[["Rainbow","🌈"],["Robot","🤖"],["Ring","💍"]],
+  "S":[["Sun","☀️"],["Star","⭐"],["Sock","🧦"]],
+  "T":[["Train","🚂"],["Tiger","🐯"],["Turtle","🐢"]],
+  "U":[["Umbrella","☂️"],["Unicorn","🦄"],["Urn","⚱️"]],
+  "V":[["Violin","🎻"],["Volcano","🌋"],["Van","🚐"]],
+  "W":[["Whale","🐳"],["Watermelon","🍉"],["Watch","⌚"]],
+  "X":[["Xylophone","🎼"],["X-ray","🩻"],["Xmas tree","🎄"]],
+  "Y":[["Yarn","🧶"],["Yacht","🛥️"],["Yo-yo","🪀"]],
+  "Z":[["Zebra","🦓"],["Zip","🧷"],["Zoo","🏞️"]],
+};
+function showWordsFor(L){
+  wordsBoard.innerHTML="";
+  (wordBank[L]||[]).forEach(([w,e])=>{
+    const c=document.createElement("div");
+    c.className="word-card";
+    c.innerHTML=`<div class="emo">${e}</div><div class="t">${w}</div>`;
+    c.onclick=()=>{ say(`${L} for ${w}`); celebrate(); };
+    wordsBoard.appendChild(c);
+  });
+}
+/* default */
+showWordsFor("A");
+
+/* ===== SENTENCES PANEL ===== */
+const sentEmo = document.getElementById("sentEmo");
+const sentText = document.getElementById("sentText");
+const sentPrev = document.getElementById("sentPrev");
+const sentNext = document.getElementById("sentNext");
+const sentSpeak = document.getElementById("sentSpeak");
+const sentChip = document.getElementById("sentChip");
+let sIdx = 0;
+function showSentence(i){
+  sIdx = (i+26)%26;
+  const rec=A2Z[sIdx];
+  sentEmo.textContent=rec[2];
+  sentText.textContent=rec[3];
+  sentChip.textContent=`${sIdx+1}/26`;
+  saveSetting("sIdx",sIdx);
+}
+sentPrev.onclick=()=>showSentence(sIdx-1);
+sentNext.onclick=()=>showSentence(sIdx+1);
+sentSpeak.onclick=()=>say(A2Z[sIdx][3]);
+showSentence(loadSetting("sIdx",0));
+
+/* ===== QUIZ ENGINE ===== */
+const sndRight=document.getElementById("sndRight");
+const sndWrong=document.getElementById("sndWrong");
+const qBar=document.getElementById("qBar");
+const qImg=document.getElementById("qImg");
+const qTitle=document.getElementById("qTitle");
+const qChoices=document.getElementById("qChoices");
+const qMsg=document.getElementById("qMsg");
+const levelButtons = document.querySelectorAll('[data-level]');
+const levelChip=document.getElementById("levelChip");
+
+const levels = {
+  "Easy": ()=> buildEasy(),
+  "Medium":()=> buildMedium(),
+  "Hard": ()=> buildHard()
+};
+let currentLevel = loadSetting("level","Easy");
+let qi = 0;
+let qset = [];
+
+function pickRandom(n, arr){
+  const copy=[...arr]; const out=[];
+  while(out.length<n && copy.length){
+    const i=Math.floor(Math.random()*copy.length);
+    out.push(copy.splice(i,1)[0]);
+  }
+  return out;
+}
+
+/* Build question sets */
+function buildEasy(){
+  const set = A2Z.map(([L,w,e])=>({type:"mc", emoji:e, prompt:`Which letter starts this word? (${w})`, correct:L,
+    options: shuffle([L, ...pickRandom(2, "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").filter(x=>x!==L))])}));
+  return shuffle(set);
+}
+function buildMedium(){
+  const set = A2Z.map(([L,w,e])=>({type:"mc-img", emoji:e, prompt:`Tap the correct letter for ${w}`, correct:L,
+    options: shuffle([L, ...pickRandom(3, "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").filter(x=>x!==L))])}));
+  return shuffle(set);
+}
+function buildHard(){
+  const set = A2Z.map(([L,w,e])=>({type:"type", emoji:e, prompt:`Type the first letter of ${w}`, correct:L}));
+  return shuffle(set);
+}
+function shuffle(a){ return a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(x=>x[1]); }
+
+function setLevel(name){
+  currentLevel=name;
+  levelChip.textContent=`Level: ${name}`;
+  qset = levels[name]();
+  qi = 0;
+  saveSetting("level", name);
+  renderQ();
+}
+levelButtons.forEach(b=>b.onclick=()=>setLevel(b.dataset.level));
+setLevel(currentLevel);
+
+function renderQ(){
+  if(qi>=qset.length){
+    qTitle.textContent="🏆 You finished! Great job!";
+    qImg.textContent="🎉";
+    qChoices.innerHTML="";
+    qMsg.textContent="";
+    qBar.style.width="100%";
+    return;
+  }
+  const q=qset[qi];
+  qImg.textContent=q.emoji;
+  qTitle.textContent=q.prompt;
+  qMsg.textContent="";
+  qChoices.innerHTML="";
+  if(q.type==="mc" || q.type==="mc-img"){
+    q.options.forEach(opt=>{
+      const b=document.createElement("button");
+      b.className="btn"; b.textContent=opt;
+      b.onclick=()=>check(opt);
+      qChoices.appendChild(b);
+    });
+  } else if(q.type==="type"){
+    const inp=document.createElement("input");
+    inp.className="btn"; inp.style.background="#fff"; inp.style.minWidth="120px";
+    inp.maxLength=1; inp.placeholder="Type letter";
+    inp.onkeydown=(e)=>{ if(e.key.length===1){ check(e.key.toUpperCase()); } if(e.key==="Enter"){ check(inp.value.toUpperCase()); } };
+    qChoices.appendChild(inp);
+    setTimeout(()=>inp.focus(),50);
+  }
+  qBar.style.width = `${(qi/qset.length)*100}%`;
+}
+
+function check(ans){
+  const q=qset[qi];
+  if(ans===q.correct){
+    qMsg.textContent="✅ Correct! Moving on…";
+    qMsg.className="msg ok";
+    celebrate();
+    sndRight.currentTime=0; sndRight.play();
+    setTimeout(()=>{ qi++; renderQ(); saveProgress(); }, 900);
+  }else{
+    qMsg.textContent="😅 Oops! Try again!";
+    qMsg.className="msg bad";
+    sndWrong.currentTime=0; sndWrong.play();
+  }
+}
+
+/* ===== REWARDS ===== */
+function celebrate(){
+  // balloons
+  for(let i=0;i<4;i++){
+    const b=document.createElement("div");
+    b.className="balloon";
+    b.style.left=Math.random()*100+"vw";
+    b.style.background=["#ff6cab","#6c6cff","#00c2ff","#7cf387","#ffd166"][Math.floor(Math.random()*5)];
+    document.body.appendChild(b);
+    setTimeout(()=>b.remove(),5000);
+  }
+  // fireworks
+  for(let i=0;i<10;i++){
+    const f=document.createElement("div");
+    f.className="firework";
+    f.style.left= (window.innerWidth/2 + (Math.random()*240-120)) +"px";
+    f.style.top = (120 + Math.random()*160) +"px";
+    document.body.appendChild(f);
+    setTimeout(()=>f.remove(),800);
+  }
+}
+
+/* ===== SPEECH ===== */
+function say(text){
+  try{
+    const u=new SpeechSynthesisUtterance(text);
+    u.rate=1; u.pitch=1; u.lang='en-US';
+    speechSynthesis.cancel(); speechSynthesis.speak(u);
+  }catch(e){}
+}
+
+/* ===== RESOURCES (mock files) ===== */
+function downloadTracing(){
+  const blob=new Blob([`Tracing A–Z
+Draw big A and small a...
+(You can replace this with a real PDF later.)`],{type:"text/plain"});
+  const url=URL.createObjectURL(blob); triggerDownload(url,"tracing-AZ.txt");
+}
+function downloadFlashcards(){
+  const lines=A2Z.map(([L,w])=>`${L} — ${w}`).join("\n");
+  const blob=new Blob([`Flashcards A–Z\n\n${lines}\n\n(Replace with PDF later.)`],{type:"text/plain"});
+  const url=URL.createObjectURL(blob); triggerDownload(url,"flashcards-AZ.txt");
+}
+function triggerDownload(url,name){
+  const a=document.createElement("a"); a.href=url; a.download=name; a.click(); URL.revokeObjectURL(url);
+}
+
+/* ===== SAVE PROGRESS / SETTINGS ===== */
+function saveProgress(){
+  const data={ level:currentLevel, qi, timestamp:Date.now() };
+  localStorage.setItem("quizProgressEN", JSON.stringify(data));
+}
+function loadProgress(){
+  try{
+    const s=localStorage.getItem("quizProgressEN");
+    if(!s) return;
+    const d=JSON.parse(s);
+    if(d && d.level && levels[d.level]){
+      currentLevel=d.level; levelChip.textContent=`Level: ${currentLevel}`;
+      qset=levels[currentLevel](); qi=Math.min(d.qi||0, qset.length-1);
+      renderQ();
+    }
+  }catch(e){}
+}
+function saveSetting(k,v){ localStorage.setItem("EN_"+k, JSON.stringify(v)); }
+function loadSetting(k, fallback){
+  try{ const v=JSON.parse(localStorage.getItem("EN_"+k)); return (v===undefined||v===null)?fallback:v; }catch(e){ return fallback; }
+}
+
+/* Restore toggles & last tab */
+(function restore(){
+  if(loadSetting("contrast",false)) document.body.classList.add("contrast");
+  if(loadSetting("large",false)) document.body.classList.add("large");
+  const tab=loadSetting("tab","letters");
+  tabs.forEach(t=>{ t.classList.toggle("active", t.dataset.tab===tab); });
+  panels.forEach(p=>p.classList.toggle("active", p.id===`tab-${tab}`));
+  loadProgress();
+})();
+</script>
+</body>
+</html>
