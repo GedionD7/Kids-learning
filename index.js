@@ -5,17 +5,17 @@ const bcrypt = require('bcrypt');
 const bodyParser = require('body-parser');
 
 const app = express();
-const port = 3000;
+// Use the port Render provides, or default to 3000 for local development
+const PORT = process.env.PORT || 3000;
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Serve static files from the 'public' directory
-// You should move all your html files into a 'public' folder.
-app.use(express.static(path.join(__dirname)));
+// Serve static files (HTML, etc.) from the main project directory
+app.use(express.static(__dirname));
 
-// Serve login page
+// Serve login page at the root URL
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'login.html'));
+    res.sendFile(path.join(__dirname, 'Login.html'));
 });
 
 // Handle login
@@ -23,18 +23,17 @@ app.post('/login', (req, res) => {
     const { username, password } = req.body;
     db.get('SELECT * FROM users WHERE username = ?', [username], (err, row) => {
         if (err) {
-            res.status(500).send('Error on the server.');
-            return;
+            return res.status(500).send('Error on the server.');
         }
         if (!row) {
-            res.status(404).send('No user found.');
-            return;
+            return res.status(404).send('No user found with that username.');
         }
         bcrypt.compare(password, row.password, (err, result) => {
             if (result) {
+                // On successful login, redirect to the home page
                 res.redirect('/home.html');
             } else {
-                res.status(401).send('Password not valid.');
+                res.status(401).send('Incorrect password.');
             }
         });
     });
@@ -45,43 +44,20 @@ app.post('/signup', (req, res) => {
     const { username, password } = req.body;
     bcrypt.hash(password, 10, (err, hash) => {
         if (err) {
-            res.status(500).send('Error hashing password.');
-            return;
+            return res.status(500).send('Error hashing password.');
         }
         db.run('INSERT INTO users (username, password) VALUES (?, ?)', [username, hash], function(err) {
             if (err) {
-                res.status(409).send('Username already exists.');
-                return;
+                // This error occurs if the username is not unique
+                return res.status(409).send('Username already exists. Please choose another.');
             }
+            // On successful signup, redirect to the home page
             res.redirect('/home.html');
         });
     });
 });
 
-// Serve all other html files after login
-const pages = [
-    'home.html',
-    'english-alphabet.html',
-    'amharic-alphabet.html',
-    'numbers.html',
-    'colors.html',
-    'shapes.html',
-    'body-parts.html',
-    'family.html',
-    'stories.html',
-    'animals.html',
-    'games.html',
-    'vegetables.html',
-    'fruits.html'
-];
-
-pages.forEach(page => {
-    app.get(`/${page}`, (req, res) => {
-        res.sendFile(path.join(__dirname, page));
-    });
-});
-
-
-app.listen(port, () => {
-    console.log(`Server running at http://localhost:${port}`);
+// Start the server
+app.listen(PORT, () => {
+    console.log(`Server running and listening on port ${PORT}`);
 });
