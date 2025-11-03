@@ -137,7 +137,7 @@
 <section id="topics" class="section">
     <h2>Explore Topics</h2>
     <div class="grid" id="grid">
-        <!-- NOTE: Argument is now the category name, NOT the filename -->
+        <!-- Topic cards, each calling navigateToPage with the filename/category name -->
         <div class="card" onclick="navigateToPage('english-alphabet')">
             <div class="icon">🔤</div>
             <h3>English Alphabet</h3>
@@ -215,6 +215,8 @@
 </footer>
 
 <script>
+    // --- SIMPLE NAVIGATION AND UTILITIES (No Quiz Logic) ---
+
     // Placeholder to confirm data fetching is successful
     async function confirmDataConnection() {
         if (typeof supabase === 'undefined') {
@@ -225,16 +227,18 @@
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return;
 
-        const { data: questions, error } = await supabase
-            .from('questions')
-            .select('id');
+        // The following part is safe to keep for initial RLS/connection check
+        const { data: records, error } = await supabase
+            .from('questions') // Using a common table name for demonstration
+            .select('id')
+            .limit(1);
 
         if (error) {
-            console.error('Database connection failed or RLS error:', error.message);
+            console.warn('Initial DB check encountered RLS/connection error:', error.message);
             return;
         }
-        if (questions) {
-            console.log(`Successfully fetched ${questions.length} question records for user ${user.id}. RLS is working!`);
+        if (records) {
+            console.log(`Database connection confirmed for user ${user.id}.`);
         }
     }
 
@@ -272,10 +276,26 @@
         }
     }
 
-    // VITAL CHANGE: All cards now point to a single template file with a category parameter.
+    // *** RESTORED SIMPLE NAVIGATION ***
+    // Clicking a card now navigates directly to a file named [category].html
     function navigateToPage(category) {
-        // Encode the category name in the URL
-        window.location.href = `quiz_template.html?category=${encodeURIComponent(category)}`;
+        window.location.href = `/${encodeURIComponent(category)}.html`;
+    }
+
+    // Logout function
+    async function logout() {
+        try {
+            if (typeof supabase === 'undefined') {
+                console.error("Supabase client not available for logout.");
+                return;
+            }
+            const { error } = await supabase.auth.signOut();
+            if (error) throw error;
+            // Redirect to the login page after successful sign out
+            window.location.href = "/index.html";
+        } catch (error) {
+            console.error("Logout error:", error.message);
+        }
     }
 </script>
 </body>
