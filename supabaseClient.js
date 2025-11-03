@@ -1,0 +1,56 @@
+// supabaseClient.js
+
+// IMPORTANT: These keys are derived from our previous discussion.
+const SUPABASE_URL = 'https://fffmvhjitlnyzeirtguj.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZmZm12aGppdGxueXplaXJ0Z3VqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY3NTUwNTUsImV4cCI6MjA3MjMzMTA1NX0.g_Mw3_Es6Kl4M64b9QOKT5_2EwNnn-0vJZSMf3QQeYo';
+
+// Initialize the Supabase client
+const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// ----------------------------------------------------------------------
+// 1. SESSION MANAGEMENT (Runs on every protected page load)
+// ----------------------------------------------------------------------
+async function checkUserSession() {
+    // Check if the supabase object is ready
+    if (typeof supabase === 'undefined') {
+        console.error("Supabase client not yet defined. Retrying check...");
+        setTimeout(checkUserSession, 100);
+        return;
+    }
+
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (user) {
+        console.log("User is logged in:", user.id);
+        return user;
+    } else {
+        // User is NOT logged in. Redirect them to the login page.
+        console.log("User not logged in. Redirecting to /login.html");
+        // Only redirect if we are not already on the login page to prevent loops
+        if (!window.location.pathname.endsWith('/login.html')) {
+            window.location.href = '/login.html';
+        }
+        return null;
+    }
+}
+
+// ----------------------------------------------------------------------
+// 2. LOGOUT FUNCTION (Called from home.html navigation)
+// ----------------------------------------------------------------------
+async function logout() {
+    // Ensure supabase is defined before attempting logout
+    if (typeof supabase === 'undefined') {
+        console.error('Logout failed: Supabase client not loaded.');
+        return;
+    }
+
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+        console.error('Logout Error:', error.message);
+    }
+    // Always redirect after sign out attempt
+    window.location.href = '/login.html';
+}
+
+// Start the session check process immediately when this script loads
+checkUserSession();

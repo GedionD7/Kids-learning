@@ -3,7 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Kids Fun Learning</title>
+    <title>Login - Future Focus</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="supabaseClient.js"></script>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
@@ -20,15 +25,15 @@
 <body class="flex items-center justify-center h-screen px-4">
 <div class="w-full max-w-sm">
     <div id="login-form">
-        <form class="form-container shadow-lg rounded-xl px-8 pt-6 pb-8 mb-4" onsubmit="handleFormSubmit(event, '/login')">
+        <form class="form-container shadow-lg rounded-xl px-8 pt-6 pb-8 mb-4" onsubmit="handleFormSubmit(event, 'login')">
             <div class="mb-6 text-center">
                 <h2 class="text-3xl font-bold text-gray-800">Welcome Back! 🎉</h2>
             </div>
             <div class="mb-4">
-                <label class="block text-gray-700 text-sm font-bold mb-2" for="username">
-                    Username
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="email">
+                    Email
                 </label>
-                <input class="shadow-sm appearance-none border-2 border-gray-200 rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:border-purple-400" id="username" name="username" type="text" placeholder="Your Username" required>
+                <input class="shadow-sm appearance-none border-2 border-gray-200 rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:border-purple-400" id="email" name="email" type="email" placeholder="Your Email" required>
             </div>
             <div class="mb-6">
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="password">
@@ -40,7 +45,7 @@
                 <button class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline transition-transform transform hover:scale-105" type="submit">
                     Sign In
                 </button>
-                <a class="inline-block align-baseline font-bold text-sm text-purple-500 hover:text-purple-700" href="#" onclick="toggleForm()">
+                <a class="inline-block align-baseline font-bold text-sm text-purple-500 hover:text-purple-700 cursor-pointer" onclick="toggleForm()">
                     Create an Account
                 </a>
             </div>
@@ -48,15 +53,15 @@
     </div>
 
     <div id="signup-form" style="display: none;">
-        <form class="form-container shadow-lg rounded-xl px-8 pt-6 pb-8 mb-4" onsubmit="handleFormSubmit(event, '/signup')">
+        <form class="form-container shadow-lg rounded-xl px-8 pt-6 pb-8 mb-4" onsubmit="handleFormSubmit(event, 'signup')">
             <div class="mb-6 text-center">
                 <h2 class="text-3xl font-bold text-gray-800">Join the Fun! 🚀</h2>
             </div>
             <div class="mb-4">
-                <label class="block text-gray-700 text-sm font-bold mb-2" for="new-username">
-                    Username
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="new-email">
+                    Email
                 </label>
-                <input class="shadow-sm appearance-none border-2 border-gray-200 rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:border-teal-400" id="new-username" name="username" type="text" placeholder="Choose a Username" required>
+                <input class="shadow-sm appearance-none border-2 border-gray-200 rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:border-teal-400" id="new-email" name="email" type="email" placeholder="Your Email" required>
             </div>
             <div class="mb-6">
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="new-password">
@@ -68,7 +73,7 @@
                 <button class="bg-teal-500 hover:bg-teal-600 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline transition-transform transform hover:scale-105" type="submit">
                     Sign Up
                 </button>
-                <a class="inline-block align-baseline font-bold text-sm text-purple-500 hover:text-purple-700" href="#" onclick="toggleForm()">
+                <a class="inline-block align-baseline font-bold text-sm text-purple-500 hover:text-purple-700 cursor-pointer" onclick="toggleForm()">
                     Back to Login
                 </a>
             </div>
@@ -97,28 +102,52 @@
 
     async function handleFormSubmit(event, action) {
         event.preventDefault();
-        const form = event.target;
-        const formData = new URLSearchParams(new FormData(form));
-        const messageEl = document.getElementById('message');
 
-        try {
-            const response = await fetch(action, {
-                method: 'POST',
-                body: formData
+        // Use the global supabase object from supabaseClient.js
+        if (typeof supabase === 'undefined') {
+            document.getElementById('message').textContent = 'Error: Supabase client not loaded.';
+            return;
+        }
+
+        const form = event.target;
+        // Use .value to get data from input fields
+        const email = form.elements['email'].value;
+        const password = form.elements['password'].value;
+        const messageEl = document.getElementById('message');
+        messageEl.textContent = 'Processing...';
+
+        let response;
+
+        if (action === 'login') {
+            // --- Supabase Login ---
+            response = await supabase.auth.signInWithPassword({
+                email: email,
+                password: password,
             });
 
-            if (response.ok) {
-                // Redirect to home page on successful login/signup
-                window.location.href = '/home.html';
-            } else {
-                const errorMessage = await response.text();
-                messageEl.textContent = errorMessage;
-            }
-        } catch (error) {
-            messageEl.textContent = 'An error occurred. Please try again.';
+        } else if (action === 'signup') {
+            // --- Supabase Sign Up ---
+            response = await supabase.auth.signUp({
+                email: email,
+                password: password,
+            });
+        }
+
+        if (response.error) {
+            messageEl.textContent = response.error.message;
+        } else if (action === 'signup' && response.data.user) {
+            // Successful signup often requires email confirmation (depending on Supabase settings)
+            messageEl.textContent = 'Success! Please check your email for a confirmation link.';
+            // Do NOT redirect immediately on signup if email confirmation is required.
+        } else if (response.data.user || response.data.session) {
+            // Successful login OR sign-up if email confirmation is disabled
+            messageEl.textContent = 'Login successful! Redirecting...';
+            // VITAL CHANGE: Redirect to /home.html
+            window.location.href = '/home.html';
+        } else {
+            messageEl.textContent = 'An unknown error occurred.';
         }
     }
 </script>
 </body>
 </html>
-

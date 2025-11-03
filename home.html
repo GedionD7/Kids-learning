@@ -1,271 +1,282 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Kids Fun Learning</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Future focus</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabaseClient.js"></script>
+    <!-- Google font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 
-  <!-- Google font -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --accent:#ff6f61;
+            --accent-2:#7c4dff;
+            --shadow:0 10px 25px rgba(0,0,0,.12);
+            --radius:22px;
+        }
+        *{box-sizing:border-box}
+        html,body{margin:0}
+        body{
+            font-family:"Poppins",sans-serif;
+            color:#222;
+            background:linear-gradient(180deg,#fdfbfb,#ebedee);
+            overflow-x:hidden;
+        }
+        a{text-decoration:none;color:inherit}
 
-  <style>
-    :root {
-      --accent:#ff6f61;
-      --accent-2:#7c4dff;
-      --shadow:0 10px 25px rgba(0,0,0,.12);
-      --radius:22px;
-    }
-    *{box-sizing:border-box}
-    html,body{margin:0}
-    body{
-      font-family:"Poppins",sans-serif;
-      color:#222;
-      background:linear-gradient(180deg,#fdfbfb,#ebedee);
-      overflow-x:hidden;
-    }
-    a{text-decoration:none;color:inherit}
+        /* NAV */
+        .nav{position:sticky;top:0;z-index:50;background:#fff;box-shadow:0 2px 14px rgba(0,0,0,.05)}
+        .nav-inner{max-width:1200px;margin:auto;padding:14px 20px;display:flex;align-items:center}
+        .brand{font-weight:700;font-size:22px;color:var(--accent)}
+        .nav-links{margin-left:auto;display:flex;gap:18px}
+        .nav-links a{font-weight:600;color:#475467}
+        .nav-links a:hover{color:var(--accent)}
 
-    /* NAV */
-    .nav{position:sticky;top:0;z-index:50;background:#fff;box-shadow:0 2px 14px rgba(0,0,0,.05)}
-    .nav-inner{max-width:1200px;margin:auto;padding:14px 20px;display:flex;align-items:center}
-    .brand{font-weight:700;font-size:22px;color:var(--accent)}
-    .nav-links{margin-left:auto;display:flex;gap:18px}
-    .nav-links a{font-weight:600;color:#475467}
-    .nav-links a:hover{color:var(--accent)}
+        /* HERO */
+        .hero{
+            position:relative;
+            text-align:center;
+            padding:80px 20px;
+            color:#222;
+            background:linear-gradient(135deg,#ffecd2,#fcb69f,#a1c4fd,#c2e9fb);
+            overflow:hidden;
+        }
+        .hero h1{font-size:clamp(30px,5vw,48px);margin-bottom:14px}
+        .hero p{max-width:650px;margin:auto;font-size:18px;color:#444}
+        .hero button{
+            margin-top:22px;
+            padding:12px 24px;border:none;border-radius:30px;
+            background:var(--accent);color:#fff;font-size:16px;font-weight:600;
+            cursor:pointer;transition:.3s;
+        }
+        .hero button:hover{background:#e85a4f;transform:scale(1.05)}
 
-    /* HERO */
-    .hero{
-      position:relative;
-      text-align:center;
-      padding:80px 20px;
-      color:#222;
-      background:linear-gradient(135deg,#ffecd2,#fcb69f,#a1c4fd,#c2e9fb);
-      overflow:hidden;
-    }
-    .hero h1{font-size:clamp(30px,5vw,48px);margin-bottom:14px}
-    .hero p{max-width:650px;margin:auto;font-size:18px;color:#444}
-    .hero button{
-      margin-top:22px;
-      padding:12px 24px;border:none;border-radius:30px;
-      background:var(--accent);color:#fff;font-size:16px;font-weight:600;
-      cursor:pointer;transition:.3s;
-    }
-    .hero button:hover{background:#e85a4f;transform:scale(1.05)}
+        /* PLANE ANIMATION */
+        .plane{
+            position:absolute;top:40px;left:-150px;font-size:40px;
+            animation:fly 15s linear infinite;
+        }
+        @keyframes fly{
+            0%{transform:translateX(-200px) rotate(0deg)}
+            50%{transform:translateX(120vw) rotate(5deg)}
+            100%{transform:translateX(-200px) rotate(0deg)}
+        }
 
-    /* PLANE ANIMATION */
-    .plane{
-      position:absolute;top:40px;left:-150px;font-size:40px;
-      animation:fly 15s linear infinite;
-    }
-    @keyframes fly{
-      0%{transform:translateX(-200px) rotate(0deg)}
-      50%{transform:translateX(120vw) rotate(5deg)}
-      100%{transform:translateX(-200px) rotate(0deg)}
-    }
+        /* STARS */
+        .star{
+            position:absolute;width:4px;height:4px;border-radius:50%;
+            background:white;opacity:.8;
+            animation:twinkle 3s infinite alternate;
+        }
+        @keyframes twinkle{
+            from{opacity:.2}
+            to{opacity:1}
+        }
 
-    /* STARS */
-    .star{
-      position:absolute;width:4px;height:4px;border-radius:50%;
-      background:white;opacity:.8;
-      animation:twinkle 3s infinite alternate;
-    }
-    @keyframes twinkle{
-      from{opacity:.2}
-      to{opacity:1}
-    }
+        /* SECTION */
+        .section{max-width:1200px;margin:60px auto;padding:0 20px;text-align:center}
+        .section h2{font-size:28px;margin-bottom:20px;color:var(--accent)}
+        .grid{
+            display:grid;gap:22px;
+            grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+        }
+        .card{
+            background:#fff;border-radius:var(--radius);
+            padding:26px 20px;box-shadow:var(--shadow);
+            transition:.3s;cursor:pointer;position:relative;overflow:hidden;
+        }
+        .card:hover{transform:translateY(-6px);box-shadow:0 14px 30px rgba(0,0,0,.15)}
+        .icon{
+            font-size:40px;margin-bottom:10px;transition:.4s;
+            display:inline-block;
+        }
+        .card:hover .icon{transform:rotate(10deg) scale(1.2)}
+        .card h3{margin:0 0 8px;font-size:18px}
+        .card p{margin:0;color:#666;font-size:14px}
 
-    /* SECTION */
-    .section{max-width:1200px;margin:60px auto;padding:0 20px;text-align:center}
-    .section h2{font-size:28px;margin-bottom:20px;color:var(--accent)}
-    .grid{
-      display:grid;gap:22px;
-      grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-    }
-    .card{
-      background:#fff;border-radius:var(--radius);
-      padding:26px 20px;box-shadow:var(--shadow);
-      transition:.3s;cursor:pointer;position:relative;overflow:hidden;
-    }
-    .card:hover{transform:translateY(-6px);box-shadow:0 14px 30px rgba(0,0,0,.15)}
-    .icon{
-      font-size:40px;margin-bottom:10px;transition:.4s;
-      display:inline-block;
-    }
-    .card:hover .icon{transform:rotate(10deg) scale(1.2)}
-    .card h3{margin:0 0 8px;font-size:18px}
-    .card p{margin:0;color:#666;font-size:14px}
+        /* CONFETTI */
+        .confetti{
+            position:fixed;width:8px;height:10px;
+            transform:translate(-50%,-50%);
+            animation:fall .9s ease-out forwards;border-radius:2px;
+        }
+        @keyframes fall{
+            0%{opacity:1}
+            100%{transform:translate(-50%,40px) rotate(320deg);opacity:0}
+        }
 
-    /* CONFETTI */
-    .confetti{
-      position:fixed;width:8px;height:10px;
-      transform:translate(-50%,-50%);
-      animation:fall .9s ease-out forwards;border-radius:2px;
-    }
-    @keyframes fall{
-      0%{opacity:1}
-      100%{transform:translate(-50%,40px) rotate(320deg);opacity:0}
-    }
-
-    footer{text-align:center;padding:30px;color:#555;background:#fff;border-top:1px solid #eee}
-  </style>
+        footer{text-align:center;padding:30px;color:#555;background:#fff;border-top:1px solid #eee}
+    </style>
 </head>
 <body>
 
-  <!-- NAV -->
-  <header class="nav">
+<!-- NAV -->
+<header class="nav">
     <div class="nav-inner">
-      <div class="brand">Kids Fun Learning</div>
-      <nav class="nav-links">
-        <a href="#home">Home</a>
-        <a href="#topics">Topics</a>
-        <a href="#about">About</a>
-      </nav>
+        <div class="brand">Kids Fun Learning</div>
+        <nav class="nav-links">
+            <a href="#home">Home</a>
+            <a href="#topics">Topics</a>
+            <a href="#about">About</a>
+            <a href="#" onclick="logout()" style="color: var(--accent); font-weight: 700;">Logout</a>
+        </nav>
     </div>
-  </header>
+</header>
 
-  <!-- HERO -->
-  <section id="home" class="hero">
+<!-- HERO -->
+<section id="home" class="hero">
     <span class="plane">✈️</span>
     <h1>Make Learning Bright & Fun ✨</h1>
     <p>Engaging lessons, colorful visuals, and interactive play to help kids grow joyfully.</p>
     <button onclick="document.getElementById('topics').scrollIntoView({behavior:'smooth'})">Start Learning 🚀</button>
-  </section>
+</section>
 
-  <!-- TOPICS -->
-  <section id="topics" class="section">
+<!-- TOPICS -->
+<section id="topics" class="section">
     <h2>Explore Topics</h2>
     <div class="grid" id="grid">
-      <div class="card" onclick="navigateToPage('english-alphabet.html')">
-        <div class="icon">🔤</div>
-        <h3>English Alphabet</h3>
-        <p>Letters & sounds</p>
-      </div>
-      <div class="card" onclick="navigateToPage('amharic-alphabet.html')">
-        <div class="icon">🇪🇹</div>
-        <h3>Amharic Alphabet</h3>
-        <p>Learn Fidel</p>
-      </div>
-      <div class="card" onclick="navigateToPage('numbers.html')">
-        <div class="icon">🔢</div>
-        <h3>Numbers</h3>
-        <p>Counting & math</p>
-      </div>
-      <div class="card" onclick="navigateToPage('colors.html')">
-        <div class="icon">🎨</div>
-        <h3>Colors</h3>
-        <p>Mix & match</p>
-      </div>
-      <div class="card" onclick="navigateToPage('shapes.html')">
-        <div class="icon">✏️</div>
-        <h3>Lines & Shapes</h3>
-        <p>Trace & draw</p>
-      </div>
-      <div class="card" onclick="navigateToPage('body-parts.html')">
-        <div class="icon">🧒</div>
-        <h3>Body Parts</h3>
-        <p>See & learn</p>
-      </div>
-      <div class="card" onclick="navigateToPage('family.html')">
-        <div class="icon">👨‍👩‍👧</div>
-        <h3>Family</h3>
-        <p>Meet everyone</p>
-      </div>
-      <div class="card" onclick="navigateToPage('stories.html')">
-        <div class="icon">📖</div>
-        <h3>Stories</h3>
-        <p>Read & enjoy</p>
-      </div>
-      <div class="card" onclick="navigateToPage('animals.html')">
-        <div class="icon">🐶</div>
-        <h3>Animals</h3>
-        <p>Roars & facts</p>
-      </div>
-      <div class="card" onclick="navigateToPage('games.html')">
-        <div class="icon">🎮</div>
-        <h3>Games</h3>
-        <p>Play & learn</p>
-      </div>
-      <!-- NEW CARDS FOR VEGETABLES AND FRUITS -->
-      <div class="card" onclick="navigateToPage('vegetables.html')">
-        <div class="icon">🥦</div>
-        <h3>Vegetables</h3>
-        <p>Healthy & green</p>
-      </div>
-      <div class="card" onclick="navigateToPage('fruits.html')">
-        <div class="icon">🍎</div>
-        <h3>Fruits</h3>
-        <p>Sweet & colorful</p>
-      </div>
+        <!-- NOTE: Argument is now the category name, NOT the filename -->
+        <div class="card" onclick="navigateToPage('english-alphabet')">
+            <div class="icon">🔤</div>
+            <h3>English Alphabet</h3>
+            <p>Letters & sounds</p>
+        </div>
+        <div class="card" onclick="navigateToPage('amharic-alphabet')">
+            <div class="icon">🇪🇹</div>
+            <h3>Amharic Alphabet</h3>
+            <p>Learn Fidel</p>
+        </div>
+        <div class="card" onclick="navigateToPage('numbers')">
+            <div class="icon">🔢</div>
+            <h3>Numbers</h3>
+            <p>Counting & math</p>
+        </div>
+        <div class="card" onclick="navigateToPage('colors')">
+            <div class="icon">🎨</div>
+            <h3>Colors</h3>
+            <p>Mix & match</p>
+        </div>
+        <div class="card" onclick="navigateToPage('shapes')">
+            <div class="icon">✏️</div>
+            <h3>Lines & Shapes</h3>
+            <p>Trace & draw</p>
+        </div>
+        <div class="card" onclick="navigateToPage('body-parts')">
+            <div class="icon">🧒</div>
+            <h3>Body Parts</h3>
+            <p>See & learn</p>
+        </div>
+        <div class="card" onclick="navigateToPage('family')">
+            <div class="icon">👨‍👩‍👧</div>
+            <h3>Family</h3>
+            <p>Meet everyone</p>
+        </div>
+        <div class="card" onclick="navigateToPage('stories')">
+            <div class="icon">📖</div>
+            <h3>Stories</h3>
+            <p>Read & enjoy</p>
+        </div>
+        <div class="card" onclick="navigateToPage('animals')">
+            <div class="icon">🐶</div>
+            <h3>Animals</h3>
+            <p>Roars & facts</p>
+        </div>
+        <div class="card" onclick="navigateToPage('games')">
+            <div class="icon">🎮</div>
+            <h3>Games</h3>
+            <p>Play & learn</p>
+        </div>
+        <div class="card" onclick="navigateToPage('vegetables')">
+            <div class="icon">🥦</div>
+            <h3>Vegetables</h3>
+            <p>Healthy & green</p>
+        </div>
+        <div class="card" onclick="navigateToPage('fruits')">
+            <div class="icon">🍎</div>
+            <h3>Fruits</h3>
+            <p>Sweet & colorful</p>
+        </div>
     </div>
-  </section>
+</section>
 
-  <!-- ABOUT -->
-  <section id="about" class="section">
+<!-- ABOUT -->
+<section id="about" class="section">
     <h2>About Us</h2>
     <p style="max-width:700px;margin:auto;color:#555">
-      Kids Fun Learning is a joyful platform where education meets play.  
-      We use colors, motion, and stories to keep kids excited while learning.
+        Kids Fun Learning is a joyful platform where education meets play.
+        We use colors, motion, and stories to keep kids excited while learning.
     </p>
-  </section>
+</section>
 
-  <footer>
+<footer>
     © 2025 Kids Fun Learning • Made with ❤️
-  </footer>
+</footer>
 
-  <script>
+<script>
+    // Placeholder to confirm data fetching is successful
+    async function confirmDataConnection() {
+        if (typeof supabase === 'undefined') {
+            console.error("Supabase client not loaded.");
+            return;
+        }
+
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        const { data: questions, error } = await supabase
+            .from('questions')
+            .select('id');
+
+        if (error) {
+            console.error('Database connection failed or RLS error:', error.message);
+            return;
+        }
+        if (questions) {
+            console.log(`Successfully fetched ${questions.length} question records for user ${user.id}. RLS is working!`);
+        }
+    }
+
+    window.onload = confirmDataConnection;
+
     // Generate stars in hero
     for(let i=0;i<20;i++){
-      let s=document.createElement("div");
-      s.className="star";
-      s.style.left=Math.random()*100+"%";
-      s.style.top=Math.random()*100+"%";
-      s.style.animationDelay=Math.random()*5+"s";
-      document.querySelector(".hero").appendChild(s);
+        let s=document.createElement("div");
+        s.className="star";
+        s.style.left=Math.random()*100+"%";
+        s.style.top=Math.random()*100+"%";
+        s.style.animationDelay=Math.random()*5+"s";
+        document.querySelector(".hero").appendChild(s);
     }
 
     // Confetti burst on card click
     document.getElementById("grid").addEventListener("click",e=>{
-      const card=e.target.closest(".card"); if(!card) return;
-      confettiBurst(e.clientX,e.clientY);
+        const card=e.target.closest(".card"); if(!card) return;
+        confettiBurst(e.clientX,e.clientY);
     });
     function confettiBurst(x,y){
-      const colors=['#ff6f61','#ffb84d','#4dd0e1','#7c4dff','#4caf50','#ffd700'];
-      for(let i=0;i<14;i++){
-        const piece=document.createElement('i');
-        piece.className='confetti';
-        piece.style.left=x+(Math.random()*40-20)+'px';
-        piece.style.top=y+(Math.random()*6-3)+'px';
-        piece.style.background=colors[i%colors.length];
-        piece.style.transform+=` rotate(${Math.random()*360}deg)`;
-        piece.style.animationDuration=(0.6+Math.random()*0.5)+'s';
-        piece.style.width=(6+Math.random()*6)+'px';
-        piece.style.height=(6+Math.random()*9)+'px';
-        document.body.appendChild(piece);
-        setTimeout(()=>piece.remove(),900);
-      }
+        const colors=['#ff6f61','#ffb84d','#4dd0e1','#7c4dff','#4caf50','#ffd700'];
+        for(let i=0;i<14;i++){
+            const piece=document.createElement('i');
+            piece.className='confetti';
+            piece.style.left=x+(Math.random()*40-20)+'px';
+            piece.style.top=y+(Math.random()*6-3)+'px';
+            piece.style.background=colors[i%colors.length];
+            piece.style.transform+=` rotate(${Math.random()*360}deg)`;
+            piece.style.animationDuration=(0.6+Math.random()*0.5)+'s';
+            piece.style.width=(6+Math.random()*6)+'px';
+            piece.style.height=(6+Math.random()*9)+'px';
+            document.body.appendChild(piece);
+            setTimeout(()=>piece.remove(),900);
+        }
     }
 
-    // Navigation function to connect with your pages
-    function navigateToPage(page) {
-      // Replace these with your actual file paths
-      const pageMap = {
-        'english-alphabet.html': 'english-alphabet.html',
-        'amharic-alphabet.html': 'amharic-alphabet.html',
-        'numbers.html': 'numbers.html',
-        'colors.html': 'colors.html',
-        'shapes.html': 'shapes.html',
-        'body-parts.html': 'body-parts.html',
-        'family.html': 'family.html',
-        'stories.html': 'stories.html',
-        'animals.html': 'animals.html',
-        'games.html': 'games.html',
-        'vegetables.html': 'vegetables.html',
-        'fruits.html': 'fruits.html'
-      };
-      
-      // Navigate to the page
-      window.location.href = pageMap[page] || page;
+    // VITAL CHANGE: All cards now point to a single template file with a category parameter.
+    function navigateToPage(category) {
+        // Encode the category name in the URL
+        window.location.href = `quiz_template.html?category=${encodeURIComponent(category)}`;
     }
-  </script>
+</script>
 </body>
 </html>
