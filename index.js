@@ -15,7 +15,7 @@ app.use(express.static(__dirname));
 
 // Serve login page at the root URL
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'Login.html'));
+    res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 // Handle login
