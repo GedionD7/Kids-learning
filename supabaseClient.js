@@ -4,21 +4,16 @@
 const SUPABASE_URL = 'https://fffmvhjitlnyzeirtguj.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZmZm12aGppdGxueXplaXJ0Z3VqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY3NTUwNTUsImV4cCI6MjA3MjMzMTA1NX0.g_Mw3_Es6Kl4M64b9QOKT5_2EwNnn-0vJZSMf3QQeYo';
 
-// Initialize the Supabase client FIRST!
-const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// Initialize the Supabase client instance using the global 'supabase' object provided by the CDN.
+// We use 'supabaseClient' to avoid conflicting with the global 'supabase'.
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // ----------------------------------------------------------------------
 // 1. SESSION MANAGEMENT (Runs on every protected page load)
 // ----------------------------------------------------------------------
 async function checkUserSession() {
-    // Check if the supabase object is ready
-    if (typeof supabase === 'undefined') {
-        // This should not happen with the corrected order, but is a safe guard.
-        console.error("Supabase client not yet defined.");
-        return;
-    }
-
-    const { data: { user } } = await supabase.auth.getUser();
+    // We now reference the correctly named client instance
+    const { data: { user } } = await supabaseClient.auth.getUser();
 
     if (user) {
         console.log("User is logged in:", user.id);
@@ -38,12 +33,8 @@ async function checkUserSession() {
 // 2. LOGOUT FUNCTION (Called from home.html navigation)
 // ----------------------------------------------------------------------
 async function logout() {
-    if (typeof supabase === 'undefined') {
-        console.error('Logout failed: Supabase client not loaded.');
-        return;
-    }
-
-    const { error } = await supabase.auth.signOut();
+    // We now reference the correctly named client instance
+    const { error } = await supabaseClient.auth.signOut();
     if (error) {
         console.error('Logout Error:', error.message);
     }

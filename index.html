@@ -5,8 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Future Focus</title>
 
+    <!-- 1. Supabase CDN (The global 'supabase' object) -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+    <!-- 2. Your custom client file (Defines 'supabaseClient') -->
     <script src="supabaseClient.js"></script>
 
     <script src="https://cdn.tailwindcss.com"></script>
@@ -103,8 +105,8 @@
     async function handleFormSubmit(event, action) {
         event.preventDefault();
 
-        // Use the global supabase object from supabaseClient.js
-        if (typeof supabase === 'undefined') {
+        // CHECK: Ensure the custom client is loaded
+        if (typeof supabaseClient === 'undefined') { // <-- CHECKING FOR 'supabaseClient'
             document.getElementById('message').textContent = 'Error: Supabase client not loaded.';
             return;
         }
@@ -120,14 +122,16 @@
 
         if (action === 'login') {
             // --- Supabase Login ---
-            response = await supabase.auth.signInWithPassword({
+            // CORRECTED: Using 'supabaseClient'
+            response = await supabaseClient.auth.signInWithPassword({
                 email: email,
                 password: password,
             });
 
         } else if (action === 'signup') {
             // --- Supabase Sign Up ---
-            response = await supabase.auth.signUp({
+            // CORRECTED: Using 'supabaseClient'
+            response = await supabaseClient.auth.signUp({
                 email: email,
                 password: password,
             });
