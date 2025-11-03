@@ -1,350 +1,349 @@
 <!DOCTYPE html>
 <html lang="am">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>አማርኛ ፊደል Fun</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Ethiopic&display=swap" rel="stylesheet">
-    <script src="bundle.js"></script>
-<style>
-:root{
-  --accent:#ff6f61; --accent2:#ffa500; --bg:#f0f8ff; --card:#fff; --muted:#555;
-  --success:#28a745; --fail:#dc3545;
-}
-body{margin:0;font-family:"Noto Sans Ethiopic",sans-serif;background:var(--bg);color:#222;}
-header{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff;padding:14px 12px;position:sticky;top:0;z-index:50;}
-.top-row{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;max-width:1200px;margin:0 auto;}
-nav{display:flex;gap:8px;flex-wrap:wrap;}
-nav button{background:#fff;border:none;padding:8px 12px;border-radius:10px;cursor:pointer;font-weight:600;color:var(--accent);}
-nav button.active{background:rgba(255,255,255,0.2);color:#fff;}
-.toggles{display:flex;gap:8px;}
-.toggles button{background:#fff;border:none;padding:8px 10px;border-radius:8px;cursor:pointer;}
-main{max-width:1200px;margin:18px auto;padding:0 12px;}
-.section{display:none;}
-.section.active{display:block;}
-.letters-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px}
-.card{background:var(--card);border-radius:14px;padding:12px;box-shadow:0 6px 12px rgba(0,0,0,0.06);text-align:center;transition:transform .18s;cursor:default;}
-.card:hover{transform:translateY(-4px);}
-.base-letter{font-size:44px;font-weight:700;color:var(--accent);}
-.orders{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:6px}
-.order{background:#f6f0ff;padding:6px 8px;border-radius:8px;cursor:pointer;border:1px solid rgba(255,111,97,0.3);}
-.word{margin-top:8px;font-weight:700;color:#333;cursor:pointer;}
-.sentence{font-size:14px;color:var(--muted);margin-top:6px;}
-.high-contrast{background:#000;color:#ffeb3b}
-.large-text{font-size:1.25rem}
-canvas#effectsCanvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:1200}
-.game-container{margin-top:16px;text-align:center;}
-.game-btn{padding:10px 14px;border-radius:10px;background:var(--accent);color:#fff;font-weight:700;margin:6px;cursor:pointer;}
-.option-btn{padding:10px 14px;border-radius:10px;border:2px solid var(--accent2);cursor:pointer;min-width:110px;margin:4px;}
-.option-btn.correct{background:var(--success);color:#fff;border-color:var(--success);}
-.option-btn.wrong{background:var(--fail);border-color:var(--fail);color:#fff;}
-.emoji-feedback{font-size:2rem;animation: bounce 0.6s;}
-@keyframes bounce{0%{transform:scale(1)}50%{transform:scale(1.5)}100%{transform:scale(1)}}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>አማርኛ ፊደል Fun</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Ethiopic&display=swap" rel="stylesheet">
+    <style>
+        :root{
+            --accent:#ff6f61; --accent2:#ffa500; --bg:#f0f8ff; --card:#fff; --muted:#555;
+            --success:#28a745; --fail:#dc3545;
+        }
+        body{margin:0;font-family:"Noto Sans Ethiopic",sans-serif;background:var(--bg);color:#222;}
+        header{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff;padding:14px 12px;position:sticky;top:0;z-index:50;}
+        .top-row{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;max-width:1200px;margin:0 auto;}
+        nav{display:flex;gap:8px;flex-wrap:wrap;}
+        nav button{background:#fff;border:none;padding:8px 12px;border-radius:10px;cursor:pointer;font-weight:600;color:var(--accent);}
+        nav button.active{background:rgba(255,255,255,0.2);color:#fff;}
+        .toggles{display:flex;gap:8px;}
+        .toggles button{background:#fff;border:none;padding:8px 10px;border-radius:8px;cursor:pointer;}
+        main{max-width:1200px;margin:18px auto;padding:0 12px;}
+        .section{display:none;}
+        .section.active{display:block;}
+        .letters-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px}
+        .card{background:var(--card);border-radius:14px;padding:12px;box-shadow:0 6px 12px rgba(0,0,0,0.06);text-align:center;transition:transform .18s;cursor:default;}
+        .card:hover{transform:translateY(-4px);}
+        .base-letter{font-size:44px;font-weight:700;color:var(--accent);}
+        .orders{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:6px}
+        .order{background:#f6f0ff;padding:6px 8px;border-radius:8px;cursor:pointer;border:1px solid rgba(255,111,97,0.3);}
+        .word{margin-top:8px;font-weight:700;color:#333;cursor:pointer;}
+        .sentence{font-size:14px;color:var(--muted);margin-top:6px;}
+        .high-contrast{background:#000;color:#ffeb3b}
+        .large-text{font-size:1.25rem}
+        canvas#effectsCanvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:1200}
+        .game-container{margin-top:16px;text-align:center;}
+        .game-btn{padding:10px 14px;border-radius:10px;background:var(--accent);color:#fff;font-weight:700;margin:6px;cursor:pointer;}
+        .option-btn{padding:10px 14px;border-radius:10px;border:2px solid var(--accent2);cursor:pointer;min-width:110px;margin:4px;}
+        .option-btn.correct{background:var(--success);color:#fff;border-color:var(--success);}
+        .option-btn.wrong{background:var(--fail);border-color:var(--fail);color:#fff;}
+        .emoji-feedback{font-size:2rem;animation: bounce 0.6s;}
+        @keyframes bounce{0%{transform:scale(1)}50%{transform:scale(1.5)}100%{transform:scale(1)}}
 
-/* --- Memory Game Styles --- */
-.memory-game-board {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 15px;
-  max-width: 600px;
-  margin: 20px auto;
-  perspective: 1000px;
-}
-.memory-card {
-  background-color: transparent;
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  border-radius: 10px;
-  cursor: pointer;
-  position: relative;
-  transform-style: preserve-3d;
-  transition: transform 0.6s;
-}
-.memory-card.flipped {
-  transform: rotateY(180deg);
-}
-.memory-card .front-face,
-.memory-card .back-face {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  border-radius: 10px;
-  backface-visibility: hidden;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 3rem;
-  font-weight: bold;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
-.memory-card .front-face {
-  background: linear-gradient(45deg, var(--accent), var(--accent2));
-  color: white;
-}
-.memory-card .front-face::after {
-  content: '?';
-  font-size: 4rem;
-}
-.memory-card .back-face {
-  background-color: var(--card);
-  color: var(--accent);
-  transform: rotateY(180deg);
-}
-/* --- Word Pop-up Styles --- */
-#word-popup {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: var(--success);
-  color: white;
-  padding: 30px 50px;
-  border-radius: 25px;
-  font-size: 4rem;
-  font-weight: 700;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-  z-index: 2000;
-  animation: popup-animation 0.5s ease-out forwards;
-  pointer-events: none;
-}
-#word-popup.hidden {
-  display: none;
-}
-@keyframes popup-animation {
-  0% {
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(0.5);
-  }
-  100% {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
-  }
-}
-</style>
+        /* --- Memory Game Styles --- */
+        .memory-game-board {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            max-width: 600px;
+            margin: 20px auto;
+            perspective: 1000px;
+        }
+        .memory-card {
+            background-color: transparent;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            border-radius: 10px;
+            cursor: pointer;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+        }
+        .memory-card.flipped {
+            transform: rotateY(180deg);
+        }
+        .memory-card .front-face,
+        .memory-card .back-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 10px;
+            backface-visibility: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 3rem;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .memory-card .front-face {
+            background: linear-gradient(45deg, var(--accent), var(--accent2));
+            color: white;
+        }
+        .memory-card .front-face::after {
+            content: '?';
+            font-size: 4rem;
+        }
+        .memory-card .back-face {
+            background-color: var(--card);
+            color: var(--accent);
+            transform: rotateY(180deg);
+        }
+        /* --- Word Pop-up Styles --- */
+        #word-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: var(--success);
+            color: white;
+            padding: 30px 50px;
+            border-radius: 25px;
+            font-size: 4rem;
+            font-weight: 700;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            z-index: 2000;
+            animation: popup-animation 0.5s ease-out forwards;
+            pointer-events: none;
+        }
+        #word-popup.hidden {
+            display: none;
+        }
+        @keyframes popup-animation {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.5);
+            }
+            100% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+    </style>
 </head>
 <body>
 
 <header>
-  <div class="top-row">
-    <div class="brand">🎉 አማርኛ ፊደል Fun</div>
-    <nav>
-      <button data-section="letters" class="active">Letters</button>
-      <button data-section="mini">Mini Games</button>
-      <button data-section="quiz">Quiz</button>
-    </nav>
-    <div class="toggles">
-      <button id="contrastBtn">🌓 Contrast</button>
-      <button id="textBtn">🔠 Large Text</button>
+    <div class="top-row">
+        <div class="brand">🎉 አማርኛ ፊደል Fun</div>
+        <nav>
+            <button data-section="letters" class="active">Letters</button>
+            <button data-section="mini">Mini Games</button>
+            <button data-section="quiz">Quiz</button>
+        </nav>
+        <div class="toggles">
+            <button id="contrastBtn">🌓 Contrast</button>
+            <button id="textBtn">🔠 Large Text</button>
+        </div>
     </div>
-  </div>
 </header>
 
 <main>
-  <section id="letters" class="section active">
-    <h2>📚 Letters & Words</h2>
-    <div class="letters-grid" id="lettersGrid"></div>
-  </section>
+    <section id="letters" class="section active">
+        <h2>📚 Letters & Words</h2>
+        <div class="letters-grid" id="lettersGrid"></div>
+    </section>
 
-  <section id="mini" class="section">
-    <h2>🎮 Mini Games</h2>
-    <div class="game-container">
-      <button class="game-btn" onclick="startMatchingGame()">🧠 Memory Match</button>
-      <button class="game-btn" onclick="startTraceGame()">✍️ Trace Letter</button>
-      <div id="gameArea"></div>
-    </div>
-  </section>
+    <section id="mini" class="section">
+        <h2>🎮 Mini Games</h2>
+        <div class="game-container">
+            <button class="game-btn" onclick="startMatchingGame()">🧠 Memory Match</button>
+            <button class="game-btn" onclick="startTraceGame()">✍️ Trace Letter</button>
+            <div id="gameArea"></div>
+        </div>
+    </section>
 
-  <section id="quiz" class="section">
-    <h2>🎯 Quiz</h2>
-    <div id="quizArea"></div>
-    <div id="emojiFeedback" class="emoji-feedback"></div>
-    <p>Score: <span id="score">0</span></p>
-  </section>
+    <section id="quiz" class="section">
+        <h2>🎯 Quiz</h2>
+        <div id="quizArea"></div>
+        <div id="emojiFeedback" class="emoji-feedback"></div>
+        <p>Score: <span id="score">0</span></p>
+    </section>
 </main>
 
 <canvas id="effectsCanvas"></canvas>
 <div id="word-popup" class="hidden"></div>
 
 <script>
-// ---------------- Letters Data ----------------
-const lettersData=[{base:"ሀ",orders:["ሀ","ሁ","ሂ","ሃ","ሄ","ህ","ሆ"],word:"ሀብት",sentence:"ሀብት በሥራ ይመጣል"},{base:"ለ",orders:["ለ","ሉ","ሊ","ላ","ሌ","ል","ሎ"],word:"ሎሚ",sentence:"ሎሚ ጎምዛዛ ነው"},{base:"ሐ",orders:["ሐ","ሑ","ሒ","ሓ","ሔ","ሕ","ሖ"],word:"ሐኪም",sentence:"ሐኪሙ ታካሚውን ይረዳል"},{base:"መ",orders:["መ","ሙ","ሚ","ማ","ሜ","ም","ሞ"],word:"መኪና",sentence:"መኪናው በፍጥነት ይጓዛል"},{base:"ሠ",orders:["ሠ","ሡ","ሢ","ሣ","ሤ","ሥ","ሦ"],word:"ሠላም",sentence:"ሠላም ለሁሉም"},{base:"ረ",orders:["ረ","ሩ","ሪ","ራ","ሬ","ር","ሮ"],word:"ሬዲዮ",sentence:"ሬዲዮ ሙዚቃ ያጫውታል"},{base:"ሰ",orders:["ሰ","ሱ","ሲ","ሳ","ሴ","ስ","ሶ"],word:"ሰዓት",sentence:"ሰዓቱ ትክክለኛ ነው"},{base:"ሸ",orders:["ሸ","ሹ","ሺ","ሻ","ሼ","ሽ","ሾ"],word:"ሸሚዝ",sentence:"ሸሚዙ ንጹህ ነው"},{base:"ቀ",orders:["ቀ","ቁ","ቂ","ቃ","ቄ","ቅ","ቆ"],word:"ቀለም",sentence:"ቀለሙ ደማቅ ነው"},{base:"በ",orders:["በ","ቡ","ቢ","ባ","ቤ","ብ","ቦ"],word:"በር",sentence:"በሩ ተከፍቷል"},{base:"ተ",orders:["ተ","ቱ","ቲ","ታ","ቴ","ት","ቶ"],word:"ተራራ",sentence:"ተራራው ከፍ ያለ ነው"},{base:"ቸ",orders:["ቸ","ቹ","ቺ","ቻ","ቼ","ች","ቾ"],word:"ቸኮሌት",sentence:"ቸኮሌት ጣፋጭ ነው"},{base:"ኀ",orders:["ኀ","ኁ","ኂ","ኃ","ኄ","ኅ","ኆ"],word:"ኀይል",sentence:"ኀይል ያስፈልጋል"},{base:"ነ",orders:["ነ","ኑ","ኒ","ና","ኔ","ን","ኖ"],word:"ነብር",sentence:"ነብር ፈጣን ነው"},{base:"ኘ",orders:["ኘ","ኙ","ኚ","ኛ","ኜ","ኝ","ኞ"],word:"ኘላስተር",sentence:"ኘላስተር ቁስልን ይሸፍናል"},{base:"አ",orders:["አ","ኡ","ኢ","ኣ","ኤ","እ","ኦ"],word:"አንበሳ",sentence:"አንበሳ የጫካ ንጉሥ ነው"},{base:"ከ",orders:["ከ","ኩ","ኪ","ካ","ኬ","ክ","ኮ"],word:"כובע",sentence:"ኮከብ በሰማይ ላይ ያበራል"},{base:"ኸ",orders:["ኸ","ኹ","ኺ","ኻ","ኼ","ኽ","ኾ"],word:"ኸሚስ",sentence:"ኸሚስ የሳምንቱ ቀን ነው"},{base:"ወ",orders:["ወ","ዉ","ዊ","ዋ","ዌ","ው","ዎ"],word:"ወንበር",sentence:"ወንበሩ ምቹ ነው"},{base:"ዐ",orders:["ዐ","ዑ","ዒ","ዓ","ዔ","ዕ","ዖ"],word:"ዐይ",sentence:"ዓሣ በውሃ ውስጥ ይዋኛል"},{base:"ዘ",orders:["ዘ","ዙ","ዚ","ዛ","ዜ","ዝ","ዞ"],word:"ዘይት",sentence:"ዘይት ለምግብ ማብሰያ ያገለግላል"},{base:"ዠ",orders:["ዠ","ዡ","ዢ","ዣ","ዤ","ዥ","ዦ"],word:"ዠراف",sentence:"ቀጭኔ ረጅም አንገት አላት"},{base:"የ",orders:["የ","ዩ","ዪ","ያ","ዬ","ይ","ዮ"],word:"የገና ዛፍ",sentence:"የገና ዛፍ በበዓል ጊዜ ያጌጣል"},{base:"ደ",orders:["ደ","ዱ","ዲ","ዳ","ዴ","ድ","ዶ"],word:"ደብተር",sentence:"ደብተሩ ለመጻፍ ነው"},{base:"ጀ",orders:["ጀ","ጁ","ጂ","ጃ","ጄ","ጅ","ጆ"],word:"ጀልባ",sentence:"ጀልባው በውሃ ላይ ይጓዛል"},{base:"ገ",orders:["ገ","ጉ","ጊ","ጋ","ጌ","ግ","ጎ"],word:"ገበታ",sentence:"ገበታው በምግብ የተሞላ ነው"},{base:"ጠ",orders:["ጠ","ጡ","ጢ","ጣ","ጤ","ጥ","ጦ"],word:"ጠረጴዛ",sentence:"ጠረጴዛው ላይ መጻሕፍት አሉ"},{base:"ጨ",orders:["ጨ","ጩ","ጪ","ጫ","ጬ","ጭ","ጮ"],word:"ጨረቃ",sentence:"ጨረቃ በሌሊት ታበራለች"},{base:"ጰ",orders:["ጰ","ጱ","ጲ","ጳ","ጴ","ጵ","ጶ"],word:"ጰጳ",sentence:"ጳጳሱ ጸሎት ይመራሉ"},{base:"ጸ",orders:["ጸ","ጹ","ጺ","ጻ","ጼ","ጽ","ጾ"],word:"ጸሎት",sentence:"ጸሎት ሰላምን ያመጣል"},{base:"ፀ",orders:["ፀ","ፁ","ፂ","ፃ","ፄ","ፅ","ፆ"],word:"ፀሐይ",sentence:"ፀሐይ ብርሃን ትሰጣለች"},{base:"ፈ",orders:["ፈ","ፉ","ፊ","ፋ","ፌ","ፍ","ፎ"],word:"ፈረስ",sentence:"ፈረስ በፍጥነት ይሮጣል"},{base:"ፐ",orders:["ፐ","ፑ","ፒ","ፓ","ፔ","ፕ","ፖ"],word:"ፒያኖ",sentence:"ፒያኖ ጣፋጭ ዜማ ያወጣል"}];
+    // ---------------- Letters Data ----------------
+    const lettersData=[{base:"ሀ",orders:["ሀ","ሁ","ሂ","ሃ","ሄ","ህ","ሆ"],word:"ሀብት",sentence:"ሀብት በሥራ ይመጣል"},{base:"ለ",orders:["ለ","ሉ","ሊ","ላ","ሌ","ል","ሎ"],word:"ሎሚ",sentence:"ሎሚ ጎምዛዛ ነው"},{base:"ሐ",orders:["ሐ","ሑ","ሒ","ሓ","ሔ","ሕ","ሖ"],word:"ሐኪም",sentence:"ሐኪሙ ታካሚውን ይረዳል"},{base:"መ",orders:["መ","ሙ","ሚ","ማ","ሜ","ም","ሞ"],word:"መኪና",sentence:"መኪናው በፍጥነት ይጓዛል"},{base:"ሠ",orders:["ሠ","ሡ","ሢ","ሣ","ሤ","ሥ","ሦ"],word:"ሠላም",sentence:"ሠላም ለሁሉም"},{base:"ረ",orders:["ረ","ሩ","ሪ","ራ","ሬ","ር","ሮ"],word:"ሬዲዮ",sentence:"ሬዲዮ ሙዚቃ ያጫውታል"},{base:"ሰ",orders:["ሰ","ሱ","ሲ","ሳ","ሴ","ስ","ሶ"],word:"ሰዓት",sentence:"ሰዓቱ ትክክለኛ ነው"},{base:"ሸ",orders:["ሸ","ሹ","ሺ","ሻ","ሼ","ሽ","ሾ"],word:"ሸሚዝ",sentence:"ሸሚዙ ንጹህ ነው"},{base:"ቀ",orders:["ቀ","ቁ","ቂ","ቃ","ቄ","ቅ","ቆ"],word:"ቀለም",sentence:"ቀለሙ ደማቅ ነው"},{base:"በ",orders:["በ","ቡ","ቢ","ባ","ቤ","ብ","ቦ"],word:"በር",sentence:"በሩ ተከፍቷል"},{base:"ተ",orders:["ተ","ቱ","ቲ","ታ","ቴ","ት","ቶ"],word:"ተራራ",sentence:"ተራራው ከፍ ያለ ነው"},{base:"ቸ",orders:["ቸ","ቹ","ቺ","ቻ","ቼ","ች","ቾ"],word:"ቸኮሌት",sentence:"ቸኮሌት ጣፋጭ ነው"},{base:"ኀ",orders:["ኀ","ኁ","ኂ","ኃ","ኄ","ኅ","ኆ"],word:"ኀይል",sentence:"ኀይል ያስፈልጋል"},{base:"ነ",orders:["ነ","ኑ","ኒ","ና","ኔ","ን","ኖ"],word:"ነብር",sentence:"ነብር ፈጣን ነው"},{base:"ኘ",orders:["ኘ","ኙ","ኚ","ኛ","ኜ","ኝ","ኞ"],word:"ኘላስተር",sentence:"ኘላስተር ቁስልን ይሸፍናል"},{base:"አ",orders:["አ","ኡ","ኢ","ኣ","ኤ","እ","ኦ"],word:"አንበሳ",sentence:"አንበሳ የጫካ ንጉሥ ነው"},{base:"ከ",orders:["ከ","ኩ","ኪ","ካ","ኬ","ክ","ኮ"],word:"כובע",sentence:"ኮከብ በሰማይ ላይ ያበራል"},{base:"ኸ",orders:["ኸ","ኹ","ኺ","ኻ","ኼ","ኽ","ኾ"],word:"ኸሚስ",sentence:"ኸሚስ የሳምንቱ ቀን ነው"},{base:"ወ",orders:["ወ","ዉ","ዊ","ዋ","ዌ","ው","ዎ"],word:"ወንበር",sentence:"ወንበሩ ምቹ ነው"},{base:"ዐ",orders:["ዐ","ዑ","ዒ","ዓ","ዔ","ዕ","ዖ"],word:"ዐይ",sentence:"ዓሣ በውሃ ውስጥ ይዋኛል"},{base:"ዘ",orders:["ዘ","ዙ","ዚ","ዛ","ዜ","ዝ","ዞ"],word:"ዘይት",sentence:"ዘይት ለምግብ ማብሰያ ያገለግላል"},{base:"ዠ",orders:["ዠ","ዡ","ዢ","ዣ","ዤ","ዥ","ዦ"],word:"ዠراف",sentence:"ቀጭኔ ረጅም አንገት አላት"},{base:"የ",orders:["የ","ዩ","ዪ","ያ","ዬ","ይ","ዮ"],word:"የገና ዛፍ",sentence:"የገና ዛፍ በበዓል ጊዜ ያጌጣል"},{base:"ደ",orders:["ደ","ዱ","ዲ","ዳ","ዴ","ድ","ዶ"],word:"ደብተር",sentence:"ደብተሩ ለመጻፍ ነው"},{base:"ጀ",orders:["ጀ","ጁ","ጂ","ጃ","ጄ","ጅ","ጆ"],word:"ጀልባ",sentence:"ጀልባው በውሃ ላይ ይጓዛል"},{base:"ገ",orders:["ገ","ጉ","ጊ","ጋ","ጌ","ግ","ጎ"],word:"ገበታ",sentence:"ገበታው በምግብ የተሞላ ነው"},{base:"ጠ",orders:["ጠ","ጡ","ጢ","ጣ","ጤ","ጥ","ጦ"],word:"ጠረጴዛ",sentence:"ጠረጴዛው ላይ መጻሕፍት አሉ"},{base:"ጨ",orders:["ጨ","ጩ","ጪ","ጫ","ጬ","ጭ","ጮ"],word:"ጨረቃ",sentence:"ጨረቃ በሌሊት ታበራለች"},{base:"ጰ",orders:["ጰ","ጱ","ጲ","ጳ","ጴ","ጵ","ጶ"],word:"ጰጳ",sentence:"ጳጳሱ ጸሎት ይመራሉ"},{base:"ጸ",orders:["ጸ","ጹ","ጺ","ጻ","ጼ","ጽ","ጾ"],word:"ጸሎት",sentence:"ጸሎት ሰላምን ያመጣል"},{base:"ፀ",orders:["ፀ","ፁ","ፂ","ፃ","ፄ","ፅ","ፆ"],word:"ፀሐይ",sentence:"ፀሐይ ብርሃን ትሰጣለች"},{base:"ፈ",orders:["ፈ","ፉ","ፊ","ፋ","ፌ","ፍ","ፎ"],word:"ፈረስ",sentence:"ፈረስ በፍጥነት ይሮጣል"},{base:"ፐ",orders:["ፐ","ፑ","ፒ","ፓ","ፔ","ፕ","ፖ"],word:"ፒያኖ",sentence:"ፒያኖ ጣፋጭ ዜማ ያወጣል"}];
 
-// ---------------- Render Letters ----------------
-function speakAmharic(text) {
-  if (window.isSpeaking) return;
-  window.isSpeaking = true;
-  const audioUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=am&client=tw-ob`;
-  const audio = new Audio(audioUrl);
-  audio.play();
-  audio.onended = () => { window.isSpeaking = false; };
-  audio.onerror = () => { window.isSpeaking = false; console.error("Error playing TTS audio."); };
-}
+    // ---------------- Render Letters ----------------
+    function speakAmharic(text) {
+        if (window.isSpeaking) return;
+        window.isSpeaking = true;
+        const audioUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=am&client=tw-ob`;
+        const audio = new Audio(audioUrl);
+        audio.play();
+        audio.onended = () => { window.isSpeaking = false; };
+        audio.onerror = () => { window.isSpeaking = false; console.error("Error playing TTS audio."); };
+    }
 
-const lettersGrid = document.getElementById("lettersGrid");
-lettersData.forEach(l => {
-  const c = document.createElement("div");
-  c.className = "card";
-  c.innerHTML = `<div class="base-letter" data-letter="${l.base}">${l.base}</div>
+    const lettersGrid = document.getElementById("lettersGrid");
+    lettersData.forEach(l => {
+        const c = document.createElement("div");
+        c.className = "card";
+        c.innerHTML = `<div class="base-letter" data-letter="${l.base}">${l.base}</div>
   <div class="orders">${l.orders.map(o => `<div class="order" data-letter="${o}">${o}</div>`).join('')}</div>
   <div class="word" data-letter="${l.word}">${l.word}</div>
   <div class="sentence">${l.sentence}</div>`;
-  c.addEventListener('click', (event) => {
-    const targetLetter = event.target.dataset.letter;
-    if (targetLetter) {
-      speakAmharic(targetLetter);
-    }
-  });
-  lettersGrid.appendChild(c);
-});
-
-// ---------------- Navigation (RESTORED) ----------------
-document.querySelectorAll('nav button').forEach(btn=>{
-  btn.addEventListener('click',()=>{
-    document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
-    document.getElementById(btn.dataset.section).classList.add('active');
-  });
-});
-
-// ---------------- Toggles (RESTORED) ----------------
-document.getElementById("contrastBtn").addEventListener("click",()=>document.body.classList.toggle("high-contrast"));
-document.getElementById("textBtn").addEventListener("click",()=>document.body.classList.toggle("large-text"));
-
-
-// ---------------- Quiz (RESTORED & UPDATED) ----------------
-const quizArea = document.getElementById("quizArea");
-const emojiFeedback = document.getElementById("emojiFeedback");
-let score = 0;
-
-function generateQuiz(){
-  const q = lettersData[Math.floor(Math.random()*lettersData.length)];
-  quizArea.innerHTML=`<p>Click the letter for the word: <strong>${q.word}</strong></p>
-  ${lettersData.map(l => `<button class="option-btn" data-letter="${l.base}" onclick="checkAnswer(this, '${q.base}', '${q.word}')">${l.base}</button>`).join('')}`;
-}
-
-function checkAnswer(btn, correctAnswer, word) {
-  if (btn.dataset.letter === correctAnswer) {
-    const cheerSound = new Audio('mp3.mp3'); // Using your local file
-    cheerSound.volume = 0.7;
-    cheerSound.addEventListener('ended', () => {
-      speakAmharic(word);
+        c.addEventListener('click', (event) => {
+            const targetLetter = event.target.dataset.letter;
+            if (targetLetter) {
+                speakAmharic(targetLetter);
+            }
+        });
+        lettersGrid.appendChild(c);
     });
-    cheerSound.play();
-    btn.classList.add("correct");
-    showFireworks();
-    emojiFeedback.innerText="🎉 ጎበዝ!";
-    score++;
-    document.getElementById("score").innerText = score;
-    const popup = document.getElementById('word-popup');
-    popup.textContent = word;
-    popup.classList.remove('hidden');
-    setTimeout(() => {
-        popup.classList.add('hidden');
-    }, 6000);
-    setTimeout(() => {
-      emojiFeedback.innerText = "";
-      generateQuiz();
-    }, 7000);
-  } else {
-    const awwSound = new Audio('https://www.soundjay.com/misc/sounds/fail-buzzer-01.mp3');
-    awwSound.volume = 0.5;
-    awwSound.play();
-    btn.classList.add("wrong");
-    emojiFeedback.innerText = "❌ እንደገና ሞክር!";
-    setTimeout(() => {
-      btn.classList.remove("wrong");
-      emojiFeedback.innerText = "";
-    }, 3000);
-  }
-}
 
-generateQuiz();
+    // ---------------- Navigation (RESTORED) ----------------
+    document.querySelectorAll('nav button').forEach(btn=>{
+        btn.addEventListener('click',()=>{
+            document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+            btn.classList.add('active');
+            document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+            document.getElementById(btn.dataset.section).classList.add('active');
+        });
+    });
 
-// ---------------- Fireworks (RESTORED) ----------------
-const canvas=document.getElementById("effectsCanvas");
-const ctx=canvas.getContext("2d");
-canvas.width=window.innerWidth;
-canvas.height=window.innerHeight;
+    // ---------------- Toggles (RESTORED) ----------------
+    document.getElementById("contrastBtn").addEventListener("click",()=>document.body.classList.toggle("high-contrast"));
+    document.getElementById("textBtn").addEventListener("click",()=>document.body.classList.toggle("large-text"));
 
-function showFireworks(){
-  for(let i=0;i<50;i++){
-    const x=Math.random()*canvas.width;
-    const y=Math.random()*canvas.height/2;
-    ctx.fillStyle=`hsl(${Math.random()*360},100%,50%)`;
-    ctx.beginPath();
-    ctx.arc(x,y,Math.random()*8+2,0,Math.PI*2);
-    ctx.fill();
-  }
-  setTimeout(()=>ctx.clearRect(0,0,canvas.width,canvas.height),500);
-}
-window.addEventListener('resize',()=>{canvas.width=window.innerWidth; canvas.height=window.innerHeight;});
 
-// ---------------- Mini Games (UPDATED) ----------------
-const gameArea = document.getElementById("gameArea");
+    // ---------------- Quiz (RESTORED & UPDATED) ----------------
+    const quizArea = document.getElementById("quizArea");
+    const emojiFeedback = document.getElementById("emojiFeedback");
+    let score = 0;
 
-function startMatchingGame() {
-  gameArea.innerHTML = `<h3>🧠 Find the Matching Letters!</h3><div class="memory-game-board" id="memory-board"></div><button class="game-btn" onclick="startMatchingGame()">Reset Game</button>`;
-  const memoryBoard = document.getElementById('memory-board');
-  const gameLetters = lettersData.map(l => l.base).sort(() => 0.5 - Math.random()).slice(0, 8);
-  const cardSet = [...gameLetters, ...gameLetters];
-  cardSet.sort(() => Math.random() - 0.5);
-  let hasFlippedCard = false;
-  let lockBoard = false;
-  let firstCard, secondCard;
-  cardSet.forEach(letter => {
-    const card = document.createElement('div');
-    card.classList.add('memory-card');
-    card.dataset.letter = letter;
-    card.innerHTML = `
+    function generateQuiz(){
+        const q = lettersData[Math.floor(Math.random()*lettersData.length)];
+        quizArea.innerHTML=`<p>Click the letter for the word: <strong>${q.word}</strong></p>
+  ${lettersData.map(l => `<button class="option-btn" data-letter="${l.base}" onclick="checkAnswer(this, '${q.base}', '${q.word}')">${l.base}</button>`).join('')}`;
+    }
+
+    function checkAnswer(btn, correctAnswer, word) {
+        if (btn.dataset.letter === correctAnswer) {
+            const cheerSound = new Audio('mp3.mp3'); // Using your local file
+            cheerSound.volume = 0.7;
+            cheerSound.addEventListener('ended', () => {
+                speakAmharic(word);
+            });
+            cheerSound.play();
+            btn.classList.add("correct");
+            showFireworks();
+            emojiFeedback.innerText="🎉 ጎበዝ!";
+            score++;
+            document.getElementById("score").innerText = score;
+            const popup = document.getElementById('word-popup');
+            popup.textContent = word;
+            popup.classList.remove('hidden');
+            setTimeout(() => {
+                popup.classList.add('hidden');
+            }, 6000);
+            setTimeout(() => {
+                emojiFeedback.innerText = "";
+                generateQuiz();
+            }, 7000);
+        } else {
+            const awwSound = new Audio('https://www.soundjay.com/misc/sounds/fail-buzzer-01.mp3');
+            awwSound.volume = 0.5;
+            awwSound.play();
+            btn.classList.add("wrong");
+            emojiFeedback.innerText = "❌ እንደገና ሞክር!";
+            setTimeout(() => {
+                btn.classList.remove("wrong");
+                emojiFeedback.innerText = "";
+            }, 3000);
+        }
+    }
+
+    generateQuiz();
+
+    // ---------------- Fireworks (RESTORED) ----------------
+    const canvas=document.getElementById("effectsCanvas");
+    const ctx=canvas.getContext("2d");
+    canvas.width=window.innerWidth;
+    canvas.height=window.innerHeight;
+
+    function showFireworks(){
+        for(let i=0;i<50;i++){
+            const x=Math.random()*canvas.width;
+            const y=Math.random()*canvas.height/2;
+            ctx.fillStyle=`hsl(${Math.random()*360},100%,50%)`;
+            ctx.beginPath();
+            ctx.arc(x,y,Math.random()*8+2,0,Math.PI*2);
+            ctx.fill();
+        }
+        setTimeout(()=>ctx.clearRect(0,0,canvas.width,canvas.height),500);
+    }
+    window.addEventListener('resize',()=>{canvas.width=window.innerWidth; canvas.height=window.innerHeight;});
+
+    // ---------------- Mini Games (UPDATED) ----------------
+    const gameArea = document.getElementById("gameArea");
+
+    function startMatchingGame() {
+        gameArea.innerHTML = `<h3>🧠 Find the Matching Letters!</h3><div class="memory-game-board" id="memory-board"></div><button class="game-btn" onclick="startMatchingGame()">Reset Game</button>`;
+        const memoryBoard = document.getElementById('memory-board');
+        const gameLetters = lettersData.map(l => l.base).sort(() => 0.5 - Math.random()).slice(0, 8);
+        const cardSet = [...gameLetters, ...gameLetters];
+        cardSet.sort(() => Math.random() - 0.5);
+        let hasFlippedCard = false;
+        let lockBoard = false;
+        let firstCard, secondCard;
+        cardSet.forEach(letter => {
+            const card = document.createElement('div');
+            card.classList.add('memory-card');
+            card.dataset.letter = letter;
+            card.innerHTML = `
       <div class="front-face"></div>
       <div class="back-face">${letter}</div>
     `;
-    memoryBoard.appendChild(card);
-    card.addEventListener('click', flipCard);
-  });
-  function flipCard() {
-    if (lockBoard) return;
-    if (this === firstCard) return;
-    this.classList.add('flipped');
-    speakAmharic(this.dataset.letter);
-    if (!hasFlippedCard) {
-      hasFlippedCard = true;
-      firstCard = this;
-      return;
+            memoryBoard.appendChild(card);
+            card.addEventListener('click', flipCard);
+        });
+        function flipCard() {
+            if (lockBoard) return;
+            if (this === firstCard) return;
+            this.classList.add('flipped');
+            speakAmharic(this.dataset.letter);
+            if (!hasFlippedCard) {
+                hasFlippedCard = true;
+                firstCard = this;
+                return;
+            }
+            secondCard = this;
+            checkForMatch();
+        }
+        function checkForMatch() {
+            let isMatch = firstCard.dataset.letter === secondCard.dataset.letter;
+            isMatch ? disableCards() : unflipCards();
+        }
+        function disableCards() {
+            firstCard.removeEventListener('click', flipCard);
+            secondCard.removeEventListener('click', flipCard);
+            showFireworks();
+            resetBoard();
+        }
+        function unflipCards() {
+            lockBoard = true;
+            setTimeout(() => {
+                firstCard.classList.remove('flipped');
+                secondCard.classList.remove('flipped');
+                resetBoard();
+            }, 1200);
+        }
+        function resetBoard() {
+            [hasFlippedCard, lockBoard] = [false, false];
+            [firstCard, secondCard] = [null, null];
+        }
     }
-    secondCard = this;
-    checkForMatch();
-  }
-  function checkForMatch() {
-    let isMatch = firstCard.dataset.letter === secondCard.dataset.letter;
-    isMatch ? disableCards() : unflipCards();
-  }
-  function disableCards() {
-    firstCard.removeEventListener('click', flipCard);
-    secondCard.removeEventListener('click', flipCard);
-    showFireworks();
-    resetBoard();
-  }
-  function unflipCards() {
-    lockBoard = true;
-    setTimeout(() => {
-      firstCard.classList.remove('flipped');
-      secondCard.classList.remove('flipped');
-      resetBoard();
-    }, 1200);
-  }
-  function resetBoard() {
-      [hasFlippedCard, lockBoard] = [false, false];
-      [firstCard, secondCard] = [null, null];
-  }
-}
 
-function startTraceGame() {
-    gameArea.innerHTML = `<h3>✍️ Trace the Letter</h3>
+    function startTraceGame() {
+        gameArea.innerHTML = `<h3>✍️ Trace the Letter</h3>
     <p>Click the letter to hear its sound.</p>
     <div style="font-size:60px;cursor:pointer;" onclick="speakAmharic('ሀ')">ሀ</div>`;
-}
+    }
 </script>
 </body>
 </html>
