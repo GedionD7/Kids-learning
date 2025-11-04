@@ -7,6 +7,7 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Ethiopic&display=swap" rel="stylesheet">
     <style>
+        /* Restored Original Theme and Structure */
         :root{
             --accent:#ff6f61; --accent2:#ffa500; --bg:#f0f8ff; --card:#fff; --muted:#555;
             --success:#28a745; --fail:#dc3545;
@@ -121,6 +122,19 @@
                 transform: translate(-50%, -50%) scale(1);
             }
         }
+        /* --- TTS Status Box --- */
+        #status-box {
+            background-color: #ffeaea; /* Light Red/Error Color */
+            border: 1px solid #ff0000;
+            color: #8b0000;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            display: none; /* Controlled by JS */
+        }
+        #status-box.active {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -142,6 +156,11 @@
 </header>
 
 <main>
+    <!-- TTS Status Message (Only visible on error/loading) -->
+    <div id="status-box">
+        <strong id="status-message"></strong>
+    </div>
+
     <section id="letters" class="section active">
         <h2>📚 Letters & Words</h2>
         <div class="letters-grid" id="lettersGrid"></div>
@@ -166,12 +185,26 @@
 
 <canvas id="effectsCanvas"></canvas>
 <div id="word-popup" class="hidden"></div>
+<audio id="audio-player" hidden></audio>
 
 <script>
-    // ---------------- TTS API (Text-to-Speech) Fix ----------------
-    // This section handles the robust generation and playback of Amharic audio.
+    // ---------------- Letters Data ----------------
+    // Data is preserved from the original file
+    const lettersData=[{base:"ሀ",orders:["ሀ","ሁ","ሂ","ሃ","ሄ","ህ","ሆ"],word:"ሀብት",sentence:"ሀብት በሥራ ይመጣል"},{base:"ለ",orders:["ለ","ሉ","ሊ","ላ", "ሌ", "ል", "ሎ"],word:"ሎሚ",sentence:"ሎሚ ጎምዛዛ ነው"},{base:"ሐ",orders:["ሐ","ሑ","ሒ","ሓ","ሔ","ሕ","ሖ"],word:"ሐኪም",sentence:"ሐኪሙ ታካሚውን ይረዳል"},{base:"መ",orders:["መ","ሙ","ሚ","ማ","ሜ","ም","ሞ"],word:"መኪና",sentence:"መኪናው በፍጥነት ይጓዛል"},{base:"ሠ",orders:["ሠ","ሡ","ሢ","ሣ","ሤ","ሥ","ሦ"],word:"ሠላም",sentence:"ሠላም ለሁሉም"},{base:"ረ",orders:["ረ","ሩ","ሪ","ራ","ሬ","ር","ሮ"],word:"ሬዲዮ",sentence:"ሬዲዮ ሙዚቃ ያጫውታል"},{base:"ሰ",orders:["ሰ","ሱ","ሲ","ሳ","ሴ","ስ","ሶ"],word:"ሰዓት",sentence:"ሰዓቱ ትክክለኛ ነው"},{base:"ሸ",orders:["ሸ","ሹ","ሺ","ሻ","ሼ","ሽ","ሾ"],word:"ሸሚዝ",sentence:"ሸሚዙ ንጹህ ነው"},{base:"ቀ",orders:["ቀ","ቁ","ቂ","ቃ","ቄ","ቅ","ቆ"],word:"ቀለም",sentence:"ቀለሙ ደማቅ ነው"},{base:"በ",orders:["በ","ቡ","ቢ","ባ","ቤ","ብ","ቦ"],word:"በር",sentence:"በሩ ተከፍቷል"},{base:"ተ",orders:["ተ","ቱ","ቲ","ታ","ቴ","ት","ቶ"],word:"ተራራ",sentence:"ተራራው ከፍ ያለ ነው"},{base:"ቸ",orders:["ቸ","ቹ","ቺ","ቻ","ቼ","ች","ቾ"],word:"ቸኮሌት",sentence:"ቸኮሌት ጣፋጭ ነው"},{base:"ኀ",orders:["ኀ","ኁ","ኂ","ኃ","ኄ","ኅ","ኆ"],word:"ኀይል",sentence:"ኀይል ያስፈልጋል"},{base:"ነ",orders:["ነ","ኑ","ኒ","ና","ኔ","ን","ኖ"],word:"ነብር",sentence:"ነብር ፈጣን ነው"},{base:"ኘ",orders:["ኘ","ኙ","ኚ","ኛ","ኜ","ኝ","ኞ"],word:"ኘላስተር",sentence:"ኘላስተር ቁስልን ይሸፍናል"},{base:"አ",orders:["አ","ኡ","ኢ","ኣ","ኤ","እ","ኦ"],word:"አንበሳ",sentence:"አንበሳ የጫካ ንጉሥ ነው"},{base:"ከ",orders:["ከ","ኩ","ኪ","ካ","ኬ","ክ","ኮ"],word:"ኮከብ",sentence:"ኮከብ በሰማይ ላይ ያበራል"},{base:"ኸ",orders:["ኸ","ኹ","ኺ","ኻ","ኼ","ኽ","ኾ"],word:"ኸሚስ",sentence:"ኸሚስ የሳምንቱ ቀን ነው"},{base:"ወ",orders:["ወ","ዉ","ዊ","ዋ","ዌ","ው","ዎ"],word:"ወንበር",sentence:"ወንበሩ ምቹ ነው"},{base:"ዐ",orders:["ዐ","ዑ","ዒ","ዓ","ዔ","ዕ","ዖ"],word:"ዓሣ",sentence:"ዓሣ በውሃ ውስጥ ይዋኛል"},{base:"ዘ",orders:["ዘ","ዙ","ዚ","ዛ","ዜ","ዝ","ዞ"],word:"ዘይት",sentence:"ዘይት ለምግብ ማብሰያ ያገለግላል"},{base:"ዠ",orders:["ዠ","ዡ","ዢ","ዣ","ዤ","ዥ","ዦ"],word:"ቀጭኔ",sentence:"ቀጭኔ ረጅም አንገት አላት"},{base:"የ",orders:["የ","ዩ","ዪ","ያ","ዬ","ይ","ዮ"],word:"የገና ዛፍ",sentence:"የገና ዛፍ በበዓል ጊዜ ያጌጣል"},{base:"ደ",orders:["ደ","ዱ","ዲ","ዳ","ዴ","ድ","ዶ"],word:"ደብተር",sentence:"ደብተሩ ለመጻፍ ነው"},{base:"ጀ",orders:["ጀ","ጁ","ጂ","ጃ","ጄ","ጅ","ጆ"],word:"ጀልባ",sentence:"ጀልባው በውሃ ላይ ይጓዛል"},{base:"ገ",orders:["ገ","ጉ","ጊ","ጋ","ጌ","ግ","ጎ"],word:"ገበታ",sentence:"ገበታው በምግብ የተሞላ ነው"},{base:"ጠ",orders:["ጠ","ጡ","ጢ","ጣ","ጤ","ጥ","ጦ"],word:"ጠረጴዛ",sentence:"ጠረጴዛው ላይ መጻሕፍት አሉ"},{base:"ጨ",orders:["ጨ","ጩ","ጪ","ጫ","ጬ","ጭ","ጮ"],word:"ጨረቃ",sentence:"ጨረቃ በሌሊት ታበራለች"},{base:"ጰ",orders:["ጰ","ጱ","ጲ","ጳ","ጴ","ጵ","ጶ"],word:"ጳጳስ",sentence:"ጳጳሱ ጸሎት ይመራሉ"},{base:"ጸ",orders:["ጸ","ጹ","ጺ","ጻ","ጼ","ጽ","ጾ"],word:"ጸሎት",sentence:"ጸሎት ሰላምን ያመጣል"},{base:"ፀ",orders:["ፀ","ፁ","ፂ","ፃ","ፄ","ፅ","ፆ"],word:"ፀሐይ",sentence:"ፀሐይ ብርሃን ትሰጣለች"},{base:"ፈ",orders:["ፈ","ፉ","ፊ","ፋ","ፌ","ፍ","ፎ"],word:"ፈረስ",sentence:"ፈረስ በፍጥነት ይሮጣል"},{base:"ፐ",orders:["ፐ","ፑ","ፒ","ፓ","ፔ","ፕ","ፖ"],word:"ፒያኖ",sentence:"ፒያኖ ጣፋጭ ዜማ ያወጣል"}];
 
-    let audioContext;
+    // ---------------- TTS API & Playback Logic (Fixed) ----------------
+    // Includes robust error handling and backoff for the API calls.
+    const audioPlayer = document.getElementById('audio-player');
+    const statusBox = document.getElementById('status-box');
+    const statusMessage = document.getElementById('status-message');
+    let isSpeaking = false;
+
+    // Helper to write a string to a DataView
+    function writeString(view, offset, string) {
+        for (let i = 0; i < string.length; i++) {
+            view.setUint8(offset + i, string.charCodeAt(i));
+        }
+    }
 
     // Helper to convert Base64 string to ArrayBuffer for audio data processing
     function base64ToArrayBuffer(base64) {
@@ -187,47 +220,33 @@
     // Helper to wrap raw PCM audio data into a playable WAV blob
     function pcmToWav(pcm16, sampleRate) {
         const numChannels = 1;
-        const bitsPerSample = 16;
-        const byteRate = sampleRate * numChannels * (bitsPerSample / 8);
-        const blockAlign = numChannels * (bitsPerSample / 8);
+        const bytesPerSample = 2;
+        const blockAlign = numChannels * bytesPerSample;
+        const byteRate = sampleRate * blockAlign;
+        const dataLength = pcm16.length * bytesPerSample;
 
-        const buffer = new ArrayBuffer(44 + pcm16.length * 2);
+        const buffer = new ArrayBuffer(44 + dataLength);
         const view = new DataView(buffer);
         let offset = 0;
 
-        function writeString(str) {
-            for (let i = 0; i < str.length; i++) {
-                view.setUint8(offset + i, str.charCodeAt(i));
-            }
-            offset += str.length;
-        }
-        function writeUint32(val) {
-            view.setUint32(offset, val, true);
-            offset += 4;
-        }
-        function writeUint16(val) {
-            view.setUint16(offset, val, true);
-            offset += 2;
-        }
+        // RIFF header
+        writeString(view, offset, 'RIFF'); offset += 4;
+        view.setUint32(offset, 36 + dataLength, true); offset += 4;
+        writeString(view, offset, 'WAVE'); offset += 4;
 
-        // RIFF chunk
-        writeString('RIFF');
-        writeUint32(36 + pcm16.length * 2);
-        writeString('WAVE');
+        // FMT sub-chunk
+        writeString(view, offset, 'fmt '); offset += 4;
+        view.setUint32(offset, 16, true); offset += 4;          // Sub-chunk size (16 for PCM)
+        view.setUint16(offset, 1, true); offset += 2;           // Audio format (1 for PCM)
+        view.setUint16(offset, numChannels, true); offset += 2; // Number of channels
+        view.setUint32(offset, sampleRate, true); offset += 4;  // Sample rate
+        view.setUint32(offset, byteRate, true); offset += 4;    // Byte rate
+        view.setUint16(offset, blockAlign, true); offset += 2;  // Block align
+        view.setUint16(offset, 16, true); offset += 2;          // Bits per sample (16)
 
-        // fmt chunk
-        writeString('fmt ');
-        writeUint32(16);
-        writeUint16(1);
-        writeUint16(numChannels);
-        writeUint32(sampleRate);
-        writeUint32(byteRate);
-        writeUint16(blockAlign);
-        writeUint16(bitsPerSample);
-
-        // data chunk
-        writeString('data');
-        writeUint32(pcm16.length * 2);
+        // Data sub-chunk
+        writeString(view, offset, 'data'); offset += 4;
+        view.setUint32(offset, dataLength, true); offset += 4; // Data size
 
         // PCM data
         for (let i = 0; i < pcm16.length; i++) {
@@ -238,28 +257,41 @@
         return new Blob([view], { type: 'audio/wav' });
     }
 
+    /** Displays a status message to the user. */
+    function showStatus(message, isError = false) {
+        statusMessage.textContent = message;
+        statusBox.classList.remove('active'); // Remove and re-add to trigger transition/visibility
+        statusBox.classList.add('active');
+        statusBox.style.backgroundColor = isError ? '#ffeaea' : '#e0f7fa';
+        statusBox.style.borderColor = isError ? '#ff0000' : '#00bcd4';
+        statusBox.style.color = isError ? '#8b0000' : '#006064';
+    }
+
+    /** Hides the status message. */
+    function hideStatus() {
+        statusBox.classList.remove('active');
+    }
+
     /**
-     * Generates and plays Amharic speech using the Gemini TTS API.
-     * @param {string} text The Amharic text to speak.
+     * Fetches audio data from the TTS API with exponential backoff.
      */
-    async function speakAmharic(text) {
-        if (window.isSpeaking) return;
-        window.isSpeaking = true;
+    async function fetchAudioWithBackoff(textToSpeak, retries = 0) {
+        const MAX_RETRIES = 3;
+        const apiKey = "";
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`;
 
         const payload = {
-            contents: [{ parts: [{ text: text }] }],
+            contents: [{ parts: [{ text: textToSpeak }] }],
             generationConfig: {
                 responseModalities: ["AUDIO"],
                 speechConfig: {
-                    // Use Kore voice, which works well for clear Amharic pronunciation
                     voiceConfig: { prebuiltVoiceConfig: { voiceName: "Kore" } }
                 }
             },
             model: "gemini-2.5-flash-preview-tts"
         };
 
-        const apiKey = "";
-        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`;
+        const delay = Math.pow(2, retries) * 1000; // Exponential delay
 
         try {
             const response = await fetch(apiUrl, {
@@ -268,8 +300,12 @@
                 body: JSON.stringify(payload)
             });
 
+            if (response.status === 403) {
+                throw new Error("403 Forbidden: TTS feature may be restricted in this environment.");
+            }
+
             if (!response.ok) {
-                throw new Error(`API call failed with status: ${response.status}`);
+                throw new Error(`API call failed with status: ${response.status} ${response.statusText}`);
             }
 
             const result = await response.json();
@@ -277,36 +313,76 @@
             const audioData = part?.inlineData?.data;
             const mimeType = part?.inlineData?.mimeType;
 
-            if (audioData && mimeType && mimeType.startsWith("audio/L16")) {
-                const sampleRate = 24000; // Expected sample rate for the TTS model
-                const pcmData = base64ToArrayBuffer(audioData);
-                const pcm16 = new Int16Array(pcmData);
-                const wavBlob = pcmToWav(pcm16, sampleRate);
-                const audioUrl = URL.createObjectURL(wavBlob);
-                const audio = new Audio(audioUrl);
-
-                audio.play();
-
-                audio.onended = () => {
-                    window.isSpeaking = false;
-                    URL.revokeObjectURL(audioUrl);
-                };
-                audio.onerror = (e) => {
-                    window.isSpeaking = false;
-                    console.error("Error playing generated WAV audio:", e);
-                    URL.revokeObjectURL(audioUrl);
-                };
-            } else {
-                throw new Error("Invalid audio data or MIME type from API.");
+            if (!audioData || !mimeType) {
+                throw new Error("API response was successful but did not contain valid audio data.");
             }
+
+            return { audioData, mimeType };
+
         } catch (error) {
-            window.isSpeaking = false;
-            console.error("TTS Generation/Playback Error:", error.message);
+            console.error(`Attempt ${retries + 1} failed:`, error.message);
+            if (retries < MAX_RETRIES) {
+                showStatus(`TTS: Connection error, retrying in ${delay / 1000}s... (Attempt ${retries + 1}/${MAX_RETRIES})`);
+                await new Promise(resolve => setTimeout(resolve, delay));
+                return fetchAudioWithBackoff(textToSpeak, retries + 1);
+            } else {
+                throw new Error(`TTS Generation/Playback Error: Could not retrieve audio after ${MAX_RETRIES} attempts. Details: ${error.message}`);
+            }
         }
     }
 
-    // ---------------- Letters Data ----------------
-    const lettersData=[{base:"ሀ",orders:["ሀ","ሁ","ሂ","ሃ","ሄ","ህ","ሆ"],word:"ሀብት",sentence:"ሀብት በሥራ ይመጣል"},{base:"ለ",orders:["ለ","ሉ","ሊ","ላ","ሌ","ል","ሎ"],word:"ሎሚ",sentence:"ሎሚ ጎምዛዛ ነው"},{base:"ሐ",orders:["ሐ","ሑ","ሒ","ሓ","ሔ","ሕ","ሖ"],word:"ሐኪም",sentence:"ሐኪሙ ታካሚውን ይረዳል"},{base:"መ",orders:["መ","ሙ","ሚ","ማ","ሜ","ም","ሞ"],word:"መኪና",sentence:"መኪናው በፍጥነት ይጓዛል"},{base:"ሠ",orders:["ሠ","ሡ","ሢ","ሣ","ሤ","ሥ","ሦ"],word:"ሠላም",sentence:"ሠላም ለሁሉም"},{base:"ረ",orders:["ረ","ሩ","ሪ","ራ","ሬ","ር","ሮ"],word:"ሬዲዮ",sentence:"ሬዲዮ ሙዚቃ ያጫውታል"},{base:"ሰ",orders:["ሰ","ሱ","ሲ","ሳ","ሴ","ስ","ሶ"],word:"ሰዓት",sentence:"ሰዓቱ ትክክለኛ ነው"},{base:"ሸ",orders:["ሸ","ሹ","ሺ","ሻ","ሼ","ሽ","ሾ"],word:"ሸሚዝ",sentence:"ሸሚዙ ንጹህ ነው"},{base:"ቀ",orders:["ቀ","ቁ","ቂ","ቃ","ቄ","ቅ","ቆ"],word:"ቀለም",sentence:"ቀለሙ ደማቅ ነው"},{base:"በ",orders:["በ","ቡ","ቢ","ባ","ቤ","ብ","ቦ"],word:"በር",sentence:"በሩ ተከፍቷል"},{base:"ተ",orders:["ተ","ቱ","ቲ","ታ","ቴ","ት","ቶ"],word:"ተራራ",sentence:"ተራራው ከፍ ያለ ነው"},{base:"ቸ",orders:["ቸ","ቹ","ቺ","ቻ","ቼ","ች","ቾ"],word:"ቸኮሌት",sentence:"ቸኮሌት ጣፋጭ ነው"},{base:"ኀ",orders:["ኀ","ኁ","ኂ","ኃ","ኄ","ኅ","ኆ"],word:"ኀይል",sentence:"ኀይል ያስፈልጋል"},{base:"ነ",orders:["ነ","ኑ","ኒ","ና","ኔ","ን","ኖ"],word:"ነብር",sentence:"ነብር ፈጣን ነው"},{base:"ኘ",orders:["ኘ","ኙ","ኚ","ኛ","ኜ","ኝ","ኞ"],word:"ኘላስተር",sentence:"ኘላስተር ቁስልን ይሸፍናል"},{base:"አ",orders:["አ","ኡ","ኢ","ኣ","ኤ","እ","ኦ"],word:"አንበሳ",sentence:"አንበሳ የጫካ ንጉሥ ነው"},{base:"ከ",orders:["ከ","ኩ","ኪ","ካ","ኬ","ክ","ኮ"],word:"ኮከብ",sentence:"ኮከብ በሰማይ ላይ ያበራል"},{base:"ኸ",orders:["ኸ","ኹ","ኺ","ኻ","ኼ","ኽ","ኾ"],word:"ኸሚስ",sentence:"ኸሚስ የሳምንቱ ቀን ነው"},{base:"ወ",orders:["ወ","ዉ","ዊ","ዋ","ዌ","ው","ዎ"],word:"ወንበር",sentence:"ወንበሩ ምቹ ነው"},{base:"ዐ",orders:["ዐ","ዑ","ዒ","ዓ","ዔ","ዕ","ዖ"],word:"ዓሣ",sentence:"ዓሣ በውሃ ውስጥ ይዋኛል"},{base:"ዘ",orders:["ዘ","ዙ","ዚ","ዛ","ዜ","ዝ","ዞ"],word:"ዘይት",sentence:"ዘይት ለምግብ ማብሰያ ያገለግላል"},{base:"ዠ",orders:["ዠ","ዡ","ዢ","ዣ","ዤ","ዥ","ዦ"],word:"ቀጭኔ",sentence:"ቀጭኔ ረጅም አንገት አላት"},{base:"የ",orders:["የ","ዩ","ዪ","ያ","ዬ","ይ","ዮ"],word:"የገና ዛፍ",sentence:"የገና ዛፍ በበዓል ጊዜ ያጌጣል"},{base:"ደ",orders:["ደ","ዱ","ዲ","ዳ","ዴ","ድ","ዶ"],word:"ደብተር",sentence:"ደብተሩ ለመጻፍ ነው"},{base:"ጀ",orders:["ጀ","ጁ","ጂ","ጃ","ጄ","ጅ","ጆ"],word:"ጀልባ",sentence:"ጀልባው በውሃ ላይ ይጓዛል"},{base:"ገ",orders:["ገ","ጉ","ጊ","ጋ","ጌ","ግ","ጎ"],word:"ገበታ",sentence:"ገበታው በምግብ የተሞላ ነው"},{base:"ጠ",orders:["ጠ","ጡ","ጢ","ጣ","ጤ","ጥ","ጦ"],word:"ጠረጴዛ",sentence:"ጠረጴዛው ላይ መጻሕፍት አሉ"},{base:"ጨ",orders:["ጨ","ጩ","ጪ","ጫ","ጬ","ጭ","ጮ"],word:"ጨረቃ",sentence:"ጨረቃ በሌሊት ታበራለች"},{base:"ጰ",orders:["ጰ","ጱ","ጲ","ጳ","ጴ","ጵ","ጶ"],word:"ጳጳስ",sentence:"ጳጳሱ ጸሎት ይመራሉ"},{base:"ጸ",orders:["ጸ","ጹ","ጺ","ጻ","ጼ","ጽ","ጾ"],word:"ጸሎት",sentence:"ጸሎት ሰላምን ያመጣል"},{base:"ፀ",orders:["ፀ","ፁ","ፂ","ፃ","ፄ","ፅ","ፆ"],word:"ፀሐይ",sentence:"ፀሐይ ብርሃን ትሰጣለች"},{base:"ፈ",orders:["ፈ","ፉ","ፊ","ፋ","ፌ","ፍ","ፎ"],word:"ፈረስ",sentence:"ፈረስ በፍጥነት ይሮጣል"},{base:"ፐ",orders:["ፐ","ፑ","ፒ","ፓ","ፔ","ፕ","ፖ"],word:"ፒያኖ",sentence:"ፒያኖ ጣፋጭ ዜማ ያወጣል"}];
+
+    /**
+     * Generates and plays Amharic speech using the Gemini TTS API.
+     * @param {string} text The Amharic text to speak.
+     */
+    async function speakAmharic(text) {
+        if (isSpeaking) return;
+        isSpeaking = true;
+
+        showStatus(`Generating audio for "${text}"...`);
+
+        try {
+            // 1. Fetch the raw audio data
+            const { audioData, mimeType } = await fetchAudioWithBackoff(text);
+
+            // 2. Extract sample rate and convert PCM to WAV
+            // The model is known to return 24000 Hz for this task
+            const sampleRate = 24000;
+
+            const pcmData = base64ToArrayBuffer(audioData);
+            const pcm16 = new Int16Array(pcmData);
+            const wavBlob = pcmToWav(pcm16, sampleRate);
+            const audioUrl = URL.createObjectURL(wavBlob);
+
+            // 3. Play the audio
+            audioPlayer.src = audioUrl;
+
+            audioPlayer.onended = () => {
+                URL.revokeObjectURL(audioUrl);
+                isSpeaking = false;
+                hideStatus();
+            };
+
+            audioPlayer.onerror = (e) => {
+                isSpeaking = false;
+                URL.revokeObjectURL(audioUrl);
+                showStatus("Playback failed. Please try again.", true);
+            };
+
+            await audioPlayer.play();
+            showStatus(`Playing pronunciation for "${text}".`);
+
+        } catch (error) {
+            isSpeaking = false;
+            console.error(error);
+            const message = error.message.includes("403 Forbidden")
+                ? "Error: TTS feature is currently unavailable or restricted. (403 Forbidden)"
+                : `Error generating audio: ${error.message}`;
+            showStatus(message, true);
+        }
+    }
+
 
     // ---------------- Render Letters ----------------
     const lettersGrid = document.getElementById("lettersGrid");
@@ -381,7 +457,8 @@
         }
     }
 
-    generateQuiz();
+    // Initialize the quiz on load
+    window.onload = generateQuiz;
 
     // ---------------- Fireworks ----------------
     const canvas=document.getElementById("effectsCanvas");
@@ -429,7 +506,7 @@
             if (lockBoard) return;
             if (this === firstCard) return;
             this.classList.add('flipped');
-            speakAmharic(this.dataset.letter);
+            speakAmharic(this.dataset.letter); // Use the fixed TTS function
             if (!hasFlippedCard) {
                 hasFlippedCard = true;
                 firstCard = this;
@@ -464,8 +541,8 @@
 
     function startTraceGame() {
         gameArea.innerHTML = `<h3>✍️ Trace the Letter</h3>
-    <p>Click the letter to hear its sound.</p>
-    <div style="font-size:60px;cursor:pointer;" onclick="speakAmharic('ሀ')">ሀ</div>`;
+    <p>This is a placeholder for a tracing game. Click the letter to hear its sound.</p>
+    <div style="font-size:60px;cursor:pointer; padding: 20px; border: 2px dashed var(--accent); border-radius: 10px; display: inline-block;" onclick="speakAmharic('ሀ')">ሀ</div>`;
     }
 </script>
 </body>
