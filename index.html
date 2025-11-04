@@ -1,180 +1,387 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Future Focus</title>
-
-    <!-- 1. Supabase CDN (The global 'supabase' object) -->
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Future focus</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-    <!-- 2. Your custom client file (Defines 'supabaseClient') -->
     <script src="supabaseClient.js"></script>
-
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google font -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
     <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            /* Using the gradient from the homepage for a consistent feel */
-            background: linear-gradient(135deg, #a1c4fd, #c2e9fb);
-            min-height: 100vh;
+        :root {
+            --accent:#ff6f61;
+            --accent-2:#7c4dff;
+            --shadow:0 10px 25px rgba(0,0,0,.12);
+            --radius:22px;
         }
-        .form-container {
-            background-color: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(0, 0, 0, 0.05);
+        *{box-sizing:border-box}
+        html,body{margin:0}
+        body{
+            font-family:"Poppins",sans-serif;
+            color:#222;
+            background:linear-gradient(180deg,#fdfbfb,#ebedee);
+            overflow-x:hidden;
         }
+        a{text-decoration:none;color:inherit}
+
+        /* NAV */
+        .nav{position:sticky;top:0;z-index:50;background:#fff;box-shadow:0 2px 14px rgba(0,0,0,.05)}
+        .nav-inner{max-width:1200px;margin:auto;padding:14px 20px;display:flex;align-items:center}
+        .brand{font-weight:700;font-size:22px;color:var(--accent)}
+        .nav-links{margin-left:auto;display:flex;gap:18px; align-items: center;}
+        .nav-links a{font-weight:600;color:#475467}
+        .nav-links a:hover{color:var(--accent)}
+
+        /* Nav Login/Logout Link Styling */
+        #nav-login-link {
+            padding: 8px 16px;
+            border-radius: 20px;
+            background: var(--accent-2); /* A secondary accent color */
+            color: #fff;
+            font-weight: 700;
+            transition: .3s;
+            box-shadow: 0 4px 6px rgba(0,0,0,.1);
+            line-height: 1;
+        }
+        #nav-login-link:hover {
+            background: #6a3dbf;
+        }
+
+        /* HERO */
+        .hero{
+            position:relative;
+            text-align:center;
+            padding:80px 20px;
+            color:#222;
+            background:linear-gradient(135deg,#ffecd2,#fcb69f,#a1c4fd,#c2e9fb);
+            overflow:hidden;
+        }
+        .hero h1{font-size:clamp(30px,5vw,48px);margin-bottom:14px}
+        .hero p{max-width:650px;margin:auto;font-size:18px;color:#444}
+
+        /* Hero Buttons Container */
+        .hero-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px; /* Space between the two buttons */
+            margin-top: 22px;
+        }
+
+        /* Main Button Styling */
+        .hero-buttons button{
+            padding:14px 30px; /* Slightly larger padding */
+            border:none;
+            border-radius:30px;
+            background:var(--accent);
+            color:#fff;
+            font-size:18px; /* Slightly larger font */
+            font-weight:700; /* Bolder font */
+            cursor:pointer;
+            transition:.3s;
+            box-shadow: 0 4px 10px rgba(255, 111, 97, 0.4);
+            text-transform: uppercase;
+        }
+        .hero-buttons button:hover{background:#e85a4f;transform:scale(1.05)}
+
+        /* PLANE ANIMATION */
+        .plane{
+            position:absolute;top:40px;left:-150px;font-size:40px;
+            animation:fly 15s linear infinite;
+        }
+        @keyframes fly{
+            0%{transform:translateX(-200px) rotate(0deg)}
+            50%{transform:translateX(120vw) rotate(5deg)}
+            100%{transform:translateX(-200px) rotate(0deg)}
+        }
+
+        /* STARS */
+        .star{
+            position:absolute;width:4px;height:4px;border-radius:50%;
+            background:white;opacity:.8;
+            animation:twinkle 3s infinite alternate;
+        }
+        @keyframes twinkle{
+            from{opacity:.2}
+            to{opacity:1}
+        }
+
+        /* SECTION */
+        .section{max-width:1200px;margin:60px auto;padding:0 20px;text-align:center}
+        .section h2{font-size:28px;margin-bottom:20px;color:var(--accent)}
+        .grid{
+            display:grid;gap:22px;
+            grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+        }
+        .card{
+            background:#fff;border-radius:var(--radius);
+            padding:26px 20px;box-shadow:var(--shadow);
+            transition:.3s;cursor:pointer;position:relative;overflow:hidden;
+        }
+        .card:hover{transform:translateY(-6px);box-shadow:0 14px 30px rgba(0,0,0,.15)}
+        .icon{
+            font-size:40px;margin-bottom:10px;transition:.4s;
+            display:inline-block;
+        }
+        .card:hover .icon{transform:rotate(10deg) scale(1.2)}
+        .card h3{margin:0 0 8px;font-size:18px}
+        .card p{margin:0;color:#666;font-size:14px}
+
+        /* CONFETTI */
+        .confetti{
+            position:fixed;width:8px;height:10px;
+            transform:translate(-50%,-50%);
+            animation:fall .9s ease-out forwards;border-radius:2px;
+        }
+        @keyframes fall{
+            0%{opacity:1}
+            100%{transform:translate(-50%,40px) rotate(320deg);opacity:0}
+        }
+
+        footer{text-align:center;padding:30px;color:#555;background:#fff;border-top:1px solid #eee}
     </style>
 </head>
-<body class="flex items-center justify-center h-screen px-4">
-<div class="w-full max-w-sm">
+<body>
 
-    <!-- Login Form -->
-    <div id="login-form">
-        <form class="form-container shadow-2xl rounded-xl px-8 pt-8 pb-10 mb-4" onsubmit="handleFormSubmit(event, 'login')">
-            <div class="mb-8 text-center">
-                <h2 class="text-3xl font-bold text-gray-800">Welcome Back! 🎉</h2>
-            </div>
-            <div class="mb-4">
-                <label class="block text-gray-700 text-sm font-bold mb-2" for="email">
-                    Email
-                </label>
-                <input class="shadow-sm appearance-none border-2 border-gray-200 rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:border-purple-500" id="email" name="email" type="email" placeholder="Your Email" required>
-            </div>
-            <div class="mb-8">
-                <label class="block text-gray-700 text-sm font-bold mb-2" for="password">
-                    Password
-                </label>
-                <input class="shadow-sm appearance-none border-2 border-gray-200 rounded-lg w-full py-3 px-4 text-gray-700 mb-3 leading-tight focus:outline-none focus:border-purple-500" id="password" name="password" type="password" placeholder="******************" required>
-            </div>
-            <div class="flex items-center justify-between">
-                <button class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-6 rounded-full focus:outline-none focus:shadow-outline transition-all duration-200 transform hover:scale-105 shadow-md" type="submit">
-                    Sign In
-                </button>
-                <a class="inline-block align-baseline font-bold text-sm text-purple-500 hover:text-purple-700 cursor-pointer transition-colors" onclick="toggleForm()">
-                    Create an Account
-                </a>
-            </div>
-        </form>
+<!-- NAV -->
+<header class="nav">
+    <div class="nav-inner">
+        <div class="brand">Future Focus</div>
+        <nav class="nav-links">
+            <a href="#home">Home</a>
+            <a href="#topics">Topics</a>
+            <a href="#about">About</a>
+            <!-- LOGIN/LOGOUT LINK in Nav: Toggles based on auth state (Optional, but good backup) -->
+            <a id="nav-login-link" href="/login.html" style="display: none;">Log In</a>
+            <a id="logout-link" href="#" onclick="logout()" style="color: var(--accent); font-weight: 700; display: none;">Logout</a>
+        </nav>
     </div>
+</header>
 
-    <!-- Signup Form (Hidden by default) -->
-    <div id="signup-form" style="display: none;">
-        <form class="form-container shadow-2xl rounded-xl px-8 pt-8 pb-10 mb-4" onsubmit="handleFormSubmit(event, 'signup')">
-            <div class="mb-8 text-center">
-                <h2 class="text-3xl font-bold text-gray-800">Join the Fun! 🚀</h2>
-            </div>
-            <div class="mb-4">
-                <label class="block text-gray-700 text-sm font-bold mb-2" for="new-email">
-                    Email
-                </label>
-                <input class="shadow-sm appearance-none border-2 border-gray-200 rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:border-teal-500" id="new-email" name="email" type="email" placeholder="Your Email" required>
-            </div>
-            <div class="mb-8">
-                <label class="block text-gray-700 text-sm font-bold mb-2" for="new-password">
-                    Password
-                </label>
-                <input class="shadow-sm appearance-none border-2 border-gray-200 rounded-lg w-full py-3 px-4 text-gray-700 mb-3 leading-tight focus:outline-none focus:border-teal-500" id="new-password" name="password" type="password" placeholder="******************" required>
-            </div>
-            <div class="flex items-center justify-between">
-                <button class="bg-teal-500 hover:bg-teal-600 text-white font-bold py-3 px-6 rounded-full focus:outline-none focus:shadow-outline transition-all duration-200 transform hover:scale-105 shadow-md" type="submit">
-                    Sign Up
-                </button>
-                <a class="inline-block align-baseline font-bold text-sm text-purple-500 hover:text-purple-700 cursor-pointer transition-colors" onclick="toggleForm()">
-                    Back to Login
-                </a>
-            </div>
-        </form>
+<!-- HERO -->
+<section id="home" class="hero">
+    <span class="plane">✈️</span>
+    <h1>Make Learning Bright & Fun ✨</h1>
+    <p>Engaging lessons, colorful visuals, and interactive play to help kids grow joyfully.</p>
+
+    <div class="hero-buttons">
+        <!-- MAIN BUTTON: Now defaults to the login text. JS will change it if user is logged in. -->
+        <button id="hero-main-button" onclick="handleHeroButtonClick()">
+            Log In / Join 🔑
+        </button>
     </div>
+</section>
 
-    <!-- Feedback Message Area -->
-    <p id="message" class="text-center text-red-500 text-sm font-bold mt-4"></p>
+<!-- TOPICS -->
+<section id="topics" class="section">
+    <h2>Explore Topics</h2>
+    <div class="grid" id="grid">
+        <!-- Topic cards, each calling navigateToPage with the filename/category name -->
+        <div class="card" onclick="navigateToPage('english-alphabet')">
+            <div class="icon">🔤</div>
+            <h3>English Alphabet</h3>
+            <p>Letters & sounds</p>
+        </div>
+        <div class="card" onclick="navigateToPage('amharic-alphabet')">
+            <div class="icon">🇪🇹</div>
+            <h3>Amharic Alphabet</h3>
+            <p>Learn Fidel</p>
+        </div>
+        <div class="card" onclick="navigateToPage('Numbers')">
+            <div class="icon">🔢</div>
+            <h3>Numbers</h3>
+            <p>Counting & math</p>
+        </div>
+        <div class="card" onclick="navigateToPage('colors')">
+            <div class="icon">🎨</div>
+            <h3>Colors</h3>
+            <p>Mix & match</p>
+        </div>
+        <div class="card" onclick="navigateToPage('shapes')">
+            <div class="icon">✏️</div>
+            <h3>Lines & Shapes</h3>
+            <p>Trace & draw</p>
+        </div>
+        <div class="card" onclick="navigateToPage('body-parts')">
+            <div class="icon">🧒</div>
+            <h3>Body Parts</h3>
+            <p>See & learn</p>
+        </div>
+        <div class="card" onclick="navigateToPage('family')">
+            <div class="icon">👨‍👩‍👧</div>
+            <h3>Family</h3>
+            <p>Meet everyone</p>
+        </div>
+        <div class="card" onclick="navigateToPage('stories')">
+            <div class="icon">📖</div>
+            <h3>Stories</h3>
+            <p>Read & enjoy</p>
+        </div>
+        <div class="card" onclick="navigateToPage('animals')">
+            <div class="icon">🐶</div>
+            <h3>Animals</h3>
+            <p>Roars & facts</p>
+        </div>
+        <div class="card" onclick="navigateToPage('Games')">
+            <div class="icon">🎮</div>
+            <h3>Games</h3>
+            <p>Play & learn</p>
+        </div>
+        <div class="card" onclick="navigateToPage('Vegetables')">
+            <div class="icon">🥦</div>
+            <h3>Vegetables</h3>
+            <p>Healthy & green</p>
+        </div>
+        <div class="card" onclick="navigateToPage('Fruits')">
+            <div class="icon">🍎</div>
+            <h3>Fruits</h3>
+            <p>Sweet & colorful</p>
+        </div>
+    </div>
+</section>
 
-    <p class="text-center text-gray-600 text-xs mt-4">
-        &copy;2025 Kids Fun Learning. All rights reserved.
+<!-- ABOUT -->
+<section id="about" class="section">
+    <h2>About Us</h2>
+    <p style="max-width:700px;margin:auto;color:#555">
+        Kids Fun Learning is a joyful platform where education meets play.
+        We use colors, motion, and stories to keep kids excited while learning.
     </p>
-</div>
+</section>
+
+<footer>
+    © 2025 Kids Fun Learning • Made with ❤️
+</footer>
 
 <script>
-    /**
-     * Toggles between the login and signup forms.
-     */
-    function toggleForm() {
-        const loginForm = document.getElementById('login-form');
-        const signupForm = document.getElementById('signup-form');
-        const messageEl = document.getElementById('message');
-        messageEl.textContent = ''; // Clear any previous messages
+    // --- AUTH AND UI TOGGLE ---
 
-        // Simple toggle logic
-        if (loginForm.style.display === 'none') {
-            loginForm.style.display = 'block';
-            signupForm.style.display = 'none';
+    const navLoginLink = document.getElementById('nav-login-link');
+    const logoutLink = document.getElementById('logout-link');
+    const heroMainButton = document.getElementById('hero-main-button');
+    let isUserLoggedIn = false; // Global flag to track authentication state
+
+    /**
+     * Handles the click action for the main hero button.
+     * Scrolls to content if logged in, redirects to login page if logged out.
+     */
+    function handleHeroButtonClick() {
+        if (isUserLoggedIn) {
+            // Logged in: Scroll to the topics section
+            document.getElementById('topics').scrollIntoView({behavior:'smooth'});
         } else {
-            loginForm.style.display = 'none';
-            signupForm.style.display = 'block';
+            // Logged out: Go to the login page
+            window.location.href = '/login.html';
         }
     }
 
     /**
-     * Handles the form submission for both login and signup actions.
-     * @param {Event} event The form submission event.
-     * @param {string} action 'login' or 'signup'.
+     * Checks authentication status and updates navigation links AND hero button.
      */
-    async function handleFormSubmit(event, action) {
-        event.preventDefault();
-
-        const messageEl = document.getElementById('message');
-
-        // 1. Initialization and validation check
-        if (typeof supabaseClient === 'undefined') {
-            messageEl.textContent = 'Error: Supabase client not loaded.';
+    async function confirmDataConnection() {
+        if (typeof supabase === 'undefined') {
+            console.error("Supabase client not loaded.");
+            // If Supabase is missing, we assume logged out and the default HTML text "Log In / Join 🔑" is correct.
+            navLoginLink.style.display = 'block';
+            logoutLink.style.display = 'none';
             return;
         }
 
-        const form = event.target;
-        const email = form.elements['email'].value; // Works for both forms since both inputs are named 'email'
-        const password = form.elements['password'].value; // Works for both forms since both inputs are named 'password'
+        const { data: { user } } = await supabase.auth.getUser();
 
-        messageEl.textContent = 'Processing...';
+        if (user) {
+            // User is logged in: SHOW LOGOUT, HIDE LOGIN, CHANGE MAIN BUTTON
+            isUserLoggedIn = true;
+            console.log(`User ${user.id} is authenticated.`);
 
-        let response;
+            // Update main hero button for logged-in users
+            heroMainButton.textContent = "Continue Learning 🚀";
 
-        // 2. Perform the authentication action
-        if (action === 'login') {
-            response = await supabaseClient.auth.signInWithPassword({
-                email: email,
-                password: password,
-            });
+            // Set navigation links
+            navLoginLink.style.display = 'none';
+            logoutLink.style.display = 'block';
+        } else {
+            // User is NOT logged in: SHOW LOGIN, HIDE LOGOUT, KEEP MAIN BUTTON AS DEFAULT LOGIN TEXT
+            isUserLoggedIn = false;
+            console.log("User is not authenticated. Showing Log In link.");
 
-        } else if (action === 'signup') {
-            // NOTE: The 'redirectTo' field is often used for email confirmation links,
-            // but for simplicity, we omit it and rely on the default setup.
-            response = await supabaseClient.auth.signUp({
-                email: email,
-                password: password,
-            });
+            // Set navigation links
+            navLoginLink.style.display = 'block';
+            logoutLink.style.display = 'none';
+            // The heroMainButton already defaults to "Log In / Join 🔑" in the HTML.
         }
 
-        // 3. Handle response and redirect
-        if (response.error) {
-            // Display a user-friendly error
-            messageEl.textContent = `Error: ${response.error.message}`;
+        // Database connection check (kept for RLS/setup confirmation)
+        try {
+            const { data: records, error } = await supabase
+                .from('questions')
+                .select('id')
+                .limit(1);
 
-        } else if (action === 'signup' && response.data.user && !response.data.session) {
-            // Successful signup but email confirmation is required (session is null)
-            messageEl.textContent = 'Success! Please check your email for a confirmation link to log in.';
+            if (error) {
+                console.warn('Initial DB check encountered RLS/connection error:', error.message);
+            }
+        } catch (e) {
+            console.error('Database check failed:', e);
+        }
+    }
 
-        } else if (response.data.user || response.data.session) {
-            // Successful login OR sign-up if email confirmation is disabled/user is auto-logged in
-            messageEl.textContent = 'Success! Redirecting to home...';
+    window.onload = confirmDataConnection;
 
-            // CRITICAL: Redirect to the main index page after successful authentication
-            window.location.href = '/index.html';
+    // --- UTILITIES ---
 
-        } else {
-            // Fallback for unexpected success scenarios
-            messageEl.textContent = 'An unknown success occurred. Please refresh if you are not redirected.';
+    // Generate stars in hero
+    for(let i=0;i<20;i++){
+        let s=document.createElement("div");
+        s.className="star";
+        s.style.left=Math.random()*100+"%";
+        s.style.top=Math.random()*100+"%";
+        s.style.animationDelay=Math.random()*5+"s";
+        document.querySelector(".hero").appendChild(s);
+    }
+
+    // Confetti burst on card click
+    document.getElementById("grid").addEventListener("click",e=>{
+        const card=e.target.closest(".card"); if(!card) return;
+        confettiBurst(e.clientX,e.clientY);
+    });
+    function confettiBurst(x,y){
+        const colors=['#ff6f61','#ffb84d','#4dd0e1','#7c4dff','#4caf50','#ffd700'];
+        for(let i=0;i<14;i++){
+            const piece=document.createElement('i');
+            piece.className='confetti';
+            piece.style.left=x+(Math.random()*40-20)+'px';
+            piece.style.top=y+(Math.random()*6-3)+'px';
+            piece.style.background=colors[i%colors.length];
+            piece.style.transform+=` rotate(${Math.random()*360}deg)`;
+            piece.style.animationDuration=(0.6+Math.random()*0.5)+'s';
+            piece.style.width=(6+Math.random()*6)+'px';
+            piece.style.height=(6+Math.random()*9)+'px';
+            document.body.appendChild(piece);
+            setTimeout(()=>piece.remove(),900);
+        }
+    }
+
+    // Navigation function
+    function navigateToPage(category) {
+        window.location.href = `/${encodeURIComponent(category)}.html`;
+    }
+
+    // Logout function
+    async function logout() {
+        try {
+            if (typeof supabase === 'undefined') {
+                console.error("Supabase client not available for logout.");
+                window.location.href = "/login.html";
+                return;
+            }
+            const { error } = await supabase.auth.signOut();
+            if (error) throw error;
+            // Redirect to the login page after successful sign out
+            window.location.href = "/login.html";
+        } catch (error) {
+            console.error("Logout error:", error.message);
         }
     }
 </script>

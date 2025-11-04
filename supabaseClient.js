@@ -20,17 +20,17 @@ async function checkUserSession() {
         return user;
     } else {
         // User is NOT logged in. Redirect them to the login page.
-        console.log("User not logged in. Redirecting to /index.html");
-        // Redirect to the login page (index.html is the new entry point)
-        if (!window.location.pathname.endsWith('/index.html')) {
-            window.location.href = '/index.html';
+        console.log("User not logged in. Redirecting to /login.html");
+        // Redirect to the login page (login.html is the new entry point)
+        if (!window.location.pathname.endsWith('/login.html')) {
+            window.location.href = '/login.html';
         }
         return null;
     }
 }
 
 // ----------------------------------------------------------------------
-// 2. LOGOUT FUNCTION (Called from home.html navigation)
+// 2. LOGOUT FUNCTION (Called from index.html navigation)
 // ----------------------------------------------------------------------
 async function logout() {
     // We now reference the correctly named client instance
@@ -39,11 +39,11 @@ async function logout() {
         console.error('Logout Error:', error.message);
     }
     // Always redirect after sign out attempt
-    window.location.href = '/index.html';
+    window.location.href = '/login.html';
 }
 
 // Start the session check process immediately when this script loads
-// This will only run if it's NOT the index.html page.
-if (!window.location.pathname.endsWith('/index.html')) {
+// This will only run if it's NOT the login.html page.
+if (!window.location.pathname.endsWith('/login.html')) {
     checkUserSession();
 }
