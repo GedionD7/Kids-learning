@@ -30,9 +30,24 @@
         .nav{position:sticky;top:0;z-index:50;background:#fff;box-shadow:0 2px 14px rgba(0,0,0,.05)}
         .nav-inner{max-width:1200px;margin:auto;padding:14px 20px;display:flex;align-items:center}
         .brand{font-weight:700;font-size:22px;color:var(--accent)}
-        .nav-links{margin-left:auto;display:flex;gap:18px}
+        .nav-links{margin-left:auto;display:flex;gap:18px; align-items: center;}
         .nav-links a{font-weight:600;color:#475467}
         .nav-links a:hover{color:var(--accent)}
+
+        /* Nav Login/Logout Link Styling */
+        #nav-login-link {
+            padding: 8px 16px;
+            border-radius: 20px;
+            background: var(--accent-2); /* A secondary accent color */
+            color: #fff;
+            font-weight: 700;
+            transition: .3s;
+            box-shadow: 0 4px 6px rgba(0,0,0,.1);
+            line-height: 1;
+        }
+        #nav-login-link:hover {
+            background: #6a3dbf;
+        }
 
         /* HERO */
         .hero{
@@ -45,13 +60,30 @@
         }
         .hero h1{font-size:clamp(30px,5vw,48px);margin-bottom:14px}
         .hero p{max-width:650px;margin:auto;font-size:18px;color:#444}
-        .hero button{
-            margin-top:22px;
-            padding:12px 24px;border:none;border-radius:30px;
-            background:var(--accent);color:#fff;font-size:16px;font-weight:600;
-            cursor:pointer;transition:.3s;
+
+        /* Hero Buttons Container */
+        .hero-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px; /* Space between the two buttons */
+            margin-top: 22px;
         }
-        .hero button:hover{background:#e85a4f;transform:scale(1.05)}
+
+        /* Main Button Styling */
+        .hero-buttons button{
+            padding:14px 30px; /* Slightly larger padding */
+            border:none;
+            border-radius:30px;
+            background:var(--accent);
+            color:#fff;
+            font-size:18px; /* Slightly larger font */
+            font-weight:700; /* Bolder font */
+            cursor:pointer;
+            transition:.3s;
+            box-shadow: 0 4px 10px rgba(255, 111, 97, 0.4);
+            text-transform: uppercase;
+        }
+        .hero-buttons button:hover{background:#e85a4f;transform:scale(1.05)}
 
         /* PLANE ANIMATION */
         .plane{
@@ -115,12 +147,14 @@
 <!-- NAV -->
 <header class="nav">
     <div class="nav-inner">
-        <div class="brand">Kids Fun Learning</div>
+        <div class="brand">Future Focus</div>
         <nav class="nav-links">
             <a href="#home">Home</a>
             <a href="#topics">Topics</a>
             <a href="#about">About</a>
-            <a href="#" onclick="logout()" style="color: var(--accent); font-weight: 700;">Logout</a>
+            <!-- LOGIN/LOGOUT LINK in Nav: Toggles based on auth state (Optional, but good backup) -->
+            <a id="nav-login-link" href="/login.html" style="display: none;">Log In</a>
+            <a id="logout-link" href="#" onclick="logout()" style="color: var(--accent); font-weight: 700; display: none;">Logout</a>
         </nav>
     </div>
 </header>
@@ -130,7 +164,13 @@
     <span class="plane">✈️</span>
     <h1>Make Learning Bright & Fun ✨</h1>
     <p>Engaging lessons, colorful visuals, and interactive play to help kids grow joyfully.</p>
-    <button onclick="document.getElementById('topics').scrollIntoView({behavior:'smooth'})">Start Learning 🚀</button>
+
+    <div class="hero-buttons">
+        <!-- MAIN BUTTON: Now defaults to the login text. JS will change it if user is logged in. -->
+        <button id="hero-main-button" onclick="handleHeroButtonClick()">
+            Log In / Join 🔑
+        </button>
+    </div>
 </section>
 
 <!-- TOPICS -->
@@ -148,7 +188,7 @@
             <h3>Amharic Alphabet</h3>
             <p>Learn Fidel</p>
         </div>
-        <div class="card" onclick="navigateToPage('numbers')">
+        <div class="card" onclick="navigateToPage('Numbers')">
             <div class="icon">🔢</div>
             <h3>Numbers</h3>
             <p>Counting & math</p>
@@ -183,17 +223,17 @@
             <h3>Animals</h3>
             <p>Roars & facts</p>
         </div>
-        <div class="card" onclick="navigateToPage('games')">
+        <div class="card" onclick="navigateToPage('Games')">
             <div class="icon">🎮</div>
             <h3>Games</h3>
             <p>Play & learn</p>
         </div>
-        <div class="card" onclick="navigateToPage('vegetables')">
+        <div class="card" onclick="navigateToPage('Vegetables')">
             <div class="icon">🥦</div>
             <h3>Vegetables</h3>
             <p>Healthy & green</p>
         </div>
-        <div class="card" onclick="navigateToPage('fruits')">
+        <div class="card" onclick="navigateToPage('Fruits')">
             <div class="icon">🍎</div>
             <h3>Fruits</h3>
             <p>Sweet & colorful</p>
@@ -215,34 +255,81 @@
 </footer>
 
 <script>
-    // --- SIMPLE NAVIGATION AND UTILITIES (No Quiz Logic) ---
+    // --- AUTH AND UI TOGGLE ---
 
-    // Placeholder to confirm data fetching is successful
+    const navLoginLink = document.getElementById('nav-login-link');
+    const logoutLink = document.getElementById('logout-link');
+    const heroMainButton = document.getElementById('hero-main-button');
+    let isUserLoggedIn = false; // Global flag to track authentication state
+
+    /**
+     * Handles the click action for the main hero button.
+     * Scrolls to content if logged in, redirects to login page if logged out.
+     */
+    function handleHeroButtonClick() {
+        if (isUserLoggedIn) {
+            // Logged in: Scroll to the topics section
+            document.getElementById('topics').scrollIntoView({behavior:'smooth'});
+        } else {
+            // Logged out: Go to the login page
+            window.location.href = '/login.html';
+        }
+    }
+
+    /**
+     * Checks authentication status and updates navigation links AND hero button.
+     */
     async function confirmDataConnection() {
         if (typeof supabase === 'undefined') {
             console.error("Supabase client not loaded.");
+            // If Supabase is missing, we assume logged out and the default HTML text "Log In / Join 🔑" is correct.
+            navLoginLink.style.display = 'block';
+            logoutLink.style.display = 'none';
             return;
         }
 
         const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return;
 
-        // The following part is safe to keep for initial RLS/connection check
-        const { data: records, error } = await supabase
-            .from('questions') // Using a common table name for demonstration
-            .select('id')
-            .limit(1);
+        if (user) {
+            // User is logged in: SHOW LOGOUT, HIDE LOGIN, CHANGE MAIN BUTTON
+            isUserLoggedIn = true;
+            console.log(`User ${user.id} is authenticated.`);
 
-        if (error) {
-            console.warn('Initial DB check encountered RLS/connection error:', error.message);
-            return;
+            // Update main hero button for logged-in users
+            heroMainButton.textContent = "Continue Learning 🚀";
+
+            // Set navigation links
+            navLoginLink.style.display = 'none';
+            logoutLink.style.display = 'block';
+        } else {
+            // User is NOT logged in: SHOW LOGIN, HIDE LOGOUT, KEEP MAIN BUTTON AS DEFAULT LOGIN TEXT
+            isUserLoggedIn = false;
+            console.log("User is not authenticated. Showing Log In link.");
+
+            // Set navigation links
+            navLoginLink.style.display = 'block';
+            logoutLink.style.display = 'none';
+            // The heroMainButton already defaults to "Log In / Join 🔑" in the HTML.
         }
-        if (records) {
-            console.log(`Database connection confirmed for user ${user.id}.`);
+
+        // Database connection check (kept for RLS/setup confirmation)
+        try {
+            const { data: records, error } = await supabase
+                .from('questions')
+                .select('id')
+                .limit(1);
+
+            if (error) {
+                console.warn('Initial DB check encountered RLS/connection error:', error.message);
+            }
+        } catch (e) {
+            console.error('Database check failed:', e);
         }
     }
 
     window.onload = confirmDataConnection;
+
+    // --- UTILITIES ---
 
     // Generate stars in hero
     for(let i=0;i<20;i++){
@@ -276,8 +363,7 @@
         }
     }
 
-    // *** RESTORED SIMPLE NAVIGATION ***
-    // Clicking a card now navigates directly to a file named [category].html
+    // Navigation function
     function navigateToPage(category) {
         window.location.href = `/${encodeURIComponent(category)}.html`;
     }
@@ -287,12 +373,13 @@
         try {
             if (typeof supabase === 'undefined') {
                 console.error("Supabase client not available for logout.");
+                window.location.href = "/login.html";
                 return;
             }
             const { error } = await supabase.auth.signOut();
             if (error) throw error;
             // Redirect to the login page after successful sign out
-            window.location.href = "/index.html";
+            window.location.href = "/login.html";
         } catch (error) {
             console.error("Logout error:", error.message);
         }
