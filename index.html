@@ -61,22 +61,22 @@
             cursor: default !important;
         }
 
-        /* HERO */
+        /* HERO - FIX: text-align changed to left */
         .hero{
             position:relative;
-            text-align:center;
+            text-align:left;
             padding:80px 20px;
             color:#222;
             background:linear-gradient(135deg,#ffecd2,#fcb69f,#a1c4fd,#c2e9fb);
             overflow:hidden;
         }
         .hero h1{font-size:clamp(30px,5vw,48px);margin-bottom:14px}
-        .hero p{max-width:650px;margin:auto;font-size:18px;color:#444}
+        .hero p{max-width:650px;font-size:18px;color:#444} /* margin:auto removed */
 
-        /* Hero Buttons Container */
+        /* Hero Buttons Container - FIX: justify-content changed to flex-start */
         .hero-buttons {
             display: flex;
-            justify-content: center;
+            justify-content: flex-start;
             gap: 15px; /* Space between the two buttons */
             margin-top: 22px;
         }
@@ -306,27 +306,23 @@
         if (user) {
             // User is logged in: SHOW LOGOUT, DISPLAY USER NAME/EMAIL IN NAV
             isUserLoggedIn = true;
-            console.log(`User ${user.id} is authenticated.`);
 
-            // --- User Name/Email Logic ---
-            // 1. Get the display name (Use user_metadata.name first, then email, then fallback)
-            let rawName = user.user_metadata.name || user.email || 'User';
+            // --- User Name/Email Logic (FIXED FOR BETTER FALLBACK) ---
+            // 1. Get the display name (Use user_metadata.name first, then fallback to email)
+            // Use optional chaining for robustness
+            let rawName = user.user_metadata?.name;
             let displayName;
 
-            // 2. Format Name (Truncate email part before @ or just truncate long strings)
-            if (rawName.includes('@')) {
-                // If it's an email, display the part before @ and truncate if long
-                displayName = rawName.substring(0, rawName.indexOf('@'));
-                if (displayName.length > 12) {
-                    displayName = displayName.substring(0, 10) + '...';
-                }
-            } else if (rawName.length > 15) {
-                displayName = rawName.substring(0, 13) + '...';
+            if (rawName) {
+                // Use provided name and truncate if long
+                displayName = rawName.length > 15 ? rawName.substring(0, 13) + '...' : rawName;
             } else {
-                displayName = rawName;
+                // Fallback for existing users (using email, truncated before the @)
+                let emailPart = user.email ? user.email.substring(0, user.email.indexOf('@')) : 'User';
+                displayName = emailPart.length > 12 ? emailPart.substring(0, 10) + '...' : emailPart;
             }
 
-            // 3. Update Nav Link to display Name/Email
+            // 2. Update Nav Link to display Name/Email
             userAuthLink.textContent = `Hello, ${displayName} 👋`;
             userAuthLink.style.display = 'block';
             userAuthLink.href = '#'; // Not clickable (or could go to a profile page)
@@ -343,7 +339,6 @@
         } else {
             // User is NOT logged in: SHOW LOGIN, HIDE LOGOUT
             isUserLoggedIn = false;
-            console.log("User is not authenticated. Showing Log In link.");
 
             // Reset Nav Link to Log In state
             userAuthLink.textContent = 'Log In';
@@ -374,7 +369,6 @@
     window.onload = confirmDataConnection;
 
     // --- UTILITIES (confetti, navigation, logout) ---
-    // ... (no changes to these functions)
 
     // Generate stars in hero
     for(let i=0;i<20;i++){
@@ -400,7 +394,6 @@
             piece.style.top=y+(Math.random()*6-3)+'px';
             piece.style.background=colors[i%colors.length];
             piece.style.transform+=` rotate(${Math.random()*360}deg)`;
-            piece.style.animationDuration=(0.6+Math.random()*0.5)+'s';
             piece.style.width=(6+Math.random()*6)+'px';
             piece.style.height=(6+Math.random()*9)+'px';
             document.body.appendChild(piece);

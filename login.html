@@ -252,11 +252,10 @@
 
         messageEl.textContent = 'Sending reset link...';
 
-        // NOTE: Supabase uses the site URL configured in the dashboard for the redirect path.
-        // We set a temporary URL here, which is often overridden by the Supabase settings.
+        // FIX: Added redirectTo using window.location.origin to point the reset link
+        // back to the Canvas environment instead of a hardcoded localhost:3000.
         const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
-            // You can optionally specify a redirectTo URL here if needed, but often configured in Supabase Auth settings
-            // redirectTo: 'https://yourdomain.com/reset-password-page'
+            redirectTo: window.location.origin + '/index.html'
         });
 
         if (error) {
