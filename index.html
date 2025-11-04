@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Future focus</title>
+    <title>Future Focus</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabaseClient.js"></script>
     <!-- Google font -->
@@ -34,19 +34,31 @@
         .nav-links a{font-weight:600;color:#475467}
         .nav-links a:hover{color:var(--accent)}
 
-        /* Nav Login/Logout Link Styling */
-        #nav-login-link {
+        /* Nav Login/User Display Link Styling */
+        #user-auth-link {
             padding: 8px 16px;
             border-radius: 20px;
-            background: var(--accent-2); /* A secondary accent color */
+            background: var(--accent-2); /* A secondary accent color (for Log In state) */
             color: #fff;
             font-weight: 700;
             transition: .3s;
             box-shadow: 0 4px 6px rgba(0,0,0,.1);
             line-height: 1;
+            /* Added for user display styling */
+            white-space: nowrap;
+            max-width: 150px;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
-        #nav-login-link:hover {
+        #user-auth-link:hover {
             background: #6a3dbf;
+        }
+        /* Specific style for when it displays the user name (overwritten in JS) */
+        .logged-in-badge {
+            background: #e0f2f1 !important; /* Light teal */
+            color: #0d9488 !important; /* Dark teal */
+            border: 1px solid #14b8a6;
+            cursor: default !important;
         }
 
         /* HERO */
@@ -152,8 +164,9 @@
             <a href="#home">Home</a>
             <a href="#topics">Topics</a>
             <a href="#about">About</a>
-            <!-- LOGIN/LOGOUT LINK in Nav: Toggles based on auth state (Optional, but good backup) -->
-            <a id="nav-login-link" href="/login.html" style="display: none;">Log In</a>
+            <!-- USER DISPLAY/LOGIN LINK: New ID and styles for logged-in state -->
+            <a id="user-auth-link" href="/login.html" style="display: none;">Log In</a>
+            <!-- The logout link remains separate -->
             <a id="logout-link" href="#" onclick="logout()" style="color: var(--accent); font-weight: 700; display: none;">Logout</a>
         </nav>
     </div>
@@ -257,7 +270,8 @@
 <script>
     // --- AUTH AND UI TOGGLE ---
 
-    const navLoginLink = document.getElementById('nav-login-link');
+    // Updated ID for the link that displays either "Log In" or "Hello, [Name]"
+    const userAuthLink = document.getElementById('user-auth-link');
     const logoutLink = document.getElementById('logout-link');
     const heroMainButton = document.getElementById('hero-main-button');
     let isUserLoggedIn = false; // Global flag to track authentication state
@@ -282,8 +296,7 @@
     async function confirmDataConnection() {
         if (typeof supabase === 'undefined') {
             console.error("Supabase client not loaded.");
-            // If Supabase is missing, we assume logged out and the default HTML text "Log In / Join 🔑" is correct.
-            navLoginLink.style.display = 'block';
+            userAuthLink.style.display = 'block';
             logoutLink.style.display = 'none';
             return;
         }
@@ -291,23 +304,54 @@
         const { data: { user } } = await supabase.auth.getUser();
 
         if (user) {
-            // User is logged in: SHOW LOGOUT, HIDE LOGIN, CHANGE MAIN BUTTON
+            // User is logged in: SHOW LOGOUT, DISPLAY USER NAME/EMAIL IN NAV
             isUserLoggedIn = true;
             console.log(`User ${user.id} is authenticated.`);
+
+            // --- User Name/Email Logic ---
+            // 1. Get the display name (Use user_metadata.name first, then email, then fallback)
+            let rawName = user.user_metadata.name || user.email || 'User';
+            let displayName;
+
+            // 2. Format Name (Truncate email part before @ or just truncate long strings)
+            if (rawName.includes('@')) {
+                // If it's an email, display the part before @ and truncate if long
+                displayName = rawName.substring(0, rawName.indexOf('@'));
+                if (displayName.length > 12) {
+                    displayName = displayName.substring(0, 10) + '...';
+                }
+            } else if (rawName.length > 15) {
+                displayName = rawName.substring(0, 13) + '...';
+            } else {
+                displayName = rawName;
+            }
+
+            // 3. Update Nav Link to display Name/Email
+            userAuthLink.textContent = `Hello, ${displayName} 👋`;
+            userAuthLink.style.display = 'block';
+            userAuthLink.href = '#'; // Not clickable (or could go to a profile page)
+
+            // Apply logged-in badge style
+            userAuthLink.classList.add('logged-in-badge');
 
             // Update main hero button for logged-in users
             heroMainButton.textContent = "Continue Learning 🚀";
 
-            // Set navigation links
-            navLoginLink.style.display = 'none';
+            // Set logout link
             logoutLink.style.display = 'block';
+
         } else {
-            // User is NOT logged in: SHOW LOGIN, HIDE LOGOUT, KEEP MAIN BUTTON AS DEFAULT LOGIN TEXT
+            // User is NOT logged in: SHOW LOGIN, HIDE LOGOUT
             isUserLoggedIn = false;
             console.log("User is not authenticated. Showing Log In link.");
 
-            // Set navigation links
-            navLoginLink.style.display = 'block';
+            // Reset Nav Link to Log In state
+            userAuthLink.textContent = 'Log In';
+            userAuthLink.href = '/login.html';
+            userAuthLink.style.display = 'block';
+            // Remove logged-in badge style to revert to the default button style
+            userAuthLink.classList.remove('logged-in-badge');
+
             logoutLink.style.display = 'none';
             // The heroMainButton already defaults to "Log In / Join 🔑" in the HTML.
         }
@@ -329,7 +373,8 @@
 
     window.onload = confirmDataConnection;
 
-    // --- UTILITIES ---
+    // --- UTILITIES (confetti, navigation, logout) ---
+    // ... (no changes to these functions)
 
     // Generate stars in hero
     for(let i=0;i<20;i++){
