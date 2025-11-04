@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>አማርኛ ፊደል Fun</title>
+
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Ethiopic&display=swap" rel="stylesheet">
     <style>
         :root{
@@ -13,6 +14,7 @@
         body{margin:0;font-family:"Noto Sans Ethiopic",sans-serif;background:var(--bg);color:#222;}
         header{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff;padding:14px 12px;position:sticky;top:0;z-index:50;}
         .top-row{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;max-width:1200px;margin:0 auto;}
+
         nav{display:flex;gap:8px;flex-wrap:wrap;}
         nav button{background:#fff;border:none;padding:8px 12px;border-radius:10px;cursor:pointer;font-weight:600;color:var(--accent);}
         nav button.active{background:rgba(255,255,255,0.2);color:#fff;}
@@ -126,6 +128,7 @@
 <header>
     <div class="top-row">
         <div class="brand">🎉 አማርኛ ፊደል Fun</div>
+
         <nav>
             <button data-section="letters" class="active">Letters</button>
             <button data-section="mini">Mini Games</button>
@@ -165,20 +168,147 @@
 <div id="word-popup" class="hidden"></div>
 
 <script>
-    // ---------------- Letters Data ----------------
-    const lettersData=[{base:"ሀ",orders:["ሀ","ሁ","ሂ","ሃ","ሄ","ህ","ሆ"],word:"ሀብት",sentence:"ሀብት በሥራ ይመጣል"},{base:"ለ",orders:["ለ","ሉ","ሊ","ላ","ሌ","ል","ሎ"],word:"ሎሚ",sentence:"ሎሚ ጎምዛዛ ነው"},{base:"ሐ",orders:["ሐ","ሑ","ሒ","ሓ","ሔ","ሕ","ሖ"],word:"ሐኪም",sentence:"ሐኪሙ ታካሚውን ይረዳል"},{base:"መ",orders:["መ","ሙ","ሚ","ማ","ሜ","ም","ሞ"],word:"መኪና",sentence:"መኪናው በፍጥነት ይጓዛል"},{base:"ሠ",orders:["ሠ","ሡ","ሢ","ሣ","ሤ","ሥ","ሦ"],word:"ሠላም",sentence:"ሠላም ለሁሉም"},{base:"ረ",orders:["ረ","ሩ","ሪ","ራ","ሬ","ር","ሮ"],word:"ሬዲዮ",sentence:"ሬዲዮ ሙዚቃ ያጫውታል"},{base:"ሰ",orders:["ሰ","ሱ","ሲ","ሳ","ሴ","ስ","ሶ"],word:"ሰዓት",sentence:"ሰዓቱ ትክክለኛ ነው"},{base:"ሸ",orders:["ሸ","ሹ","ሺ","ሻ","ሼ","ሽ","ሾ"],word:"ሸሚዝ",sentence:"ሸሚዙ ንጹህ ነው"},{base:"ቀ",orders:["ቀ","ቁ","ቂ","ቃ","ቄ","ቅ","ቆ"],word:"ቀለም",sentence:"ቀለሙ ደማቅ ነው"},{base:"በ",orders:["በ","ቡ","ቢ","ባ","ቤ","ብ","ቦ"],word:"በር",sentence:"በሩ ተከፍቷል"},{base:"ተ",orders:["ተ","ቱ","ቲ","ታ","ቴ","ት","ቶ"],word:"ተራራ",sentence:"ተራራው ከፍ ያለ ነው"},{base:"ቸ",orders:["ቸ","ቹ","ቺ","ቻ","ቼ","ች","ቾ"],word:"ቸኮሌት",sentence:"ቸኮሌት ጣፋጭ ነው"},{base:"ኀ",orders:["ኀ","ኁ","ኂ","ኃ","ኄ","ኅ","ኆ"],word:"ኀይል",sentence:"ኀይል ያስፈልጋል"},{base:"ነ",orders:["ነ","ኑ","ኒ","ና","ኔ","ን","ኖ"],word:"ነብር",sentence:"ነብር ፈጣን ነው"},{base:"ኘ",orders:["ኘ","ኙ","ኚ","ኛ","ኜ","ኝ","ኞ"],word:"ኘላስተር",sentence:"ኘላስተር ቁስልን ይሸፍናል"},{base:"አ",orders:["አ","ኡ","ኢ","ኣ","ኤ","እ","ኦ"],word:"አንበሳ",sentence:"አንበሳ የጫካ ንጉሥ ነው"},{base:"ከ",orders:["ከ","ኩ","ኪ","ካ","ኬ","ክ","ኮ"],word:"כובע",sentence:"ኮከብ በሰማይ ላይ ያበራል"},{base:"ኸ",orders:["ኸ","ኹ","ኺ","ኻ","ኼ","ኽ","ኾ"],word:"ኸሚስ",sentence:"ኸሚስ የሳምንቱ ቀን ነው"},{base:"ወ",orders:["ወ","ዉ","ዊ","ዋ","ዌ","ው","ዎ"],word:"ወንበር",sentence:"ወንበሩ ምቹ ነው"},{base:"ዐ",orders:["ዐ","ዑ","ዒ","ዓ","ዔ","ዕ","ዖ"],word:"ዐይ",sentence:"ዓሣ በውሃ ውስጥ ይዋኛል"},{base:"ዘ",orders:["ዘ","ዙ","ዚ","ዛ","ዜ","ዝ","ዞ"],word:"ዘይት",sentence:"ዘይት ለምግብ ማብሰያ ያገለግላል"},{base:"ዠ",orders:["ዠ","ዡ","ዢ","ዣ","ዤ","ዥ","ዦ"],word:"ዠراف",sentence:"ቀጭኔ ረጅም አንገት አላት"},{base:"የ",orders:["የ","ዩ","ዪ","ያ","ዬ","ይ","ዮ"],word:"የገና ዛፍ",sentence:"የገና ዛፍ በበዓል ጊዜ ያጌጣል"},{base:"ደ",orders:["ደ","ዱ","ዲ","ዳ","ዴ","ድ","ዶ"],word:"ደብተር",sentence:"ደብተሩ ለመጻፍ ነው"},{base:"ጀ",orders:["ጀ","ጁ","ጂ","ጃ","ጄ","ጅ","ጆ"],word:"ጀልባ",sentence:"ጀልባው በውሃ ላይ ይጓዛል"},{base:"ገ",orders:["ገ","ጉ","ጊ","ጋ","ጌ","ግ","ጎ"],word:"ገበታ",sentence:"ገበታው በምግብ የተሞላ ነው"},{base:"ጠ",orders:["ጠ","ጡ","ጢ","ጣ","ጤ","ጥ","ጦ"],word:"ጠረጴዛ",sentence:"ጠረጴዛው ላይ መጻሕፍት አሉ"},{base:"ጨ",orders:["ጨ","ጩ","ጪ","ጫ","ጬ","ጭ","ጮ"],word:"ጨረቃ",sentence:"ጨረቃ በሌሊት ታበራለች"},{base:"ጰ",orders:["ጰ","ጱ","ጲ","ጳ","ጴ","ጵ","ጶ"],word:"ጰጳ",sentence:"ጳጳሱ ጸሎት ይመራሉ"},{base:"ጸ",orders:["ጸ","ጹ","ጺ","ጻ","ጼ","ጽ","ጾ"],word:"ጸሎት",sentence:"ጸሎት ሰላምን ያመጣል"},{base:"ፀ",orders:["ፀ","ፁ","ፂ","ፃ","ፄ","ፅ","ፆ"],word:"ፀሐይ",sentence:"ፀሐይ ብርሃን ትሰጣለች"},{base:"ፈ",orders:["ፈ","ፉ","ፊ","ፋ","ፌ","ፍ","ፎ"],word:"ፈረስ",sentence:"ፈረስ በፍጥነት ይሮጣል"},{base:"ፐ",orders:["ፐ","ፑ","ፒ","ፓ","ፔ","ፕ","ፖ"],word:"ፒያኖ",sentence:"ፒያኖ ጣፋጭ ዜማ ያወጣል"}];
+    // ---------------- TTS API (Text-to-Speech) Fix ----------------
+    // This section handles the robust generation and playback of Amharic audio.
 
-    // ---------------- Render Letters ----------------
-    function speakAmharic(text) {
-        if (window.isSpeaking) return;
-        window.isSpeaking = true;
-        const audioUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=am&client=tw-ob`;
-        const audio = new Audio(audioUrl);
-        audio.play();
-        audio.onended = () => { window.isSpeaking = false; };
-        audio.onerror = () => { window.isSpeaking = false; console.error("Error playing TTS audio."); };
+    let audioContext;
+
+    // Helper to convert Base64 string to ArrayBuffer for audio data processing
+    function base64ToArrayBuffer(base64) {
+        const binaryString = atob(base64);
+        const len = binaryString.length;
+        const bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binaryString.charCodeAt(i);
+        }
+        return bytes.buffer;
     }
 
+    // Helper to wrap raw PCM audio data into a playable WAV blob
+    function pcmToWav(pcm16, sampleRate) {
+        const numChannels = 1;
+        const bitsPerSample = 16;
+        const byteRate = sampleRate * numChannels * (bitsPerSample / 8);
+        const blockAlign = numChannels * (bitsPerSample / 8);
+
+        const buffer = new ArrayBuffer(44 + pcm16.length * 2);
+        const view = new DataView(buffer);
+        let offset = 0;
+
+        function writeString(str) {
+            for (let i = 0; i < str.length; i++) {
+                view.setUint8(offset + i, str.charCodeAt(i));
+            }
+            offset += str.length;
+        }
+        function writeUint32(val) {
+            view.setUint32(offset, val, true);
+            offset += 4;
+        }
+        function writeUint16(val) {
+            view.setUint16(offset, val, true);
+            offset += 2;
+        }
+
+        // RIFF chunk
+        writeString('RIFF');
+        writeUint32(36 + pcm16.length * 2);
+        writeString('WAVE');
+
+        // fmt chunk
+        writeString('fmt ');
+        writeUint32(16);
+        writeUint16(1);
+        writeUint16(numChannels);
+        writeUint32(sampleRate);
+        writeUint32(byteRate);
+        writeUint16(blockAlign);
+        writeUint16(bitsPerSample);
+
+        // data chunk
+        writeString('data');
+        writeUint32(pcm16.length * 2);
+
+        // PCM data
+        for (let i = 0; i < pcm16.length; i++) {
+            view.setInt16(offset, pcm16[i], true);
+            offset += 2;
+        }
+
+        return new Blob([view], { type: 'audio/wav' });
+    }
+
+    /**
+     * Generates and plays Amharic speech using the Gemini TTS API.
+     * @param {string} text The Amharic text to speak.
+     */
+    async function speakAmharic(text) {
+        if (window.isSpeaking) return;
+        window.isSpeaking = true;
+
+        const payload = {
+            contents: [{ parts: [{ text: text }] }],
+            generationConfig: {
+                responseModalities: ["AUDIO"],
+                speechConfig: {
+                    // Use Kore voice, which works well for clear Amharic pronunciation
+                    voiceConfig: { prebuiltVoiceConfig: { voiceName: "Kore" } }
+                }
+            },
+            model: "gemini-2.5-flash-preview-tts"
+        };
+
+        const apiKey = "";
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`;
+
+        try {
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                throw new Error(`API call failed with status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            const part = result?.candidates?.[0]?.content?.parts?.[0];
+            const audioData = part?.inlineData?.data;
+            const mimeType = part?.inlineData?.mimeType;
+
+            if (audioData && mimeType && mimeType.startsWith("audio/L16")) {
+                const sampleRate = 24000; // Expected sample rate for the TTS model
+                const pcmData = base64ToArrayBuffer(audioData);
+                const pcm16 = new Int16Array(pcmData);
+                const wavBlob = pcmToWav(pcm16, sampleRate);
+                const audioUrl = URL.createObjectURL(wavBlob);
+                const audio = new Audio(audioUrl);
+
+                audio.play();
+
+                audio.onended = () => {
+                    window.isSpeaking = false;
+                    URL.revokeObjectURL(audioUrl);
+                };
+                audio.onerror = (e) => {
+                    window.isSpeaking = false;
+                    console.error("Error playing generated WAV audio:", e);
+                    URL.revokeObjectURL(audioUrl);
+                };
+            } else {
+                throw new Error("Invalid audio data or MIME type from API.");
+            }
+        } catch (error) {
+            window.isSpeaking = false;
+            console.error("TTS Generation/Playback Error:", error.message);
+        }
+    }
+
+    // ---------------- Letters Data ----------------
+    const lettersData=[{base:"ሀ",orders:["ሀ","ሁ","ሂ","ሃ","ሄ","ህ","ሆ"],word:"ሀብት",sentence:"ሀብት በሥራ ይመጣል"},{base:"ለ",orders:["ለ","ሉ","ሊ","ላ","ሌ","ል","ሎ"],word:"ሎሚ",sentence:"ሎሚ ጎምዛዛ ነው"},{base:"ሐ",orders:["ሐ","ሑ","ሒ","ሓ","ሔ","ሕ","ሖ"],word:"ሐኪም",sentence:"ሐኪሙ ታካሚውን ይረዳል"},{base:"መ",orders:["መ","ሙ","ሚ","ማ","ሜ","ም","ሞ"],word:"መኪና",sentence:"መኪናው በፍጥነት ይጓዛል"},{base:"ሠ",orders:["ሠ","ሡ","ሢ","ሣ","ሤ","ሥ","ሦ"],word:"ሠላም",sentence:"ሠላም ለሁሉም"},{base:"ረ",orders:["ረ","ሩ","ሪ","ራ","ሬ","ር","ሮ"],word:"ሬዲዮ",sentence:"ሬዲዮ ሙዚቃ ያጫውታል"},{base:"ሰ",orders:["ሰ","ሱ","ሲ","ሳ","ሴ","ስ","ሶ"],word:"ሰዓት",sentence:"ሰዓቱ ትክክለኛ ነው"},{base:"ሸ",orders:["ሸ","ሹ","ሺ","ሻ","ሼ","ሽ","ሾ"],word:"ሸሚዝ",sentence:"ሸሚዙ ንጹህ ነው"},{base:"ቀ",orders:["ቀ","ቁ","ቂ","ቃ","ቄ","ቅ","ቆ"],word:"ቀለም",sentence:"ቀለሙ ደማቅ ነው"},{base:"በ",orders:["በ","ቡ","ቢ","ባ","ቤ","ብ","ቦ"],word:"በር",sentence:"በሩ ተከፍቷል"},{base:"ተ",orders:["ተ","ቱ","ቲ","ታ","ቴ","ት","ቶ"],word:"ተራራ",sentence:"ተራራው ከፍ ያለ ነው"},{base:"ቸ",orders:["ቸ","ቹ","ቺ","ቻ","ቼ","ች","ቾ"],word:"ቸኮሌት",sentence:"ቸኮሌት ጣፋጭ ነው"},{base:"ኀ",orders:["ኀ","ኁ","ኂ","ኃ","ኄ","ኅ","ኆ"],word:"ኀይል",sentence:"ኀይል ያስፈልጋል"},{base:"ነ",orders:["ነ","ኑ","ኒ","ና","ኔ","ን","ኖ"],word:"ነብር",sentence:"ነብር ፈጣን ነው"},{base:"ኘ",orders:["ኘ","ኙ","ኚ","ኛ","ኜ","ኝ","ኞ"],word:"ኘላስተር",sentence:"ኘላስተር ቁስልን ይሸፍናል"},{base:"አ",orders:["አ","ኡ","ኢ","ኣ","ኤ","እ","ኦ"],word:"አንበሳ",sentence:"አንበሳ የጫካ ንጉሥ ነው"},{base:"ከ",orders:["ከ","ኩ","ኪ","ካ","ኬ","ክ","ኮ"],word:"ኮከብ",sentence:"ኮከብ በሰማይ ላይ ያበራል"},{base:"ኸ",orders:["ኸ","ኹ","ኺ","ኻ","ኼ","ኽ","ኾ"],word:"ኸሚስ",sentence:"ኸሚስ የሳምንቱ ቀን ነው"},{base:"ወ",orders:["ወ","ዉ","ዊ","ዋ","ዌ","ው","ዎ"],word:"ወንበር",sentence:"ወንበሩ ምቹ ነው"},{base:"ዐ",orders:["ዐ","ዑ","ዒ","ዓ","ዔ","ዕ","ዖ"],word:"ዓሣ",sentence:"ዓሣ በውሃ ውስጥ ይዋኛል"},{base:"ዘ",orders:["ዘ","ዙ","ዚ","ዛ","ዜ","ዝ","ዞ"],word:"ዘይት",sentence:"ዘይት ለምግብ ማብሰያ ያገለግላል"},{base:"ዠ",orders:["ዠ","ዡ","ዢ","ዣ","ዤ","ዥ","ዦ"],word:"ቀጭኔ",sentence:"ቀጭኔ ረጅም አንገት አላት"},{base:"የ",orders:["የ","ዩ","ዪ","ያ","ዬ","ይ","ዮ"],word:"የገና ዛፍ",sentence:"የገና ዛፍ በበዓል ጊዜ ያጌጣል"},{base:"ደ",orders:["ደ","ዱ","ዲ","ዳ","ዴ","ድ","ዶ"],word:"ደብተር",sentence:"ደብተሩ ለመጻፍ ነው"},{base:"ጀ",orders:["ጀ","ጁ","ጂ","ጃ","ጄ","ጅ","ጆ"],word:"ጀልባ",sentence:"ጀልባው በውሃ ላይ ይጓዛል"},{base:"ገ",orders:["ገ","ጉ","ጊ","ጋ","ጌ","ግ","ጎ"],word:"ገበታ",sentence:"ገበታው በምግብ የተሞላ ነው"},{base:"ጠ",orders:["ጠ","ጡ","ጢ","ጣ","ጤ","ጥ","ጦ"],word:"ጠረጴዛ",sentence:"ጠረጴዛው ላይ መጻሕፍት አሉ"},{base:"ጨ",orders:["ጨ","ጩ","ጪ","ጫ","ጬ","ጭ","ጮ"],word:"ጨረቃ",sentence:"ጨረቃ በሌሊት ታበራለች"},{base:"ጰ",orders:["ጰ","ጱ","ጲ","ጳ","ጴ","ጵ","ጶ"],word:"ጳጳስ",sentence:"ጳጳሱ ጸሎት ይመራሉ"},{base:"ጸ",orders:["ጸ","ጹ","ጺ","ጻ","ጼ","ጽ","ጾ"],word:"ጸሎት",sentence:"ጸሎት ሰላምን ያመጣል"},{base:"ፀ",orders:["ፀ","ፁ","ፂ","ፃ","ፄ","ፅ","ፆ"],word:"ፀሐይ",sentence:"ፀሐይ ብርሃን ትሰጣለች"},{base:"ፈ",orders:["ፈ","ፉ","ፊ","ፋ","ፌ","ፍ","ፎ"],word:"ፈረስ",sentence:"ፈረስ በፍጥነት ይሮጣል"},{base:"ፐ",orders:["ፐ","ፑ","ፒ","ፓ","ፔ","ፕ","ፖ"],word:"ፒያኖ",sentence:"ፒያኖ ጣፋጭ ዜማ ያወጣል"}];
+
+    // ---------------- Render Letters ----------------
     const lettersGrid = document.getElementById("lettersGrid");
     lettersData.forEach(l => {
         const c = document.createElement("div");
@@ -196,7 +326,7 @@
         lettersGrid.appendChild(c);
     });
 
-    // ---------------- Navigation (RESTORED) ----------------
+    // ---------------- Navigation ----------------
     document.querySelectorAll('nav button').forEach(btn=>{
         btn.addEventListener('click',()=>{
             document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
@@ -206,12 +336,12 @@
         });
     });
 
-    // ---------------- Toggles (RESTORED) ----------------
+    // ---------------- Toggles ----------------
     document.getElementById("contrastBtn").addEventListener("click",()=>document.body.classList.toggle("high-contrast"));
     document.getElementById("textBtn").addEventListener("click",()=>document.body.classList.toggle("large-text"));
 
 
-    // ---------------- Quiz (RESTORED & UPDATED) ----------------
+    // ---------------- Quiz ----------------
     const quizArea = document.getElementById("quizArea");
     const emojiFeedback = document.getElementById("emojiFeedback");
     let score = 0;
@@ -224,12 +354,7 @@
 
     function checkAnswer(btn, correctAnswer, word) {
         if (btn.dataset.letter === correctAnswer) {
-            const cheerSound = new Audio('mp3.mp3'); // Using your local file
-            cheerSound.volume = 0.7;
-            cheerSound.addEventListener('ended', () => {
-                speakAmharic(word);
-            });
-            cheerSound.play();
+            speakAmharic(word);
             btn.classList.add("correct");
             showFireworks();
             emojiFeedback.innerText="🎉 ጎበዝ!";
@@ -240,15 +365,13 @@
             popup.classList.remove('hidden');
             setTimeout(() => {
                 popup.classList.add('hidden');
-            }, 6000);
+            }, 3000);
             setTimeout(() => {
                 emojiFeedback.innerText = "";
                 generateQuiz();
-            }, 7000);
+            }, 4000);
         } else {
-            const awwSound = new Audio('https://www.soundjay.com/misc/sounds/fail-buzzer-01.mp3');
-            awwSound.volume = 0.5;
-            awwSound.play();
+            console.warn("Incorrect answer.");
             btn.classList.add("wrong");
             emojiFeedback.innerText = "❌ እንደገና ሞክር!";
             setTimeout(() => {
@@ -260,7 +383,7 @@
 
     generateQuiz();
 
-    // ---------------- Fireworks (RESTORED) ----------------
+    // ---------------- Fireworks ----------------
     const canvas=document.getElementById("effectsCanvas");
     const ctx=canvas.getContext("2d");
     canvas.width=window.innerWidth;
@@ -279,7 +402,7 @@
     }
     window.addEventListener('resize',()=>{canvas.width=window.innerWidth; canvas.height=window.innerHeight;});
 
-    // ---------------- Mini Games (UPDATED) ----------------
+    // ---------------- Mini Games ----------------
     const gameArea = document.getElementById("gameArea");
 
     function startMatchingGame() {
