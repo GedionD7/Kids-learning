@@ -156,7 +156,6 @@
 </header>
 
 <main>
-    <!-- TTS Status Message (Only visible on error/loading) -->
     <div id="status-box">
         <strong id="status-message"></strong>
     </div>
@@ -190,7 +189,7 @@
 <script>
     // ---------------- Letters Data ----------------
     // Data is preserved from the original file
-    const lettersData=[{base:"ሀ",orders:["ሀ","ሁ","ሂ","ሃ","ሄ","ህ","ሆ"],word:"ሀብት",sentence:"ሀብት በሥራ ይመጣል"},{base:"ለ",orders:["ለ","ሉ","ሊ","ላ", "ሌ", "ል", "ሎ"],word:"ሎሚ",sentence:"ሎሚ ጎምዛዛ ነው"},{base:"ሐ",orders:["ሐ","ሑ","ሒ","ሓ","ሔ","ሕ","ሖ"],word:"ሐኪም",sentence:"ሐኪሙ ታካሚውን ይረዳል"},{base:"መ",orders:["መ","ሙ","ሚ","ማ","ሜ","ም","ሞ"],word:"መኪና",sentence:"መኪናው በፍጥነት ይጓዛል"},{base:"ሠ",orders:["ሠ","ሡ","ሢ","ሣ","ሤ","ሥ","ሦ"],word:"ሠላም",sentence:"ሠላም ለሁሉም"},{base:"ረ",orders:["ረ","ሩ","ሪ","ራ","ሬ","ር","ሮ"],word:"ሬዲዮ",sentence:"ሬዲዮ ሙዚቃ ያጫውታል"},{base:"ሰ",orders:["ሰ","ሱ","ሲ","ሳ","ሴ","ስ","ሶ"],word:"ሰዓት",sentence:"ሰዓቱ ትክክለኛ ነው"},{base:"ሸ",orders:["ሸ","ሹ","ሺ","ሻ","ሼ","ሽ","ሾ"],word:"ሸሚዝ",sentence:"ሸሚዙ ንጹህ ነው"},{base:"ቀ",orders:["ቀ","ቁ","ቂ","ቃ","ቄ","ቅ","ቆ"],word:"ቀለም",sentence:"ቀለሙ ደማቅ ነው"},{base:"በ",orders:["በ","ቡ","ቢ","ባ","ቤ","ብ","ቦ"],word:"በር",sentence:"በሩ ተከፍቷል"},{base:"ተ",orders:["ተ","ቱ","ቲ","ታ","ቴ","ት","ቶ"],word:"ተራራ",sentence:"ተራራው ከፍ ያለ ነው"},{base:"ቸ",orders:["ቸ","ቹ","ቺ","ቻ","ቼ","ች","ቾ"],word:"ቸኮሌት",sentence:"ቸኮሌት ጣፋጭ ነው"},{base:"ኀ",orders:["ኀ","ኁ","ኂ","ኃ","ኄ","ኅ","ኆ"],word:"ኀይል",sentence:"ኀይል ያስፈልጋል"},{base:"ነ",orders:["ነ","ኑ","ኒ","ና","ኔ","ን","ኖ"],word:"ነብር",sentence:"ነብር ፈጣን ነው"},{base:"ኘ",orders:["ኘ","ኙ","ኚ","ኛ","ኜ","ኝ","ኞ"],word:"ኘላስተር",sentence:"ኘላስተር ቁስልን ይሸፍናል"},{base:"አ",orders:["አ","ኡ","ኢ","ኣ","ኤ","እ","ኦ"],word:"አንበሳ",sentence:"አንበሳ የጫካ ንጉሥ ነው"},{base:"ከ",orders:["ከ","ኩ","ኪ","ካ","ኬ","ክ","ኮ"],word:"ኮከብ",sentence:"ኮከብ በሰማይ ላይ ያበራል"},{base:"ኸ",orders:["ኸ","ኹ","ኺ","ኻ","ኼ","ኽ","ኾ"],word:"ኸሚስ",sentence:"ኸሚስ የሳምንቱ ቀን ነው"},{base:"ወ",orders:["ወ","ዉ","ዊ","ዋ","ዌ","ው","ዎ"],word:"ወንበር",sentence:"ወንበሩ ምቹ ነው"},{base:"ዐ",orders:["ዐ","ዑ","ዒ","ዓ","ዔ","ዕ","ዖ"],word:"ዓሣ",sentence:"ዓሣ በውሃ ውስጥ ይዋኛል"},{base:"ዘ",orders:["ዘ","ዙ","ዚ","ዛ","ዜ","ዝ","ዞ"],word:"ዘይት",sentence:"ዘይት ለምግብ ማብሰያ ያገለግላል"},{base:"ዠ",orders:["ዠ","ዡ","ዢ","ዣ","ዤ","ዥ","ዦ"],word:"ቀጭኔ",sentence:"ቀጭኔ ረጅም አንገት አላት"},{base:"የ",orders:["የ","ዩ","ዪ","ያ","ዬ","ይ","ዮ"],word:"የገና ዛፍ",sentence:"የገና ዛፍ በበዓል ጊዜ ያጌጣል"},{base:"ደ",orders:["ደ","ዱ","ዲ","ዳ","ዴ","ድ","ዶ"],word:"ደብተር",sentence:"ደብተሩ ለመጻፍ ነው"},{base:"ጀ",orders:["ጀ","ጁ","ጂ","ጃ","ጄ","ጅ","ጆ"],word:"ጀልባ",sentence:"ጀልባው በውሃ ላይ ይጓዛል"},{base:"ገ",orders:["ገ","ጉ","ጊ","ጋ","ጌ","ግ","ጎ"],word:"ገበታ",sentence:"ገበታው በምግብ የተሞላ ነው"},{base:"ጠ",orders:["ጠ","ጡ","ጢ","ጣ","ጤ","ጥ","ጦ"],word:"ጠረጴዛ",sentence:"ጠረጴዛው ላይ መጻሕፍት አሉ"},{base:"ጨ",orders:["ጨ","ጩ","ጪ","ጫ","ጬ","ጭ","ጮ"],word:"ጨረቃ",sentence:"ጨረቃ በሌሊት ታበራለች"},{base:"ጰ",orders:["ጰ","ጱ","ጲ","ጳ","ጴ","ጵ","ጶ"],word:"ጳጳስ",sentence:"ጳጳሱ ጸሎት ይመራሉ"},{base:"ጸ",orders:["ጸ","ጹ","ጺ","ጻ","ጼ","ጽ","ጾ"],word:"ጸሎት",sentence:"ጸሎት ሰላምን ያመጣል"},{base:"ፀ",orders:["ፀ","ፁ","ፂ","ፃ","ፄ","ፅ","ፆ"],word:"ፀሐይ",sentence:"ፀሐይ ብርሃን ትሰጣለች"},{base:"ፈ",orders:["ፈ","ፉ","ፊ","ፋ","ፌ","ፍ","ፎ"],word:"ፈረስ",sentence:"ፈረስ በፍጥነት ይሮጣል"},{base:"ፐ",orders:["ፐ","ፑ","ፒ","ፓ","ፔ","ፕ","ፖ"],word:"ፒያኖ",sentence:"ፒያኖ ጣፋጭ ዜማ ያወጣል"}];
+    const lettersData=[{base:"ሀ",orders:["ሀ","ሁ","ሂ","ሃ","ሄ","ህ","ሆ"],word:"ሀብት",sentence:"ሀብት በሥራ ይመጣል"},{base:"ለ",orders:["ለ","ሉ","ሊ","ላ", "ሌ", "ል", "ሎ"],word:"ሎሚ",sentence:"ሎሚ ጎምዛዛ ነው"},{base:"ሐ",orders:["ሐ","ሑ","ሒ","ሓ","ሔ","ሕ","ሖ"],word:"ሐኪም",sentence:"ሐኪሙ ታካሚውን ይረዳል"},{base:"መ",orders:["መ","ሙ","ሚ","ማ","ሜ","ም","ሞ"],word:"መኪና",sentence:"መኪናው በፍጥነት ይጓዛል"},{base:"ሠ",orders:["ሠ","ሡ","ሢ","ሣ","ሤ","ሥ","ሦ"],word:"ሠላም",sentence:"ሠላም ለሁሉም"},{base:"ረ",orders:["ረ","ሩ","ሪ","ራ","ሬ","ር","ሮ"],word:"ሬዲዮ",sentence:"ሬዲዮ ሙዚቃ ያጫውታል"},{base:"ሰ",orders:["ሰ","ሱ","ሲ","ሳ","ሴ","ስ","ሶ"],word:"ሰዓት",sentence:"ሰዓቱ ትክክለኛ ነው"},{base:"ሸ",orders:["ሸ","ሹ","ሺ","ሻ","ሼ","ሽ","ሾ"],word:"ሸሚዝ",sentence:"ሸሚዙ ንጹህ ነው"},{base:"ቀ",orders:["ቀ","ቁ","ቂ","ቃ","ቄ","ቅ","ቆ"],word:"ቀለም",sentence:"ቀለሙ ደማቅ ነው"},{base:"በ",orders:["በ","ቡ","ቢ","ባ","ቤ","ብ","ቦ"],word:"በር",sentence:"በሩ ተከፍቷል"},{base:"ተ",orders:["ተ","ቱ","ቲ","ታ","ቴ","ት","ቶ"],word:"ተራራ",sentence:"ተራራው ከፍ ያለ ነው"},{base:"ቸ",orders:["ቸ","ቹ","ቺ","ቻ","ቼ","ች","ቾ"],word:"ቸኮሌት",sentence:"ቸኮሌT ጣፋጭ ነው"},{base:"ኀ",orders:["ኀ","ኁ","ኂ","ኃ","ኄ","ኅ","ኆ"],word:"ኀይል",sentence:"ኀይል ያስፈልጋል"},{base:"ነ",orders:["ነ","ኑ","ኒ","ና","ኔ","ን","ኖ"],word:"ነብር",sentence:"ነብር ፈጣን ነው"},{base:"ኘ",orders:["ኘ","ኙ","ኚ","ኛ","ኜ","ኝ","ኞ"],word:"ኘላስተር",sentence:"ኘላስተር ቁስልን ይሸፍናል"},{base:"አ",orders:["አ","ኡ","ኢ","ኣ","ኤ","እ","ኦ"],word:"አንበሳ",sentence:"አንበሳ የጫካ ንጉሥ ነው"},{base:"ከ",orders:["ከ","ኩ","ኪ","ካ","ኬ","ክ","ኮ"],word:"ኮከብ",sentence:"ኮከብ በሰማይ ላይ ያበራል"},{base:"ኸ",orders:["ኸ","ኹ","ኺ","ኻ","ኼ","ኽ","ኾ"],word:"ኸሚስ",sentence:"ኸሚስ የሳምንቱ ቀን ነው"},{baseD:"ወ",orders:["ወ","ዉ","ዊ","ዋ","ዌ","ው","ዎ"],word:"ወንበር",sentence:"ወንበሩ ምቹ ነው"},{base:"ዐ",orders:["ዐ","ዑ","ዒ","ዓ","ዔ","ዕ","ዖ"],word:"ዓሣ",sentence:"ዓሣ በውሃ ውስጥ ይዋኛል"},{base:"ዘ",orders:["ዘ","ዙ","ዚ","ዛ","ዜ","ዝ","ዞ"],word:"ዘይት",sentence:"ዘይት ለምግብ ማብሰያ ያገለግላል"},{base:"ዠ",orders:["ዠ","ዡ","ዢ","ዣ","ዤ","ዥ","ዦ"],word:"ቀጭኔ",sentence:"ቀጭኔ ረጅም አንገት አላት"},{base:"የ",orders:["የ","ዩ","ዪ","ያ","ዬ","ይ","ዮ"],word:"የገና ዛፍ",sentence:"የገና ዛፍ በበዓል ጊዜ ያጌጣል"},{base:"ደ",orders:["ደ","ዱ","ዲ","ዳ","ዴ","ድ","ዶ"],word:"ደብተር",sentence:"ደብተሩ ለመጻፍ ነው"},{base:"ጀ",orders:["ጀ","ጁ","ጂ","ጃ","ጄ","ጅ","ጆ"],word:"ጀልባ",sentence:"ጀልባው በውሃ ላይ ይጓዛል"},{base:"ገ",orders:["ገ","ጉ","ጊ","ጋ","ጌ","ግ","ጎ"],word:"ገበታ",sentence:"ገበታው በምግብ የተሞላ ነው"},{base:"ጠ",orders:["ጠ","ጡ","ጢ","ጣ","ጤ","ጥ","ጦ"],word:"ጠረጴዛ",sentence:"ጠረጴዛው ላይ መጻሕፍት አሉ"},{base:"ጨ",orders:["ጨ","ጩ","ጪ","ጫ","ጬ","ጭ","ጮ"],word:"ጨረቃ",sentence:"ጨረቃ በሌሊት ታበራለች"},{base:"ጰ",orders:["ጰ","ጱ","ጲ","ጳ","ጴ","ጵ","ጶ"],word:"ጳጳስ",sentence:"ጳጳሱ ጸሎት ይመራሉ"},{base:"ጸ",orders:["ጸ","ጹ","ጺ","ጻ","ጼ","ጽ","ጾ"],word:"ጸሎት",sentence:"ጸሎት ሰላምን ያመጣል"},{base:"ፀ",orders:["ፀ","ፁ","ፂ","ፃ","ፄ","ፅ","ፆ"],word:"ፀሐይ",sentence:"ፀሐይ ብርሃን ትሰጣለች"},{base:"ፈ",orders:["ፈ","ፉ","ፊ","ፋ","ፌ","ፍ","ፎ"],word:"ፈረስ",sentence:"ፈረስ በፍጥነት ይሮጣል"},{base:"ፐ",orders:["ፐ","ፑ","ፒ","ፓ","ፔ","ፕ","ፖ"],word:"ፒያኖ",sentence:"ፒያኖ ጣፋጭ ዜማ ያወጣል"}];
 
     // ---------------- TTS API & Playback Logic (Fixed) ----------------
     // Includes robust error handling and backoff for the API calls.
@@ -277,8 +276,20 @@
      */
     async function fetchAudioWithBackoff(textToSpeak, retries = 0) {
         const MAX_RETRIES = 3;
-        const apiKey = "";
+        
+        // ===================================================================
+        // V V V V V V V V V V V V V V V V V V V V V V V V V V V V V V V V V V
+        
+        const apiKey = "AIzaSyBeVe45w7KtL5qt7IcfC3cUwk_Qr2OG-b4"; // <-- PASTE YOUR NEW API KEY HERE
+        
+        // ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^
+        // ===================================================================
+        
         const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`;
+
+        if (!apiKey) {
+            throw new Error("API Key is missing. Please add your API key to the script.");
+        }
 
         const payload = {
             contents: [{ parts: [{ text: textToSpeak }] }],
@@ -376,9 +387,12 @@
         } catch (error) {
             isSpeaking = false;
             console.error(error);
-            const message = error.message.includes("403 Forbidden")
-                ? "Error: TTS feature is currently unavailable or restricted. (403 Forbidden)"
-                : `Error generating audio: ${error.message}`;
+            let message = error.message;
+            if (error.message.includes("403 Forbidden")) {
+                message = "Error: TTS feature is currently unavailable or restricted. (403 Forbidden)";
+            } else if (error.message.includes("API Key is missing")) {
+                message = "Error: API Key is missing. Please add your new API key to the script.";
+            }
             showStatus(message, true);
         }
     }
@@ -393,6 +407,8 @@
   <div class="orders">${l.orders.map(o => `<div class="order" data-letter="${o}">${o}</div>`).join('')}</div>
   <div class="word" data-letter="${l.word}">${l.word}</div>
   <div class="sentence">${l.sentence}</div>`;
+        
+        // This is the code that makes the words speak!
         c.addEventListener('click', (event) => {
             const targetLetter = event.target.dataset.letter;
             if (targetLetter) {
