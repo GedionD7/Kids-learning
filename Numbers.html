@@ -192,7 +192,7 @@
   <section id="numbers" class="active">
     <h2>🔢 Numbers 1–20 + 30…100</h2>
     <div class="grid" id="numbersGrid"></div>
-    <p class="note">Tip: Tap 🔊 English to hear the number. The አማርኛ button uses Google Translate for pronunciation.</p>
+    <p class="note">Tip: Tap 🔊 English to hear the number.</p>
   </section>
 
   <section id="math">
@@ -207,7 +207,6 @@
         <div class="chips">
           <button class="chip" onclick="newAdd()">🔄 New Example</button>
           <button class="chip" onclick="speakEn(currAdd.voice)">🔊 English</button>
-          <button class="chip" id="amharicAddBtn" onclick="playAmharicMath('add')">🔊 አማርኛ</button>
         </div>
       </div>
       <div class="mathbox">
@@ -219,7 +218,6 @@
         <div class="chips">
           <button class="chip" onclick="newSub()">🔄 New Example</button>
           <button class="chip" onclick="speakEn(currSub.voice)">🔊 English</button>
-          <button class="chip" id="amharicSubBtn" onclick="playAmharicMath('sub')">🔊 አማርኛ</button>
         </div>
       </div>
     </div>
@@ -314,58 +312,6 @@ function speakEn(text){
   window.speechSynthesis.cancel(); window.speechSynthesis.speak(u);
 }
 
-/* ---------- Amharic Audio using Google Translate API ---------- */
-function speakAmharic(text, buttonElement = null) {
-  if (!text) return;
-  
-  // Show loading indicator on button if provided
-  const originalText = buttonElement ? buttonElement.innerHTML : '';
-  if (buttonElement) {
-    buttonElement.innerHTML = '<span class="loading"></span>';
-    buttonElement.disabled = true;
-  }
-  
-  // Use Google Translate API for Amharic text-to-speech
-  const audio = new Audio(`https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=am&client=tw-ob`);
-  
-  audio.onended = function() {
-    if (buttonElement) {
-      buttonElement.innerHTML = originalText;
-      buttonElement.disabled = false;
-    }
-  };
-  
-  audio.onerror = function() {
-    if (buttonElement) {
-      buttonElement.innerHTML = originalText;
-      buttonElement.disabled = false;
-    }
-    alert("Unable to play Amharic audio. Please check your internet connection.");
-  };
-  
-  audio.play().catch(error => {
-    console.error("Audio play failed:", error);
-    if (buttonElement) {
-      buttonElement.innerHTML = originalText;
-      buttonElement.disabled = false;
-    }
-  });
-}
-
-// Play Amharic for numbers
-function playAmharicNumber(numberData, event) {
-  const button = event.target;
-  speakAmharic(numberData.am, button);
-}
-
-// Play Amharic for math problems
-function playAmharicMath(type) {
-  const problem = type === 'add' ? currAdd : currSub;
-  const amharicText = `${problem.l} ${type === 'add' ? 'ጨምሮ' : 'ቀንሶ'} ${problem.r} ${type === 'add' ? 'እኩል' : 'ይሆናል'} ${type === 'add' ? problem.l + problem.r : problem.l - problem.r}`;
-  const button = document.getElementById(type === 'add' ? 'amharicAddBtn' : 'amharicSubBtn');
-  speakAmharic(amharicText, button);
-}
-
 /* ---------- Rewards ---------- */
 function reward(){
   for(let i=0;i<5;i++){
@@ -423,23 +369,9 @@ NUMBERS.forEach(x=>{
     <div class="num">${x.n}</div>
     <div class="words">${x.en} • ${x.am}</div>
     <div class="sentence">${x.sent}</div>
-    <button class="btn" onclick="speakEn('${x.en}')">🔊 English</button>
-    <button class="btn" onclick="playAmharicNumber(${x.n}, event)">🔊 አማርኛ</button>`;
+    <button class="btn" onclick="speakEn('${x.en}')">🔊 English</button>`;
   grid.appendChild(c);
 });
-
-// Helper function to play Amharic number audio
-function playAmharicNumber(number, event) {
-  const numberData = NUMBERS.find(n => n.n === number);
-  if (numberData) {
-    playAmharicNumberDirect(numberData, event);
-  }
-}
-
-function playAmharicNumberDirect(numberData, event) {
-  const button = event.target;
-  speakAmharic(numberData.am, button);
-}
 
 /* ---------- MATH (animated) ---------- */
 const addPool=[
@@ -471,7 +403,6 @@ function newAdd(){
   top.innerHTML=`<span class="slideL">${repeatEmoji(obj,l)}</span> ➕ <span class="slideR">${repeatEmoji(obj,r)}</span>`;
   merge.innerHTML=`➡️ <span class="pulse">${repeatEmoji(obj,l+r)}</span>`;
   ex.textContent=currAdd.voice;
-  speakEn(currAdd.voice);
 }
 function newSub(){
   currSub=subPool[Math.floor(Math.random()*subPool.length)];
@@ -483,7 +414,6 @@ function newSub(){
   top.innerHTML=`<span class="slideL">${repeatEmoji(obj,l)}</span> − <span class="slideR">${repeatEmoji(obj,r)}</span>`;
   left.innerHTML=`➡️ <span class="pulse">${repeatEmoji(obj,l-r)}</span>`;
   ex.textContent=currSub.voice;
-  speakEn(currSub.voice);
 }
 newAdd(); newSub();
 /* ---------- QUIZ (3 levels, auto-next) ---------- */
@@ -513,7 +443,6 @@ function loadQ(){
   document.getElementById('qNo').textContent=qi+1;
   document.getElementById('qText').textContent=q.q;
   document.getElementById('qObj').textContent=q.objs? q.objs : "";
-  speakEn(q.speak || q.q);
 
   const opts=document.getElementById('qOpts'); opts.innerHTML="";
   q.options.sort(()=>Math.random()-.5).forEach(o=>{
