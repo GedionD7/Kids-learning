@@ -1,676 +1,676 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kids Fun Stories</title>
-    <script src="bundle.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root {
-            --accent: #2e7d32;
-            --accent-light: #e8f5e9;
-            --bg: #f8f9fa;
-            --card: #ffffff;
-            --muted: #6c757d;
-            --border-color: #dee2e6;
-        }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kids Fun Stories</title>
+    <script src="bundle.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --accent: #2e7d32;
+            --accent-light: #e8f5e9;
+            --bg: #f8f9fa;
+            --card: #ffffff;
+            --muted: #6c757d;
+            --border-color: #dee2e6;
+        }
 
-        * {
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: var(--bg);
-            color: #212529;
-            line-height: 1.6;
-        }
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: var(--bg);
+            color: #212529;
+            line-height: 1.6;
+        }
 
-        header {
-            background: var(--accent);
-            color: white;
-            padding: 1rem;
-            text-align: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
+        header {
+            background: var(--accent);
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
 
-        main {
-            max-width: 1200px;
-            margin: 2rem auto;
-            padding: 0 1rem;
-        }
+        main {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
 
-        .controls-container {
-            background: var(--card);
-            padding: 1.5rem;
-            border-radius: 12px;
-            margin-bottom: 2rem;
-            border: 1px solid var(--border-color);
-        }
+        .controls-container {
+            background: var(--card);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border-color);
+        }
 
-        .language-selector {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            margin-bottom: 1.5rem;
-        }
+        .language-selector {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
 
-        .lang-btn {
-            padding: 0.5rem 1rem;
-            border: 2px solid var(--accent);
-            background: white;
-            color: var(--accent);
-            border-radius: 20px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
+        .lang-btn {
+            padding: 0.5rem 1rem;
+            border: 2px solid var(--accent);
+            background: white;
+            color: var(--accent);
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
 
-        .lang-btn.active, .lang-btn:hover {
-            background: var(--accent);
-            color: white;
-        }
+        .lang-btn.active, .lang-btn:hover {
+            background: var(--accent);
+            color: white;
+        }
 
-        nav {
-            display: flex;
-            gap: 0.5rem;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
+        nav {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
 
-        .navbtn {
-            background: #f0f0f0;
-            border: 1px solid var(--border-color);
-            color: #333;
-            padding: 0.6rem 1.2rem;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: 600;
-            transition: background-color 0.2s;
-            white-space: nowrap;
-        }
-        .navbtn:hover { background: #e0e0e0; }
-        .navbtn.active {
-            background: var(--accent);
-            color: white;
-            border-color: var(--accent);
-        }
+        .navbtn {
+            background: #f0f0f0;
+            border: 1px solid var(--border-color);
+            color: #333;
+            padding: 0.6rem 1.2rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background-color 0.2s;
+            white-space: nowrap;
+        }
+        .navbtn:hover { background: #e0e0e0; }
+        .navbtn.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
 
-        .stories-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
-        }
+        .stories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
 
-        .story-card {
-            background: var(--card);
-            border-radius: 12px;
-            overflow: hidden;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            cursor: pointer;
-            transition: all 0.2s ease-in-out;
-        }
+        .story-card {
+            background: var(--card);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
 
-        .story-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
-        }
+        .story-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+        }
 
-        .story-card img {
-            width: 100%;
-            height: 180px;
-            object-fit: cover;
-        }
+        .story-card img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+        }
 
-        .story-card-content {
-            padding: 1rem;
-        }
+        .story-card-content {
+            padding: 1rem;
+        }
 
-        .story-card-content h3 {
-            margin: 0 0 0.5rem;
-            color: var(--accent);
-        }
-        .story-card-content p {
-            margin: 0;
-            color: var(--muted);
-        }
+        .story-card-content h3 {
+            margin: 0 0 0.5rem;
+            color: var(--accent);
+        }
+        .story-card-content p {
+            margin: 0;
+            color: var(--muted);
+        }
 
-        /* Modal Styles */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.7);
-            z-index: 100;
-            align-items: center;
-            justify-content: center;
-        }
+        /* Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+        }
 
-        .modal-overlay.active {
-            display: flex;
-        }
+        .modal-overlay.active {
+            display: flex;
+        }
 
-        .modal-content {
-            background: white;
-            width: 90%;
-            max-width: 700px;
-            max-height: 90vh;
-            border-radius: 12px;
-            padding: 2rem;
-            overflow-y: auto;
-            position: relative;
-        }
+        .modal-content {
+            background: white;
+            width: 90%;
+            max-width: 700px;
+            max-height: 90vh;
+            border-radius: 12px;
+            padding: 2rem;
+            overflow-y: auto;
+            position: relative;
+        }
 
-        .modal-close-btn {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            background: #eee;
-            border: none;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            font-size: 1.2rem;
-            cursor: pointer;
-        }
+        .modal-close-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: #eee;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
 
-        .modal-body h2 { color: var(--accent); }
+        .modal-body h2 { color: var(--accent); }
 
-        .audio-controls {
-            display: flex;
-            gap: 1rem;
-            align-items: center;
-            justify-content: center;
-            padding: 1rem;
-            background: #f0f0f0;
-            border-radius: 8px;
-            margin: 1.5rem 0;
-        }
+        .audio-controls {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            background: #f0f0f0;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
 
-        .audio-btn {
-            padding: 0.7rem 1.2rem;
-            border: none;
-            border-radius: 8px;
-            color: white;
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
+        .audio-btn {
+            padding: 0.7rem 1.2rem;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
 
-        .play-btn { background: var(--accent); }
-        .stop-btn { background: var(--muted); }
+        .play-btn { background: var(--accent); }
+        .stop-btn { background: var(--muted); }
 
-        .audio-btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
+        .audio-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
 
-        .loading-spinner {
-            width: 16px; height: 16px; border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%; border-top-color: #fff;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
+        .loading-spinner {
+            width: 16px; height: 16px; border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%; border-top-color: #fff;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
-        #audioStatus {
-            font-style: italic;
-            color: var(--muted);
-            text-align: center;
-            min-height: 20px;
-        }
+        #audioStatus {
+            font-style: italic;
+            color: var(--muted);
+            text-align: center;
+            min-height: 20px;
+        }
 
-        #modalText {
-            white-space: pre-line;
-        }
+        #modalText {
+            white-space: pre-line;
+        }
 
-        .highlight-sentence {
-            background-color: var(--accent-light);
-            transition: background-color 0.3s;
-        }
-    </style>
+        .highlight-sentence {
+            background-color: var(--accent-light);
+            transition: background-color 0.3s;
+        }
+    </style>
 </head>
 <body>
 
 <header>
-    <h1>Kids Fun Stories</h1>
+    <h1>Kids Fun Stories</h1>
 </header>
 
 <main>
-    <div class="controls-container">
-        <div class="language-selector">
-            <button class="lang-btn active" data-lang="english">English</button>
-            <button class="lang-btn" data-lang="amharic">Amharic (አማርኛ)</button>
-        </div>
-        <nav id="categoryNav">
-            <button class="navbtn active" data-category="all">All Stories</button>
-            <button class="navbtn" data-category="bravery">🦁 Bravery</button>
-            <button class="navbtn" data-category="kindness">❤️ Kindness</button>
-            <button class="navbtn" data-category="friendship">🐾 Friendship</button>
-        </nav>
-    </div>
-    <div id="storiesGrid" class="stories-grid"></div>
+    <div class="controls-container">
+        <div class="language-selector">
+            <button class="lang-btn active" data-lang="english">English</button>
+            <button class="lang-btn" data-lang="amharic">Amharic (አማርኛ)</button>
+        </div>
+        <nav id="categoryNav">
+            <button class="navbtn active" data-category="all">All Stories</button>
+            <button class="navbtn" data-category="bravery">🦁 Bravery</button>
+            <button class="navbtn" data-category="kindness">❤️ Kindness</button>
+            <button class="navbtn" data-category="friendship">🐾 Friendship</button>
+        </nav>
+    </div>
+    <div id="storiesGrid" class="stories-grid"></div>
 </main>
 
 <div id="storyModal" class="modal-overlay">
-    <div class="modal-content">
-        <button class="modal-close-btn">&times;</button>
-        <div class="modal-body">
-            <h2 id="modalTitle"></h2>
-            <div class="audio-controls">
-                <button id="playBtn" class="audio-btn play-btn"><i class="fas fa-play"></i> Listen</button>
-                <button id="stopBtn" class="audio-btn stop-btn"><i class="fas fa-stop"></i> Stop</button>
-            </div>
-            <p id="audioStatus"></p>
-            <div id="modalText"></div>
-        </div>
-    </div>
+    <div class="modal-content">
+        <button class="modal-close-btn">&times;</button>
+        <div class="modal-body">
+            <h2 id="modalTitle"></h2>
+            <div class="audio-controls">
+                <button id="playBtn" class="audio-btn play-btn"><i class="fas fa-play"></i> Listen</button>
+                <button id="stopBtn" class="audio-btn stop-btn"><i class="fas fa-stop"></i> Stop</button>
+            </div>
+            <p id="audioStatus"></p>
+            <div id="modalText"></div>
+        </div>
+    </div>
 </div>
 
 <script>
-    // --- FULL STORY DATA RESTORED ---
-    const stories = [
-        {
-            id: 1,
-            title: { english: "Leo the Brave Little Lion", amharic: "ሊዮ ደፋሩ አንበሳ" },
-            category: "bravery",
-            description: { english: "A small lion shows great courage", amharic: "ትንሽ አንበሳ ታላቅ ጀግንነት ያሳያል" },
-            image: "https://images.unsplash.com/photo-1552410260-0fd9b577afa6?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
-            text: {
-                english: `In the sunny jungle of Golden Tree, there lived a little lion named Leo. Leo was smaller than the other lions, but he had the biggest heart of them all. He loved exploring, playing with friends, and helping anyone in need.
+    // --- FULL STORY DATA RESTORED ---
+    const stories = [
+        {
+            id: 1,
+            title: { english: "Leo the Brave Little Lion", amharic: "ሊዮ ደፋሩ አንበሳ" },
+            category: "bravery",
+            description: { english: "A small lion shows great courage", amharic: "ትንሽ አንበሳ ታላቅ ጀግንነት ያሳያል" },
+            image: "https://images.unsplash.com/photo-1552410260-0fd9b577afa6?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+            text: {
+                english: `In the sunny jungle of Golden Tree, there lived a little lion named Leo. Leo was smaller than the other lions, but he had the biggest heart of them all. He loved exploring, playing with friends, and helping anyone in need.
 One bright morning, Leo was walking near the river when he heard a faint cry. "Help! Help!" the voice said. Curious, Leo followed the sound and found his friend, Tilly the turtle, stuck in a thorn bush. Her little legs couldn't free her.
 All the other animals saw this, but they were too scared to come close. "The thorns are too sharp," said a monkey. "I can't help," said a giraffe.
 But Leo stepped forward. "Don't worry, Tilly! I will help you!" he said. Carefully, he pulled away the thorns, one by one, until Tilly was free. Tilly hugged him tightly. "Thank you, Leo! You are brave!"
 From that day on, all the animals in the jungle knew that even the smallest lion can be the bravest of all. And Leo learned that helping others is more important than being the biggest or strongest.`,
-                amharic: `በወርቃማው ዛፍ ጫካ ውስጥ ሊዮ የሚባል ትንሽ አንበሳ ነበር። ሊዮ ከሌሎቹ አንበሶች ያነሰ ነበር፣ ነገር ግን ከሁሉም ትልቅ ልብ ነበረው። መመርመር ፣ ከጓደኞቹ ጋር መጫወት እና ለሚያስፈልገው ማንኛውም ሰው መርዳት ይወድ ነበር።
+                amharic: `በወርቃማው ዛፍ ጫካ ውስጥ ሊዮ የሚባል ትንሽ አንበሳ ነበር። ሊዮ ከሌሎቹ አንበሶች ያነሰ ነበር፣ ነገር ግን ከሁሉም ትልቅ ልብ ነበረው። መመርመር ፣ ከጓደኞቹ ጋር መጫወት እና ለሚያስፈልገው ማንኛውም ሰው መርዳት ይወድ ነበር።
 አንድ ቀን በብሩህ ማለዳ ሊዮ በወንዙ አጠገብ እየሄደ ሳለ ደካማ ጩኸት ሰማ ። "እርዱኝ! እርዱኝ!"አለ ድምፁ።የማወቅ ጉጉት ያለው ሊዮ ድምፁን ተከትሎ ጓደኛውን ቲሊ ኤሊው በእሾህ ቁጥቋጦ ውስጥ ተጣብቆ አገኘው።ትንንሽ እግሮቿ  ነፃ ሊወጡላት አልቻሉም ።
 ሌሎቹ እንስሳት ሁሉ ይህንን አዩ ፣ ነገር ግን ለመቅረብ በጣም ፈሩ። "እሾሆቹ በጣም ሹል ናቸው" አለች ዝንጀሮ። "መርዳት አልችልም" አለች ቀጭኔ።
 ነገር ግን ሊዮ ወደፊት ሄደ። "አትጨነቂ ፣ ቲሊ! እረዳሻለሁ!" አላት። በጥንቃቄ እሾሆቹን ፣ አንድ በአንድ ፣ ቲሊ እስክትፈታ ድረስ አነሳ። ቲሊ በጥብቅ አቀፈችው። "አመሰግናለሁ ፣ ሊዮ! ደፋር ነህ!"
 ከዚያ ቀን ጀምሮ በጫካው ውስጥ ያሉ ሁሉም እንስሳት ትንሹ አንበሳ እንኳ ከሁሉም ደፋር መሆኑን አወቁ። እና ሊዮ ሌሎችን ማገዝ ትልቅ ወይም ጠንካራ ከመሆን የበለጠ አስፈላጊ መሆኑን ተማረ።`
-            }
-        },
-        {
-            id: 2,
-            title: { english: "Mia the Kind Monkey", amharic: "ሚያ ደጓ ዝንጀሮ" },
-            category: "kindness",
-            description: { english: "A curious monkey helps find a lost key", amharic: "ጉጉት ያለው ዝንጀሮ የጠፋ ቁልፍ ለማግኘት ይረዳል" },
-            image: "https://images.unsplash.com/photo-1540573133985-87b6da6d54a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
-            text: {
-                english: `Mia was a young monkey who loved exploring. Every morning, she swung from branch to branch, discovering new places in the jungle. One day, while playing near the riverbank, she noticed something shiny on the ground.
+            }
+        },
+        {
+            id: 2,
+            title: { english: "Mia the Kind Monkey", amharic: "ሚያ ደጓ ዝንጀሮ" },
+            category: "kindness",
+            description: { english: "A curious monkey helps find a lost key", amharic: "ጉጉት ያለው ዝንጀሮ የጠፋ ቁልፍ ለማግኘት ይረዳል" },
+            image: "https://images.unsplash.com/photo-1540573133985-87b6da6d54a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+            text: {
+                english: `Mia was a young monkey who loved exploring. Every morning, she swung from branch to branch, discovering new places in the jungle. One day, while playing near the riverbank, she noticed something shiny on the ground.
 "What could this be?" Mia wondered. She picked it up and saw it was a golden key. She didn't know whose it was, but she wanted to help. Mia hopped from tree to tree asking her friends if it belonged to anyone.
 Finally, she reached Mr. Elephant, who had lost his treasure chest key days ago. "Mia! You found it!" he exclaimed, tears of happiness in his eyes. "You are very clever and kind."
 Mia felt proud. She realized that curiosity can help others, especially when you are willing to take action.`,
-                amharic: `ሚያ መመርመር የምትወድ ወጣት ዝንጀሮ ነበረች። በየጠዋቱ ከቅርንጫፍ ወደ ቅርንጫፍ እየዘለለች በጫካው ውስጥ አዳዲስ ቦታዎችን ታገኛለች። አንድ ቀን ፣ ከወንዝ ዳርቻ አጠገብ ስትጫወት ፣ መሬት ላይ የሚያብረቀርቅ ነገር አየች።
+                amharic: `ሚያ መመርመር የምትወድ ወጣት ዝንጀሮ ነበረች። በየጠዋቱ ከቅርንጫፍ ወደ ቅርንጫፍ እየዘለለች በጫካው ውስጥ አዳዲስ ቦታዎችን ታገኛለች። አንድ ቀን ፣ ከወንዝ ዳርቻ አጠገብ ስትጫወት ፣ መሬት ላይ የሚያብረቀርቅ ነገር አየች።
 "ይህ ምን ሊሆን ይችላል?" ሚያ አሰበች። አንስታ ስትመለከት ወርቃማ ቁልፍ ነበር። የማን እንደሆነ ባታውቅም መርዳት ፈለገች። ሚያ ከዛፍ ወደ ዛፍ እየዘለለች ጓደኞቿን የማን እንደሆነ ጠየቀች።
 በመጨረሻም፣ ከቀናት በፊት የሀብት ሳጥኑን ቁልፍ ያጣውን አቶ ዝሆንን አገኘች። "ሚያ! አገኘሽው!" ብሎ በደስታ ጮኸ። "በጣም ብልህ እና ደግ ነሽ።"
 ሚያ ኩራት ተሰማት። ጉጉት በተግባር ሲደገፍ ሌሎችን መርዳት እንደሚችል ተገነዘበች።`
-            }
-        },
-        {
-            id: 3,
-            title: { english: "Benny the Brave Bunny", amharic: "ቤኒ ደፋሩ ጥንቸል" },
-            category: "bravery",
-            description: { english: "A bunny saves a bird from danger", amharic: "ጥንቸል ወፍን ከአደጋ ያድናል" },
-            image: "https://images.unsplash.com/photo-1518796745738-41048802f99a?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
-            text: {
-                english: `Benny loved munching on carrots in his garden, but he also had a brave heart. One sunny morning, he heard a faint chirping sound. A little bird was tangled in a net near the bushes.
+            }
+        },
+        {
+            id: 3,
+            title: { english: "Benny the Brave Bunny", amharic: "ቤኒ ደፋሩ ጥንቸል" },
+            category: "bravery",
+            description: { english: "A bunny saves a bird from danger", amharic: "ጥንቸል ወፍን ከአደጋ ያድናል" },
+            image: "https://images.unsplash.com/photo-1518796745738-41048802f99a?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+            text: {
+                english: `Benny loved munching on carrots in his garden, but he also had a brave heart. One sunny morning, he heard a faint chirping sound. A little bird was tangled in a net near the bushes.
 Benny looked around. All the other bunnies ran away. "It looks dangerous," said one. But Benny didn't hesitate. Using his sharp teeth carefully, he nibbled the net until the bird was free.
 "Thank you, Benny! You saved me!" chirped the bird happily. From that day, Benny was known as the bravest bunny in the meadow. He learned that helping friends is always worth the risk.`,
-                amharic: `ቤኒ በአትክልቱ ውስጥ ካሮት መመገብ ይወድ ነበር ፣ ነገር ግን ደፋር ልብም ነበረው። አንድ ፀሐያማ ጠዋት ፣ ደካማ የ ወፍ ጩኸት ሰማ። አንዲት ትንሽ ወፍ ከቁጥቋጦዎቹ አጠገብ በመረብ ተጠልፋ ነበር።
+                amharic: `ቤኒ በአትክልቱ ውስጥ ካሮት መመገብ ይወድ ነበር ፣ ነገር ግን ደፋር ልብም ነበረው። አንድ ፀሐያማ ጠዋት ፣ ደካማ የ ወፍ ጩኸት ሰማ። አንዲት ትንሽ ወፍ ከቁጥቋጦዎቹ አጠገብ በመረብ ተጠልፋ ነበር።
 ቤኒ ዙሪያውን ተመለከተ። ሌሎቹ ጥንቸሎች ሁሉ ሸሹ። "አደገኛ ይመስላል" አለ አንዱ። ነገር ግን ቤኒ አላመነታም። ሹል ጥርሶቹን በጥንቃቄ በመጠቀም ፣ ወፏ ነፃ እስክትወጣ ድረስ መረቡን ቆረጠ።
 "አመሰግናለሁ ፣ ቤኒ! አዳንከኝ!" ወፏ በደስታ ጮኸች። ከዚያ ቀን ጀምሮ ቤኒ በሜዳው ውስጥ በጣም ደፋር ጥንቸል በመባል ይታወቅ ነበር። ጓደኞችን መርዳት ሁልጊዜም ዋጋ ያለው መሆኑን ተማረ።`
-            }
-        },
-        {
-            id: 4,
-            title: { english: "Sparkle the Kind Fish", amharic: "ስፓርክል ደጉ አሳ" },
-            category: "kindness",
-            description: { english: "A small fish helps a stranded frog", amharic: "ትንሽ አሳ የተቸገረ እንቁራሪት ይረዳል" },
-            image: "https://images.unsplash.com/photo-1518837695005-2083093ee35b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
-            text: {
-                english: `In a sparkling blue pond, lived Sparkle, a small fish with shimmering scales. Sparkle loved swimming and exploring every corner of the pond.
+            }
+        },
+        {
+            id: 4,
+            title: { english: "Sparkle the Kind Fish", amharic: "ስፓርክል ደጉ አሳ" },
+            category: "kindness",
+            description: { english: "A small fish helps a stranded frog", amharic: "ትንሽ አሳ የተቸገረ እንቁራሪት ይረዳል" },
+            image: "https://images.unsplash.com/photo-1518837695005-2083093ee35b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+            text: {
+                english: `In a sparkling blue pond, lived Sparkle, a small fish with shimmering scales. Sparkle loved swimming and exploring every corner of the pond.
 One day, Sparkle noticed a tiny frog stranded on a rock. The frog was scared. Sparkle thought quickly. "Don't worry, I'll help you!" she said.
 She splashed water gently to cool the frog and nudged it carefully toward the water. The frog finally hopped safely into the pond. "Thank you, Sparkle! You are so kind!" said the frog.
 Sparkle learned that even small creatures can make a big difference when they show kindness.`,
-                amharic: `በሚያብረቀርቅ ሰማያዊ ኩሬ ውስጥ ስፓርክል የምትባል ትንሽ አሳ ትኖር ነበር። ስፓርክል መዋኘት እና የኩሬውን እያንዳንዱን ጥግ መመርመር ትወድ ነበር።
+                amharic: `በሚያብረቀርቅ ሰማያዊ ኩሬ ውስጥ ስፓርክል የምትባል ትንሽ አሳ ትኖር ነበር። ስፓርክል መዋኘት እና የኩሬውን እያንዳንዱን ጥግ መመርመር ትወድ ነበር።
 አንድ ቀን ስፓርክል ድንጋይ ላይ ተቀምጦ የፈራ ትንሽ እንቁራሪት አየች። ስፓርክል በፍጥነት አሰበች። "አትጨነቅ እረዳሃለሁ!" አለችው።
 እንቁራሪቱን ለማቀዝቀዝ ውሃ ረጨችበት እና በጥንቃቄ ወደ ውሃው ገፋችው። እንቁራሪቱ በሰላም ወደ ኩሬው ገባ። "አመሰግናለሁ ስፓርክል! በጣም ደግ ነሽ!" አለ እንቁራሪቱ።
 ስፓርክል ትናንሽ ፍጥረታት እንኳ ደግነት ሲያሳዩ ትልቅ ለውጥ ማምጣት እንደሚችሉ ተማረች።`
-            }
-        },
-        {
-            id: 5,
-            title: { english: "Timmy and the Race", amharic: "ቲሚ እና ውድድሩ" },
-            category: "friendship",
-            description: { english: "A slow turtle shows his own strength", amharic: "ዝግተኛ ኤሊ የራሱን ጥንካሬ ያሳያል" },
-            image: "https://images.unsplash.com/photo-1673632118149-95cf2136c73f?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8dHVydGxlJTIwcmFjZXxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&q=60&w=600 ",
-            text: {
-                english: `Timmy was the smallest turtle in the forest. He was often teased for being slow. "You'll never win a race!" the other animals would say.
+            }
+        },
+        {
+            id: 5,
+            title: { english: "Timmy and the Race", amharic: "ቲሚ እና ውድድሩ" },
+            category: "friendship",
+            description: { english: "A slow turtle shows his own strength", amharic: "ዝግተኛ ኤሊ የራሱን ጥንካሬ ያሳያል" },
+            image: "https://images.unsplash.com/photo-1673632118149-95cf2136c73f?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8dHVydGxlJTIwcmFjZXxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&q=60&w=600 ",
+            text: {
+                english: `Timmy was the smallest turtle in the forest. He was often teased for being slow. "You'll never win a race!" the other animals would say.
 One day, there was a big race to the top of Sunny Hill. The fast rabbit zipped ahead, but soon got tired and took a nap. The other animals ran fast but got distracted.
 Timmy just kept going, slow and steady. He never stopped. One by one, he passed the sleeping rabbit and the distracted animals.
 To everyone's surprise, Timmy the turtle was the first to reach the top of the hill. He learned that being slow and steady can win the race.`,
-                amharic: `ቲሚ በጫካው ውስጥ በጣም ትንሹ ኤሊ ነበር። ዝግተኛ በመሆኑ ብዙ ጊዜ ይሳለቁበት ነበር። "ውድድር በፍጹም አታሸንፍም!" ይሉት ነበር ሌሎቹ እንስሳት።
+                amharic: `ቲሚ በጫካው ውስጥ በጣም ትንሹ ኤሊ ነበር። ዝግተኛ በመሆኑ ብዙ ጊዜ ይሳለቁበት ነበር። "ውድድር በፍጹም አታሸንፍም!" ይሉት ነበር ሌሎቹ እንስሳት።
 አንድ ቀን ወደ ፀሐያማ ኮረብታ ጫፍ ትልቅ ውድድር ነበር። ፈጣኑ ጥንቸል በፍጥነት ሄደ፣ ነገር ግን ብዙም ሳይቆይ ደክሞ እንቅልፍ ወሰደው። ሌሎቹ እንስሳት በፍጥነት ሮጡ ግን ትኩረታቸው ተበታተነ።
 ቲሚ ግን ዝግ እና ጽኑ ሆኖ ጉዞውን ቀጠለ። በፍጹም አላቆመም። አንድ በአንድ፣ የተኛውን ጥንቸል እና ትኩረታቸው የተበታተኑትን እንስሳት አለፋቸው።
 ለሁሉም በሚያስደንቅ ሁኔታ፣ ቲሚ ኤሊው የኮረብታውን ጫፍ ለመድረስ የመጀመሪያው ሆነ። ዝግ እና ጽኑ መሆን ውድድሩን ሊያሸንፍ እንደሚችል ተማረ።`
-            }
-        },
-        {
-            id: 6,
-            title: { english: "Lulu and the Lost Star", amharic: "ሉሉ እና የጠፋው ኮከብ" },
-            category: "friendship",
-            description: { english: "A lioness helps a friend in need", amharic: "አንበሳ የተቸገረ ጓደኛዋን ትረዳለች" },
-            image: "https://images.unsplash.com/photo-1546182990-dffeafbe841d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
-            text: {
-                english: `Lulu the lioness loved watching the stars. One night, she saw a little star fall from the sky and land in the tall grass. The little star was crying.
+            }
+        },
+        {
+            id: 6,
+            title: { english: "Lulu and the Lost Star", amharic: "ሉሉ እና የጠፋው ኮከብ" },
+            category: "friendship",
+            description: { english: "A lioness helps a friend in need", amharic: "አንበሳ የተቸገረ ጓደኛዋን ትረዳለች" },
+            image: "https://images.unsplash.com/photo-1546182990-dffeafbe841d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+            text: {
+                english: `Lulu the lioness loved watching the stars. One night, she saw a little star fall from the sky and land in the tall grass. The little star was crying.
 "I'm lost and I can't get back home!" it sobbed. Lulu felt sad for the star. "I will help you," she said gently.
 Lulu carried the little star on her back and climbed to the highest point in the jungle. "Can you see your family now?" she asked.
 "Yes! I can!" the star twinkled happily. It floated back up into the sky to join the other stars. Lulu knew that a good friend always helps, no matter how big or small the problem is.`,
-                amharic: `ሉሉ አንበሳዋ ከዋክብትን መመልከት ትወድ ነበር። አንድ ምሽት፣ አንድ ትንሽ ኮከብ ከሰማይ ወድቆ በረጅም ሳር ውስጥ ሲያርፍ አየች። ትንሹ ኮከብ እያለቀሰ ነበር።
+                amharic: `ሉሉ አንበሳዋ ከዋክብትን መመልከት ትወድ ነበር። አንድ ምሽት፣ አንድ ትንሽ ኮከብ ከሰማይ ወድቆ በረጅም ሳር ውስጥ ሲያርፍ አየች። ትንሹ ኮከብ እያለቀሰ ነበር።
 "ጠፍቻለሁ እና ወደ ቤቴ መመለስ አልችልም!" ብሎ አለቀሰ። ሉሉ ለኮከቡ አዘነች። "እረዳሃለሁ" አለችው በቀስታ።
 ሉሉ ትንሹን ኮከብ በጀርባዋ ላይ ተሸክማ በጫካው ውስጥ ወደሚገኘው ረጅሙ ቦታ ወጣች። "አሁን ቤተሰብህን ማየት ትችላለህ?" ብላ ጠየቀችው።
 "አዎ! እችላለሁ!" ኮከቡ በደስታ አንጸባረቀ። ወደ ሰማይ ተመልሶ ከሌሎቹ ከዋክብት ጋር ተቀላቀለ። ሉሉ ጥሩ ጓደኛ ችግሩ ትልቅም ይሁን ትንሽ ሁልጊዜም እንደሚረዳ አወቀች።`
-            }
-        }
-    ];
+            }
+        }
+    ];
 
-    // --- GLOBAL VARIABLES ---
-    let currentLanguage = 'english';
-    const storiesGrid = document.getElementById('storiesGrid');
-    const modal = document.getElementById('storyModal');
-    const modalTitle = document.getElementById('modalTitle');
-    const modalText = document.getElementById('modalText');
-    
-    // Global variable for native TTS (SpeechSynthesisUtterance)
-    let currentUtterance = null; 
-    let currentStoryID = null;
+    // --- GLOBAL VARIABLES ---
+    let currentLanguage = 'english';
+    const storiesGrid = document.getElementById('storiesGrid');
+    const modal = document.getElementById('storyModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalText = document.getElementById('modalText');
+    
+    // Global variable for native TTS (SpeechSynthesisUtterance)
+    let currentUtterance = null; 
+    let currentStoryID = null;
 
-    // --- FIX: A NEAT AUDIO PLAYER OBJECT TO HANDLE ALL SOUND LOGIC ---
-    const AudioPlayer = {
-        audioElement: new Audio(),
-        isPlaying: false,
-        isPaused: false,
-        isTTS: false, // Tracks if we are using native TTS or local MP3
+    // --- FIX: A NEAT AUDIO PLAYER OBJECT TO HANDLE ALL SOUND LOGIC ---
+    const AudioPlayer = {
+        audioElement: new Audio(),
+        isPlaying: false,
+        isPaused: false,
+        isTTS: false, // Tracks if we are using native TTS or local PM3
 
-        // Helper for clearing any previous highlight (used by both TTS and MP3)
-        _clearHighlight() {
-            modalText.querySelectorAll('span').forEach(span => span.classList.remove('highlight-sentence'));
-        },
+        // Helper for clearing any previous highlight (used by both TTS and MP3)
+        _clearHighlight() {
+            modalText.querySelectorAll('span').forEach(span => span.classList.remove('highlight-sentence'));
+        },
 
-        // --- FIX: Uses native TTS for English ---
-        _playTTS(text, lang) {
-            this.stop(); 
-            this.isTTS = true;
+        // --- Uses native TTS for English ---
+        _playTTS(text, lang) {
+            this.stop(); 
+            this.isTTS = true;
 
-            const langCode = lang === 'english' ? 'en-US' : 'am-ET'; // Use full codes for best voice selection
-            const sentences = text.match(/[^.!?…]+[.!?…]*/g) || [text];
-            let sentenceIndex = 0;
+            const langCode = lang === 'english' ? 'en-US' : 'am-ET'; // Use full codes for best voice selection
+            const sentences = text.match(/[^.!?…]+[.!?…]*/g) || [text];
+            let sentenceIndex = 0;
 
-            const synth = window.speechSynthesis;
-            if (!synth) {
-                this.updateUI('error', 'Text-to-Speech not supported in this browser.');
-                return;
-            }
+            const synth = window.speechSynthesis;
+            if (!synth) {
+                this.updateUI('error', 'Text-to-Speech not supported in this browser.');
+                return;
+            }
 
-            // Function to speak the next sentence chunk
-            const speakNext = () => {
-                this._clearHighlight();
+            // Function to speak the next sentence chunk
+            const speakNext = () => {
+                this._clearHighlight();
 
-                if (sentenceIndex >= sentences.length || !this.isPlaying) {
-                    this.stop();
-                    return;
-                }
+                if (sentenceIndex >= sentences.length || !this.isPlaying) {
+                    this.stop();
+                    return;
+                }
 
-                const sentence = sentences[sentenceIndex].trim();
-                if (!sentence) {
-                    sentenceIndex++;
-                    speakNext();
-                    return;
-                }
+                const sentence = sentences[sentenceIndex].trim();
+                if (!sentence) {
+                    sentenceIndex++;
+                    speakNext();
+                    return;
+                }
 
-                // Highlight the current sentence (requires the sentences to be wrapped in <span>)
-                const spans = modalText.querySelectorAll('span');
-                if (spans[sentenceIndex]) {
-                    spans[sentenceIndex].classList.add('highlight-sentence');
-                }
+                // Highlight the current sentence (requires the sentences to be wrapped in <span>)
+                const spans = modalText.querySelectorAll('span');
+                if (spans[sentenceIndex]) {
+                    spans[sentenceIndex].classList.add('highlight-sentence');
+                }
 
-                currentUtterance = new SpeechSynthesisUtterance(sentence);
-                currentUtterance.lang = langCode;
+                currentUtterance = new SpeechSynthesisUtterance(sentence);
+                currentUtterance.lang = langCode;
 
-                // Find a matching voice for better quality
-                const voice = synth.getVoices().find(v => v.lang === langCode);
-                if (voice) {
-                    currentUtterance.voice = voice;
-                }
+                // Find a matching voice for better quality
+                const voice = synth.getVoices().find(v => v.lang === langCode);
+                if (voice) {
+                    currentUtterance.voice = voice;
+                }
 
-                currentUtterance.onend = () => {
-                    sentenceIndex++;
-                    speakNext();
-                };
+                currentUtterance.onend = () => {
+                    sentenceIndex++;
+                    speakNext();
+                };
 
-                currentUtterance.onerror = (e) => {
-                    console.error('TTS Error:', e);
-                    this.updateUI('error', 'Error reading text.');
-                    this.stop();
-                };
+                currentUtterance.onerror = (e) => {
+                    console.error('TTS Error:', e);
+                    this.updateUI('error', 'Error reading text.');
+                    this.stop();
+                };
 
-                synth.speak(currentUtterance);
-            };
+                synth.speak(currentUtterance);
+            };
 
-            this.isPlaying = true;
-            this.isPaused = false;
-            speakNext();
-            this.updateUI('playing');
-        },
+            this.isPlaying = true;
+            this.isPaused = false;
+            speakNext();
+            this.updateUI('playing');
+        },
 
-        // --- FIX: Uses local MP3 for Amharic ---
-        _playMP3(storyID) {
-            this.stop();
-            this.isTTS = false;
+        // --- FIX: Uses local PM3 for Amharic with correct path: stroy/story1.pm3 ---
+        _playMP3(storyID) {
+            this.stop();
+            this.isTTS = false;
 
-            // FIX APPLIED HERE: Correctly constructs the local file path based on user's request: "story/story1.mp3"
-            const mp3Path = `story/story${storyID}.mp3`;
-            this.audioElement.src = mp3Path;
-            this.audioElement.load();
+            // FIX APPLIED HERE: Using the path structure 'stroy/story1.pm3' (singular directory, .pm3 extension)
+            const mp3Path = `stroy/story${storyID}.pm3`;
+            this.audioElement.src = mp3Path;
+            this.audioElement.load();
 
-            this.audioElement.onloadeddata = () => {
-                this.audioElement.play().catch(e => {
-                    console.error("MP3 Playback Error:", e);
-                    this.updateUI('error', 'Error playing Amharic audio. Check file path.');
-                    this.stop();
-                });
-            };
+            this.audioElement.onloadeddata = () => {
+                this.audioElement.play().catch(e => {
+                    console.error("MP3 Playback Error:", e);
+                    this.updateUI('error', 'Error playing Amharic audio. Check file path.');
+                    this.stop();
+                });
+            };
 
-            this.audioElement.onended = () => this.stop();
-            this.audioElement.onerror = () => {
-                // Changing error message to reflect the corrected path structure
-                this.updateUI('error', `Amharic MP3 (story/story${storyID}.mp3) not found or failed to load.`);
-                this.stop();
-            };
+            this.audioElement.onended = () => this.stop();
+            this.audioElement.onerror = () => {
+                // Changing error message to reflect the corrected path structure
+                this.updateUI('error', `Amharic audio file (${mp3Path}) not found. (404 likely)`);
+                this.stop();
+            };
 
-            this.isPlaying = true;
-            this.isPaused = false;
-            this.updateUI('playing');
-        },
+            this.isPlaying = true;
+            this.isPaused = false;
+            this.updateUI('playing');
+        },
 
-        // --- Unified Play Function ---
-        play(story, lang) {
-            if (this.isPaused) {
-                this.resume();
-                return;
-            }
-            
-            this.stop();
-            currentStoryID = story.id; 
+        // --- Unified Play Function ---
+        play(story, lang) {
+            if (this.isPaused) {
+                this.resume();
+                return;
+            }
+            
+            this.stop();
+            currentStoryID = story.id; 
 
-            if (lang === 'english') {
-                this._playTTS(story.text.english, 'english');
-            } else if (lang === 'amharic') {
-                this._playMP3(story.id);
-            }
-        },
+            if (lang === 'english') {
+                this._playTTS(story.text.english, 'english');
+            } else if (lang === 'amharic') {
+                this._playMP3(story.id);
+            }
+        },
 
-        pause() {
-            if (!this.isPlaying) return;
-            
-            if (this.isTTS && currentUtterance) {
-                window.speechSynthesis.pause();
-            } else {
-                this.audioElement.pause();
-            }
+        pause() {
+            if (!this.isPlaying) return;
+            
+            if (this.isTTS && currentUtterance) {
+                window.speechSynthesis.pause();
+            } else {
+                this.audioElement.pause();
+            }
 
-            this.isPaused = true;
-            this.isPlaying = false;
-            this.updateUI('paused');
-        },
+            this.isPaused = true;
+            this.isPlaying = false;
+            this.updateUI('paused');
+        },
 
-        resume() {
-            if (!this.isPaused) return;
-            
-            if (this.isTTS && currentUtterance) {
-                window.speechSynthesis.resume();
-            } else {
-                this.audioElement.play().catch(e => this.stop());
-            }
+        resume() {
+            if (!this.isPaused) return;
+            
+            if (this.isTTS && currentUtterance) {
+                window.speechSynthesis.resume();
+            } else {
+                this.audioElement.play().catch(e => this.stop());
+            }
 
-            this.isPaused = false;
-            this.isPlaying = true;
-            this.updateUI('playing');
-        },
+            this.isPaused = false;
+            this.isPlaying = true;
+            this.updateUI('playing');
+        },
 
-        stop() {
-            // Stop TTS if active
-            if (this.isTTS && window.speechSynthesis) {
-                window.speechSynthesis.cancel();
-            }
-            // Stop Audio element if active
-            this.audioElement.pause();
-            this.audioElement.src = "";
-            
-            currentUtterance = null;
-            this.isPlaying = false;
-            this.isPaused = false;
-            this._clearHighlight(); // Clears highlight
-            this.updateUI('stopped');
-        },
+        stop() {
+            // Stop TTS if active
+            if (this.isTTS && window.speechSynthesis) {
+                window.speechSynthesis.cancel();
+            }
+            // Stop Audio element if active
+            this.audioElement.pause();
+            this.audioElement.src = "";
+            
+            currentUtterance = null;
+            this.isPlaying = false;
+            this.isPaused = false;
+            this._clearHighlight(); // Clears highlight
+            this.updateUI('stopped');
+        },
 
-        updateUI(state, message = '') {
-            const playBtn = document.getElementById('playBtn');
-            const audioStatus = document.getElementById('audioStatus');
+        updateUI(state, message = '') {
+            const playBtn = document.getElementById('playBtn');
+            const audioStatus = document.getElementById('audioStatus');
 
-            if (state === 'playing') {
-                playBtn.innerHTML = `<i class="fas fa-pause"></i> Pause`;
-                audioStatus.textContent = 'Playing...';
-            } else if (state === 'paused') {
-                playBtn.innerHTML = `<i class="fas fa-play"></i> Resume`;
-                audioStatus.textContent = 'Paused.';
-            } else if (state === 'error') {
-                 playBtn.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Error`;
-                 audioStatus.textContent = message;
-                 playBtn.disabled = true;
-            } else {
-                playBtn.innerHTML = `<i class="fas fa-play"></i> Listen`;
-                audioStatus.textContent = 'Ready to play.';
-                playBtn.disabled = false;
-            }
-            // Enable stop button only if not stopped/error
-            document.getElementById('stopBtn').disabled = (state === 'stopped' || state === 'error');
-        }
-    };
+            if (state === 'playing') {
+                playBtn.innerHTML = `<i class="fas fa-pause"></i> Pause`;
+                audioStatus.textContent = 'Playing...';
+            } else if (state === 'paused') {
+                playBtn.innerHTML = `<i class="fas fa-play"></i> Resume`;
+                audioStatus.textContent = 'Paused.';
+            } else if (state === 'error') {
+                 playBtn.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Error`;
+                 audioStatus.textContent = message;
+                 playBtn.disabled = true;
+            } else {
+                playBtn.innerHTML = `<i class="fas fa-play"></i> Listen`;
+                audioStatus.textContent = 'Ready to play.';
+                playBtn.disabled = false;
+            }
+            // Enable stop button only if not stopped/error
+            document.getElementById('stopBtn').disabled = (state === 'stopped' || state === 'error');
+        }
+    };
 
-    // --- UI & APP LOGIC ---
+    // --- UI & APP LOGIC ---
 
-    function renderStories(category = 'all') {
-        storiesGrid.innerHTML = '';
-        const filteredStories = category === 'all'
-            ? stories
-            : stories.filter(story => story.category === category);
+    function renderStories(category = 'all') {
+        storiesGrid.innerHTML = '';
+        const filteredStories = category === 'all'
+            ? stories
+            : stories.filter(story => story.category === category);
 
-        filteredStories.forEach(story => {
-            const card = document.createElement('div');
-            card.className = 'story-card';
-            card.innerHTML = `
-                <img src="${story.image}" alt="${story.title[currentLanguage]}">
-                <div class="story-card-content">
-                    <h3>${story.title[currentLanguage]}</h3>
-                    <p>${story.description[currentLanguage]}</p>
-                </div>
-            `;
-            card.addEventListener('click', () => openModal(story));
-            storiesGrid.appendChild(card);
-        });
-    }
+        filteredStories.forEach(story => {
+            const card = document.createElement('div');
+            card.className = 'story-card';
+            card.innerHTML = `
+                <img src="${story.image}" alt="${story.title[currentLanguage]}">
+                <div class="story-card-content">
+                    <h3>${story.title[currentLanguage]}</h3>
+                    <p>${story.description[currentLanguage]}</p>
+                </div>
+            `;
+            card.addEventListener('click', () => openModal(story));
+            storiesGrid.appendChild(card);
+        });
+    }
 
-    function openModal(story) {
-        modalTitle.textContent = story.title[currentLanguage];
-        // Split text by sentence and wrap in <span> for highlighting (English TTS)
-        const text = story.text[currentLanguage];
-        const sentences = text.match(/[^.!?…]+[.!?…]*/g) || [];
-        modalText.innerHTML = sentences.map(s => `<span>${s.trim()}</span>`).join(' ');
-        
-        modal.story = story;
-        modal.classList.add('active');
-        AudioPlayer.updateUI('stopped');
-    }
+    function openModal(story) {
+        modalTitle.textContent = story.title[currentLanguage];
+        // Split text by sentence and wrap in <span> for highlighting (English TTS)
+        const text = story.text[currentLanguage];
+        const sentences = text.match(/[^.!?…]+[.!?…]*/g) || [];
+        modalText.innerHTML = sentences.map(s => `<span>${s.trim()}</span>`).join(' ');
+        
+        modal.story = story;
+        modal.classList.add('active');
+        AudioPlayer.updateUI('stopped');
+    }
 
-    function closeModal() {
-        AudioPlayer.stop();
-        modal.classList.remove('active');
-    }
+    function closeModal() {
+        AudioPlayer.stop();
+        modal.classList.remove('active');
+    }
 
-    // --- EVENT LISTENERS ---
-    document.addEventListener('DOMContentLoaded', () => {
-        renderStories();
+    // --- EVENT LISTENERS ---
+    document.addEventListener('DOMContentLoaded', () => {
+        renderStories();
 
-        document.querySelectorAll('.lang-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                // Stop audio when changing language
-                AudioPlayer.stop(); 
-                document.querySelector('.lang-btn.active').classList.remove('active');
-                btn.classList.add('active');
-                currentLanguage = btn.dataset.lang;
-                const activeCategory = document.querySelector('.navbtn.active')?.dataset.category || 'all';
-                renderStories(activeCategory);
-            });
-        });
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Stop audio when changing language
+                AudioPlayer.stop(); 
+                document.querySelector('.lang-btn.active').classList.remove('active');
+                btn.classList.add('active');
+                currentLanguage = btn.dataset.lang;
+                const activeCategory = document.querySelector('.navbtn.active')?.dataset.category || 'all';
+                renderStories(activeCategory);
+            });
+        });
 
-        document.querySelectorAll('.navbtn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelector('.navbtn.active').classList.remove('active');
-                btn.classList.add('active');
-                renderStories(btn.dataset.category);
-            });
-        });
+        document.querySelectorAll('.navbtn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelector('.navbtn.active').classList.remove('active');
+                btn.classList.add('active');
+                renderStories(btn.dataset.category);
+            });
+        });
 
-        modal.querySelector('.modal-close-btn').addEventListener('click', closeModal);
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) closeModal();
-        });
+        modal.querySelector('.modal-close-btn').addEventListener('click', closeModal);
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal();
+        });
 
-        document.getElementById('playBtn').addEventListener('click', () => {
-            const story = modal.story;
-            if (AudioPlayer.isPlaying || AudioPlayer.isPaused) {
-                AudioPlayer.pause();
-            } else {
-                // Pass the whole story object to play, not just the text
-                AudioPlayer.play(story, currentLanguage); 
-            }
-        });
+        document.getElementById('playBtn').addEventListener('click', () => {
+            const story = modal.story;
+            if (AudioPlayer.isPlaying || AudioPlayer.isPaused) {
+                AudioPlayer.pause();
+            } else {
+                // Pass the whole story object to play, not just the text
+                AudioPlayer.play(story, currentLanguage); 
+            }
+        });
 
-        document.getElementById('stopBtn').addEventListener('click', () => {
-            AudioPlayer.stop();
-        });
-    });
+        document.getElementById('stopBtn').addEventListener('click', () => {
+            AudioPlayer.stop();
+        });
+    });
 
 </script>
 </body>
