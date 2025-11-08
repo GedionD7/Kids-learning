@@ -478,8 +478,8 @@ Lulu carried the little star on her back and climbed to the highest point in the
             this.stop();
             this.isTTS = false;
 
-            // FIX: Correctly constructs the local file path
-            const mp3Path = `/stories/story${storyID}.mp3`;
+            // FIX APPLIED HERE: Correctly constructs the local file path based on user's request: "story/story1.mp3"
+            const mp3Path = `story/story${storyID}.mp3`;
             this.audioElement.src = mp3Path;
             this.audioElement.load();
 
@@ -493,7 +493,8 @@ Lulu carried the little star on her back and climbed to the highest point in the
 
             this.audioElement.onended = () => this.stop();
             this.audioElement.onerror = () => {
-                this.updateUI('error', 'Amharic MP3 not found or failed to load.');
+                // Changing error message to reflect the corrected path structure
+                this.updateUI('error', `Amharic MP3 (story/story${storyID}.mp3) not found or failed to load.`);
                 this.stop();
             };
 
