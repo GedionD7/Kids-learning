@@ -187,8 +187,6 @@
             transition: background-color 0.2s;
         }
         .sound-buttons button:hover { background-color: #1b5e20; }
-        .sound-buttons .amharic-btn { background-color: var(--success); }
-        .sound-buttons .amharic-btn:hover { background-color: #218838; }
 
         .panel {
             background: white;
@@ -1187,7 +1185,7 @@
         { id: 8, name: "Brown", amharic: "ቡናማ", hex: "#a52a2a", category: "warm", description: "An earthy color like tree trunks and chocolate.", amharicDescription: "እንደ ዛፍ ግንድ እና ቸኮሌት ያለ ምድራዊ ቀለም።", icon: "🟤" },
         { id: 9, name: "Black", amharic: "ጥቁር", hex: "#000000", category: "cool", description: "A dark color like night and coal.", amharicDescription: "እንደ ሌሊት እና ከሰል ያለ ጥቁር ቀለም።", icon: "⚫" },
         { id: 10, name: "White", amharic: "ነጭ", hex: "#ffffff", category: "cool", description: "A light color like snow and clouds.", amharicDescription: "እንደ በረዶ እና ደመና ያለ የብርሃን ቀለም።", icon: "⚪" },
-        { id: 11, name: "Gray", amharic: "ግራጫ", hex: "#808080", category: "cool", description: "A neutral color like stones and elephants.", amharicDescription: "እንደ ድንጋይ �እና ዝሆኖች ያለ ገለልተኛ ቀለም።", icon: "🔘" },
+        { id: 11, name: "Gray", amharic: "ግራጫ", hex: "#808080", category: "cool", description: "A neutral color like stones and elephants.", amharicDescription: "እንደ ድንጋይ እና ዝሆኖች ያለ ገለልተኛ ቀለም።", icon: "🔘" },
         { id: 12, name: "Rainbow", amharic: "ቀስተ ደመና", hex: "linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet)", category: "special", description: "All the colors together after the rain!", amharicDescription: "ከዝናብ በኋላ ሁሉም ቀለሞች አንድ ላይ!", icon: "🌈" }
     ];
 
@@ -1211,6 +1209,17 @@
         renderColors(colorsData.filter(color => favoritesColors.includes(color.id)));
     }
 
+    // --- SPEECH SYSTEM (ENGLISH ONLY) ---
+    function speakEn(text) {
+        if (!text) return;
+        const u = new SpeechSynthesisUtterance(text);
+        u.lang = "en-US";
+        u.rate = 0.95;
+        u.pitch = 1.0;
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(u);
+    }
+
     // --- COLORS RENDERING ---
     function renderColors(filteredColors = colorsData) {
         const grid = document.getElementById('colorsGrid');
@@ -1230,8 +1239,7 @@
                     <h4>${currentLanguage === 'english' ? color.name : color.amharic}</h4>
                     <small>${currentLanguage === 'english' ? color.amharic : color.name}</small>
                     <div class="sound-buttons">
-                        <button onclick="event.stopPropagation(); speakTextViaGoogle('${color.name}', 'en', this)">🔊 English</button>
-                        <button class="amharic-btn" onclick="event.stopPropagation(); speakTextViaGoogle('${color.amharic}', 'am', this)">🔊 አማርኛ</button>
+                        <button onclick="event.stopPropagation(); speakEn('${color.name}')">🔊 English</button>
                     </div>
                 `;
 
@@ -1249,55 +1257,6 @@
                 <p><strong>${currentLanguage === 'english' ? 'Description' : 'መግለጫ'}:</strong> ${currentLanguage === 'english' ? color.description : color.amharicDescription}</p>
             `;
         openModal('colorModal');
-    }
-
-    // --- SOUND SYSTEM (GOOGLE TTS) ---
-    let activeAudio = null;
-
-    function showLoading(element) {
-        if (!element.dataset.originalContent) {
-            element.dataset.originalContent = element.innerHTML;
-        }
-        element.innerHTML = '<div class="loading-spinner"></div>';
-        element.disabled = true;
-    }
-
-    function hideLoading(element) {
-        if (element && element.dataset.originalContent) {
-            element.innerHTML = element.dataset.originalContent;
-            element.disabled = false;
-        }
-    }
-
-    function speakTextViaGoogle(text, lang, element) {
-        if (activeAudio) {
-            activeAudio.pause();
-            const playingButton = document.querySelector('.loading-spinner')?.parentElement;
-            if(playingButton && playingButton !== element) {
-                hideLoading(playingButton);
-            }
-        }
-
-        showLoading(element);
-
-        const encodedText = encodeURIComponent(text);
-        const audioUrl = `https://translate.google.com/translate_tts?ie=UTF-8&tl=${lang}&client=tw-ob&q=${encodedText}`;
-
-        const audio = new Audio(audioUrl);
-        activeAudio = audio;
-
-        audio.play().then(() => {
-            hideLoading(element);
-        }).catch(error => {
-            console.error("Audio playback error:", error);
-            element.innerHTML = element.dataset.originalContent + ' ❌';
-            setTimeout(() => hideLoading(element), 2000);
-        });
-
-        audio.onended = () => {
-            hideLoading(element);
-            activeAudio = null;
-        };
     }
 
     // --- COLOR MIXER ---

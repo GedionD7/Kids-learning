@@ -293,7 +293,7 @@ All the other animals saw this, but they were too scared to come close. "The tho
 But Leo stepped forward. "Don't worry, Tilly! I will help you!" he said. Carefully, he pulled away the thorns, one by one, until Tilly was free. Tilly hugged him tightly. "Thank you, Leo! You are brave!"
 From that day on, all the animals in the jungle knew that even the smallest lion can be the bravest of all. And Leo learned that helping others is more important than being the biggest or strongest.`,
                 amharic: `በወርቃማው ዛፍ ጫካ ውስጥ ሊዮ የሚባል ትንሽ አንበሳ ነበር። ሊዮ ከሌሎቹ አንበሶች ያነሰ ነበር፣ ነገር ግን ከሁሉም ትልቅ ልብ ነበረው። መመርመር ፣ ከጓደኞቹ ጋር መጫወት እና ለሚያስፈልገው ማንኛውም ሰው መርዳት ይወድ ነበር።
-አንድ ቀን በብሩህ ማለዳ ሊዮ በወንዙ አጠገብ እየሄደ ሳለ ደካማ ጩኸት ሰማ ። "እርዱኝ! እርዱኝ!"አለ ድምፁ።የማወቅ ጉጉት ያለው ሊዮ ድምፁን ተከትሎ ጓደኛውን ቲሊ ኤሊው በእሾህ ቁጥቋጦ ውስጥ ተጣብቆ አገኘው።ትንንሽ እግሮቿ  ነፃ ሊወጡላት አልቻሉም ።
+አንድ ቀን በብሩህ ማለዳ ሊዮ በወንዙ አጠገብ እየሄደ ሳለ ደካማ ጩኸት ሰማ ። "እርዱኝ! እርዱኝ!"አለ ድምፁ።የማወቅ ጉጉት ያለው ሊዮ ድምፁን ተከትሎ ጓደኛውን ቲሊ ኤሊው በእሾህ ቁጥቋጦ ውስጥ ተጣብቆ አገኘው።ትንንሽ እግሮቿ  ነፃ ሊወጡላት አልቻሉም ።
 ሌሎቹ እንስሳት ሁሉ ይህንን አዩ ፣ ነገር ግን ለመቅረብ በጣም ፈሩ። "እሾሆቹ በጣም ሹል ናቸው" አለች ዝንጀሮ። "መርዳት አልችልም" አለች ቀጭኔ።
 ነገር ግን ሊዮ ወደፊት ሄደ። "አትጨነቂ ፣ ቲሊ! እረዳሻለሁ!" አላት። በጥንቃቄ እሾሆቹን ፣ አንድ በአንድ ፣ ቲሊ እስክትፈታ ድረስ አነሳ። ቲሊ በጥብቅ አቀፈችው። "አመሰግናለሁ ፣ ሊዮ! ደፋር ነህ!"
 ከዚያ ቀን ጀምሮ በጫካው ውስጥ ያሉ ሁሉም እንስሳት ትንሹ አንበሳ እንኳ ከሁሉም ደፋር መሆኑን አወቁ። እና ሊዮ ሌሎችን ማገዝ ትልቅ ወይም ጠንካራ ከመሆን የበለጠ አስፈላጊ መሆኑን ተማረ።`
@@ -390,85 +390,144 @@ Lulu carried the little star on her back and climbed to the highest point in the
     const modal = document.getElementById('storyModal');
     const modalTitle = document.getElementById('modalTitle');
     const modalText = document.getElementById('modalText');
+    
+    // Global variable for native TTS (SpeechSynthesisUtterance)
+    let currentUtterance = null; 
+    let currentStoryID = null;
 
     // --- FIX: A NEAT AUDIO PLAYER OBJECT TO HANDLE ALL SOUND LOGIC ---
     const AudioPlayer = {
-        playlist: [],
-        currentIndex: 0,
         audioElement: new Audio(),
         isPlaying: false,
         isPaused: false,
+        isTTS: false, // Tracks if we are using native TTS or local MP3
 
-        _createTextChunks(text) {
+        // Helper for clearing any previous highlight (used by both TTS and MP3)
+        _clearHighlight() {
+            modalText.querySelectorAll('span').forEach(span => span.classList.remove('highlight-sentence'));
+        },
+
+        // --- FIX: Uses native TTS for English ---
+        _playTTS(text, lang) {
+            this.stop(); 
+            this.isTTS = true;
+
+            const langCode = lang === 'english' ? 'en-US' : 'am-ET'; // Use full codes for best voice selection
             const sentences = text.match(/[^.!?…]+[.!?…]*/g) || [text];
-            const chunks = [];
-            sentences.forEach(sentence => {
-                if (sentence.length > 180) { // Further split very long sentences
-                    let subChunk = '';
-                    const words = sentence.trim().split(' ');
-                    words.forEach(word => {
-                        if ((subChunk + word).length > 180) {
-                            chunks.push(subChunk.trim());
-                            subChunk = '';
-                        }
-                        subChunk += word + ' ';
-                    });
-                    if (subChunk) chunks.push(subChunk.trim());
-                } else {
-                    chunks.push(sentence.trim());
+            let sentenceIndex = 0;
+
+            const synth = window.speechSynthesis;
+            if (!synth) {
+                this.updateUI('error', 'Text-to-Speech not supported in this browser.');
+                return;
+            }
+
+            // Function to speak the next sentence chunk
+            const speakNext = () => {
+                this._clearHighlight();
+
+                if (sentenceIndex >= sentences.length || !this.isPlaying) {
+                    this.stop();
+                    return;
                 }
-            });
-            return chunks.filter(c => c); // Filter out empty chunks
+
+                const sentence = sentences[sentenceIndex].trim();
+                if (!sentence) {
+                    sentenceIndex++;
+                    speakNext();
+                    return;
+                }
+
+                // Highlight the current sentence (requires the sentences to be wrapped in <span>)
+                const spans = modalText.querySelectorAll('span');
+                if (spans[sentenceIndex]) {
+                    spans[sentenceIndex].classList.add('highlight-sentence');
+                }
+
+                currentUtterance = new SpeechSynthesisUtterance(sentence);
+                currentUtterance.lang = langCode;
+
+                // Find a matching voice for better quality
+                const voice = synth.getVoices().find(v => v.lang === langCode);
+                if (voice) {
+                    currentUtterance.voice = voice;
+                }
+
+                currentUtterance.onend = () => {
+                    sentenceIndex++;
+                    speakNext();
+                };
+
+                currentUtterance.onerror = (e) => {
+                    console.error('TTS Error:', e);
+                    this.updateUI('error', 'Error reading text.');
+                    this.stop();
+                };
+
+                synth.speak(currentUtterance);
+            };
+
+            this.isPlaying = true;
+            this.isPaused = false;
+            speakNext();
+            this.updateUI('playing');
         },
 
-        _playNextChunk() {
-            this._highlightCurrentSentence();
-            if (this.currentIndex < this.playlist.length && this.isPlaying) {
-                this.audioElement.src = this.playlist[this.currentIndex];
+        // --- FIX: Uses local MP3 for Amharic ---
+        _playMP3(storyID) {
+            this.stop();
+            this.isTTS = false;
+
+            // FIX: Correctly constructs the local file path
+            const mp3Path = `/stories/story${storyID}.mp3`;
+            this.audioElement.src = mp3Path;
+            this.audioElement.load();
+
+            this.audioElement.onloadeddata = () => {
                 this.audioElement.play().catch(e => {
-                    console.error("Chunk play error:", e);
-                    this.stop(); // Stop on error
+                    console.error("MP3 Playback Error:", e);
+                    this.updateUI('error', 'Error playing Amharic audio. Check file path.');
+                    this.stop();
                 });
-                this.currentIndex++;
-            } else {
+            };
+
+            this.audioElement.onended = () => this.stop();
+            this.audioElement.onerror = () => {
+                this.updateUI('error', 'Amharic MP3 not found or failed to load.');
                 this.stop();
-            }
+            };
+
+            this.isPlaying = true;
+            this.isPaused = false;
+            this.updateUI('playing');
         },
 
-        _highlightCurrentSentence() {
-            const spans = modalText.querySelectorAll('span');
-            spans.forEach(span => span.classList.remove('highlight-sentence'));
-            // Highlight based on previous index since currentIndex is already incremented
-            const highlightIndex = this.currentIndex > 0 ? this.currentIndex - 1 : 0;
-            if (this.isPlaying && spans[highlightIndex]) {
-                spans[highlightIndex].classList.add('highlight-sentence');
-            }
-        },
-
-        play(text, lang) {
+        // --- Unified Play Function ---
+        play(story, lang) {
             if (this.isPaused) {
                 this.resume();
                 return;
             }
+            
             this.stop();
-            this.isPlaying = true;
-            this.isPaused = false;
+            currentStoryID = story.id; 
 
-            const chunks = this._createTextChunks(text);
-            const langCode = lang === 'english' ? 'en' : 'am';
-            this.playlist = chunks.map(chunk => {
-                const encodedChunk = encodeURIComponent(chunk);
-                return `https://translate.google.com/translate_tts?ie=UTF-8&tl=${langCode}&client=tw-ob&q=${encodedChunk}`;
-            });
-
-            this.currentIndex = 0;
-            this._playNextChunk();
-            this.updateUI('playing');
+            if (lang === 'english') {
+                this._playTTS(story.text.english, 'english');
+            } else if (lang === 'amharic') {
+                this._playMP3(story.id);
+            }
         },
 
         pause() {
             if (!this.isPlaying) return;
-            this.audioElement.pause();
+            
+            if (this.isTTS && currentUtterance) {
+                window.speechSynthesis.pause();
+            } else {
+                this.audioElement.pause();
+            }
+
             this.isPaused = true;
             this.isPlaying = false;
             this.updateUI('paused');
@@ -476,24 +535,35 @@ Lulu carried the little star on her back and climbed to the highest point in the
 
         resume() {
             if (!this.isPaused) return;
+            
+            if (this.isTTS && currentUtterance) {
+                window.speechSynthesis.resume();
+            } else {
+                this.audioElement.play().catch(e => this.stop());
+            }
+
             this.isPaused = false;
             this.isPlaying = true;
-            this.audioElement.play().catch(e => this.stop());
             this.updateUI('playing');
         },
 
         stop() {
+            // Stop TTS if active
+            if (this.isTTS && window.speechSynthesis) {
+                window.speechSynthesis.cancel();
+            }
+            // Stop Audio element if active
             this.audioElement.pause();
             this.audioElement.src = "";
-            this.playlist = [];
-            this.currentIndex = 0;
+            
+            currentUtterance = null;
             this.isPlaying = false;
             this.isPaused = false;
-            this._highlightCurrentSentence(); // Clears highlight
+            this._clearHighlight(); // Clears highlight
             this.updateUI('stopped');
         },
 
-        updateUI(state) {
+        updateUI(state, message = '') {
             const playBtn = document.getElementById('playBtn');
             const audioStatus = document.getElementById('audioStatus');
 
@@ -503,10 +573,17 @@ Lulu carried the little star on her back and climbed to the highest point in the
             } else if (state === 'paused') {
                 playBtn.innerHTML = `<i class="fas fa-play"></i> Resume`;
                 audioStatus.textContent = 'Paused.';
+            } else if (state === 'error') {
+                 playBtn.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Error`;
+                 audioStatus.textContent = message;
+                 playBtn.disabled = true;
             } else {
                 playBtn.innerHTML = `<i class="fas fa-play"></i> Listen`;
                 audioStatus.textContent = 'Ready to play.';
+                playBtn.disabled = false;
             }
+            // Enable stop button only if not stopped/error
+            document.getElementById('stopBtn').disabled = (state === 'stopped' || state === 'error');
         }
     };
 
@@ -535,8 +612,11 @@ Lulu carried the little star on her back and climbed to the highest point in the
 
     function openModal(story) {
         modalTitle.textContent = story.title[currentLanguage];
-        const sentences = story.text[currentLanguage].match(/[^.!?…]+[.!?…]*/g) || [];
+        // Split text by sentence and wrap in <span> for highlighting (English TTS)
+        const text = story.text[currentLanguage];
+        const sentences = text.match(/[^.!?…]+[.!?…]*/g) || [];
         modalText.innerHTML = sentences.map(s => `<span>${s.trim()}</span>`).join(' ');
+        
         modal.story = story;
         modal.classList.add('active');
         AudioPlayer.updateUI('stopped');
@@ -553,6 +633,8 @@ Lulu carried the little star on her back and climbed to the highest point in the
 
         document.querySelectorAll('.lang-btn').forEach(btn => {
             btn.addEventListener('click', () => {
+                // Stop audio when changing language
+                AudioPlayer.stop(); 
                 document.querySelector('.lang-btn.active').classList.remove('active');
                 btn.classList.add('active');
                 currentLanguage = btn.dataset.lang;
@@ -576,20 +658,16 @@ Lulu carried the little star on her back and climbed to the highest point in the
 
         document.getElementById('playBtn').addEventListener('click', () => {
             const story = modal.story;
-            const text = story.text[currentLanguage];
-            if (AudioPlayer.isPlaying) {
+            if (AudioPlayer.isPlaying || AudioPlayer.isPaused) {
                 AudioPlayer.pause();
             } else {
-                AudioPlayer.play(text, currentLanguage);
+                // Pass the whole story object to play, not just the text
+                AudioPlayer.play(story, currentLanguage); 
             }
         });
 
         document.getElementById('stopBtn').addEventListener('click', () => {
             AudioPlayer.stop();
-        });
-
-        AudioPlayer.audioElement.addEventListener('ended', () => {
-            AudioPlayer._playNextChunk();
         });
     });
 

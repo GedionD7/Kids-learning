@@ -174,18 +174,6 @@
             transition: background-color 0.2s;
         }
         .sound-buttons button:hover { background-color: #5a0462; }
-        .sound-buttons .amharic-btn { background-color: var(--success); }
-        .sound-buttons .amharic-btn:hover { background-color: #218838; }
-
-        .loading-spinner {
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: #fff;
-            animation: spin 1s ease-in-out infinite;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
 
         .panel {
             background: white;
@@ -492,8 +480,7 @@
                     <h4>${name}</h4>
                     <small>${translation}</small>
                     <div class="sound-buttons">
-                        <button onclick="speakTextViaGoogle('${item.name}', 'en', this)">🔊 English</button>
-                        <button class="amharic-btn" onclick="speakTextViaGoogle('${item.amharic}', 'am', this)">🔊 አማርኛ</button>
+                        <button onclick="speakEn('${item.name}')">🔊 English</button>
                     </div>
                 </div>
             `;
@@ -513,36 +500,15 @@
         renderShapes(filteredData);
     }
 
-    // --- SOUND SYSTEM (GOOGLE TTS) ---
-    let activeAudio = null;
-    function showLoading(element) {
-        if (!element.dataset.originalHTML) element.dataset.originalHTML = element.innerHTML;
-        element.innerHTML = '<div class="loading-spinner"></div>';
-        element.disabled = true;
-    }
-    function hideLoading(element) {
-        if (element && element.dataset.originalHTML) {
-            element.innerHTML = element.dataset.originalHTML;
-            element.disabled = false;
-        }
-    }
-    function speakTextViaGoogle(text, lang, element) {
-        if (activeAudio) {
-            activeAudio.pause();
-            const playingButton = document.querySelector('.loading-spinner')?.parentElement;
-            if(playingButton && playingButton !== element) hideLoading(playingButton);
-        }
-
-        showLoading(element);
-        const encodedText = encodeURIComponent(text);
-        const audioUrl = `https://translate.google.com/translate_tts?ie=UTF-8&tl=${lang}&client=tw-ob&q=${encodedText}`;
-
-        activeAudio = new Audio(audioUrl);
-        activeAudio.play().catch(e => console.error("Audio error:", e));
-
-        const onEnd = () => { hideLoading(element); activeAudio = null; };
-        activeAudio.addEventListener('ended', onEnd);
-        activeAudio.addEventListener('error', onEnd);
+    // --- SPEECH SYSTEM (ENGLISH ONLY) ---
+    function speakEn(text) {
+        if (!text) return;
+        const u = new SpeechSynthesisUtterance(text);
+        u.lang = "en-US";
+        u.rate = 0.95;
+        u.pitch = 1.0;
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(u);
     }
 
     // --- CELEBRATION EFFECTS ---
