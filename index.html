@@ -60,7 +60,7 @@
             cursor: default !important;
         }
 
-        /* HERO - Title is left-aligned */
+        /* HERO - Content is centered */
         .hero{
             position:relative;
             text-align:center;
@@ -70,13 +70,20 @@
             overflow:hidden;
         }
         .hero h1{font-size:clamp(30px,5vw,48px);margin-bottom:14px}
-        .hero p{max-width:650px;font-size:18px;color:#444;text-align:center}
+        .hero p{
+            max-width:650px;
+            font-size:18px;
+            color:#444;
+            text-align:center;
+            margin-left: auto; /* Added for centering */
+            margin-right: auto; /* Added for centering */
+        }
 
-        /* Hero Buttons Container - Buttons are left-aligned */
+        /* Hero Buttons Container - Buttons are centered */
         .hero-buttons {
             display: flex;
-            justify-content: flex-start;
-            gap: 15px; /* Space between the two buttons */
+            justify-content: center; /* Changed from flex-start to center */
+            gap: 15px; 
             margin-top: 22px;
         }
 
